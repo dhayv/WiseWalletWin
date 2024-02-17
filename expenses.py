@@ -33,20 +33,24 @@ def get_expenses():
     print("Enter your expenses. Include the Name, Amount, and Due Date (1-30) for each expense.")
     print("Example: Rent, 1000, 1")
 
-    expenses = [{}]
+    expenses = []
 
     while True:
-        expenses = input("Enter an expense (or type 'done' to finish) ").strip().capitalize()
-        if expenses == "done":
+        expenses_input = input("Enter an expense (or type 'done' to finish) ").strip().capitalize()
+        if expenses_input.lower() == "done":
             break
         else:
-            expenses.append(expenses)
+            expenses.append(expenses_input)
     
-    Expense_name, Amount, Due_Date = expenses.split(", ")
-
-    with open('expenses.csv' "a") as file:
+    #Write expenses to a csv file
+    with open('expenses.csv', "a", newline='') as file:
         writer = csv.Dictwriter(file, fieldnames=["Expense","Amount", "Due Date"])
-        writer.writerow({"Expense": Expense_name, "Amount": Amount, "Due Date": Due_Date})
+        # Write header row
+        writer.writeheader()
+        for expense in expenses:
+            Expense_name, Amount, Due_Date = expense.split(",")
+            # Write data 
+            writer.writerow({"Expense": Expense_name, "Amount": Amount, "Due Date": Due_Date})
     
 
 
