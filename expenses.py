@@ -30,9 +30,10 @@ def main():
 #Get user input
 def get_income():
     # Net pay(amount after taxes) what is net pay?
-
+    #store net income to not continously ask for it
     net_income = float(input("What is your montly net income? "))
 
+    #store info
     # Last 2 pay date and amount
     print("Enter your last two pay dates ")
 
@@ -82,6 +83,7 @@ def get_expenses():
 def calculate(net_income, total_expenses):
     remainder = net_income - total_expenses
     return remainder
+
 
 
 
