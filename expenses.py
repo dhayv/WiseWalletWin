@@ -1,57 +1,91 @@
 import csv
+import os
+
 def main():
 
     #Get user input
-    get_income()
-    get_expenses()
+    net_income, recent_pay_date, recent_pay_date_2 = get_income()
 
-    #Calculate
-    #calculate()
+    
+
+    #Calculate info
+    total_expenses = get_expenses()
+
+    remainder = calculate(net_income,total_expenses)
 
     #Output
-    #print("Your budget is complete")
+    print("Your Spending Plan is complete!")
+
+
+    print(f"Monthly income: ${net_income}")
+
+    print(f"Monthly fixed cost: ${total_expenses}")
+
+    print(f"Remaining balance: {remainder}")
+
+
+
+
 
 #Get user input
 def get_income():
-        #-Net pay(amount after taxes) what is net pay?
-    net_income = float(input("What is your montly net income? ")
-)
-        #-Last 2 pay date and amount
+    # Net pay(amount after taxes) what is net pay?
+
+    net_income = float(input("What is your montly net income? "))
+
+    # Last 2 pay date and amount
     print("Enter your last two pay dates ")
-        #-most recent pay date
+
+    # most recent pay date
     recent_pay_date = input("Enter your most recent pay date (MM-DD-YYYY): ")
-        #-next pay date
-    recent_pay_date = input("Enter your last pay date before the most recent one (MM-DD-YYYY): ")
+
+    # next pay date
+    recent_pay_date_2 = input("Enter your last pay date before the most recent one (MM-DD-YYYY): ")
+
+    return net_income, recent_pay_date, recent_pay_date_2
 
 def get_expenses():
 
     #Collect expenses
-    #Categories needed
-    #- [ ] Name
-    #- [ ] Amount
-    #- [ ] Due Date
+        #Categories needed (Name, amount, Due Date)
     print("Enter your expenses. Include the Name, Amount, and Due Date (1-30) for each expense.")
     print("Example: Rent, 1000, 1")
 
-    expenses = []
+    expenses_info = []
+    
+    # Expense counter
+    total_expenses = 0
 
     while True:
-        expenses_input = input("Enter an expense (or type 'done' to finish) ").strip().capitalize()
-        if expenses_input.lower() == "done":
+        expense_input = input("Enter an expense (or type 'done' to finish) ").strip().capitalize()
+        if expense_input.lower() == "done":
             break
         else:
-            expenses.append(expenses_input)
-    
+            expense_name, amount, due_date = expense_input.split(",")
+            expenses_info.append({"Expense": expense_name, "Amount": float(amount), "Due Date": int(due_date)})
+            total_expenses += float(amount)
+
     #Write expenses to a csv file
+
     with open('expenses.csv', "a", newline='') as file:
-        writer = csv.Dictwriter(file, fieldnames=["Expense","Amount", "Due Date"])
+        writer = csv.DictWriter(file, fieldnames=["Expense","Amount", "Due Date"])
+        file_exists = os.path.isfile('expenses.csv')       
+        if not file_exists:
         # Write header row
-        writer.writeheader()
-        for expense in expenses:
-            Expense_name, Amount, Due_Date = expense.split(",")
-            # Write data 
-            writer.writerow({"Expense": Expense_name, "Amount": Amount, "Due Date": Due_Date})
-    
+            writer.writeheader()
+        for expense in expenses_info:
+        # Write data 
+            writer.writerow(expense)
+
+    return total_expenses
+
+def calculate(net_income, total_expenses):
+    remainder = net_income - total_expenses
+    return remainder
+
+
+
+
 
 
 
