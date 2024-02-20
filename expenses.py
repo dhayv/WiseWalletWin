@@ -1,10 +1,11 @@
 import csv
 import os
+from datetime import date
 
 def main():
 
     #Get user input
-    net_income, recent_pay_date, recent_pay_date_2 = get_income()
+    net_income, recent_pay_date, last_pay_date = get_income()
 
     
 
@@ -41,9 +42,9 @@ def get_income():
     recent_pay_date = input("Enter your most recent pay date (MM-DD-YYYY): ")
 
     # next pay date
-    recent_pay_date_2 = input("Enter your last pay date before the most recent one (MM-DD-YYYY): ")
+    last_pay_date = input("Enter your last pay date before the most recent one (MM-DD-YYYY): ")
 
-    return net_income, recent_pay_date, recent_pay_date_2
+    return net_income, recent_pay_date, last_pay_date
 
 def get_expenses():
 
@@ -85,8 +86,12 @@ def calculate(net_income, total_expenses):
     return remainder
 
 
-
-
+#def next_pay_date(recent_pay_date):
+    #current_date = date.today("%m-%d-%Y")
+    #In your case, you could use a cron job to run a Python script at regular intervals. 
+    #This script could use the next_pay_date function to calculate the next pay date, 
+    #and then update a database with this date. Then, you could use FastAPI to create an 
+    #API that retrieves the next pay date from the database.
 
 
 
