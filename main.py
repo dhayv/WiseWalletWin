@@ -1,12 +1,11 @@
 from fastapi import FastAPI
 from pydantic import BaseModel, validator, ValidationError
-from datetime import date, datetime 
-import datetime
+from datetime import date, datetime
+from typing import Optional
+
 
 app = FastAPI()
 
-from pydantic import BaseModel, validator, ValidationError
-from datetime import datetime
 
 class Income(BaseModel):
     amount: float
@@ -23,13 +22,28 @@ class Income(BaseModel):
         except ValueError:
             # Raise an error if the date does not match the format
             raise ValueError("Date must be in MM-DD-YYYY format")
-
+        
+class Expense(BaseModel):
+    name: str
+    amount: float
+    due_date: int | None # Due date of the expense (days of the month(1-30 or 31))
+    @validator('due_date')
+    def check_due_date(cls, v):
+        if v is None:
+            return v
+        if v < 1 or v >= 31:
+            raise ValueError("Due date must be between 1 and 31")
+        return v
 
 
 
 @app.post("/income")
 def get_income(income: Income):
     return {"Message": "Income added Successfully" }
+
+@app.post("/expenses")
+def get_expenses(expense: Expense):
+    return {"Message": "Expenses added Successfully" }
 
 
 
