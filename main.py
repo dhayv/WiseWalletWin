@@ -9,7 +9,8 @@ from sqlmodel import Field, SQLModel
 app = FastAPI()
 
 
-class Income(BaseModel):
+class Income(SQLModel, table=True):
+    id: Optional[int] = Field(default=None, primary_key=True)
     amount: float
     recent_pay: date  # most recent pay day in format MM-DD-YYYY
     last_pay: date | None  # Last pay date two weeks prior to recent_pay MM-DD-YYYY
@@ -25,7 +26,8 @@ class Income(BaseModel):
             # Raise an error if the date does not match the format
             raise ValueError("Date must be in MM-DD-YYYY format")
         
-class Expense(BaseModel):
+class Expense(SQLModel, table=True):
+    id: Optional[int] = Field(default=None, primary_key=True)
     name: str
     amount: float
     due_date: int | None # Due date of the expense (days of the month(1-30 or 31))
