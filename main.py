@@ -2,6 +2,8 @@ from fastapi import FastAPI
 from pydantic import BaseModel, validator, ValidationError
 from datetime import date, datetime
 from typing import Optional
+from sqlmodel import Field, SQLModel
+
 
 
 app = FastAPI()
@@ -10,7 +12,7 @@ app = FastAPI()
 class Income(BaseModel):
     amount: float
     recent_pay: date  # most recent pay day in format MM-DD-YYYY
-    last_pay: date | None = None  # Last pay date two weeks prior to recent_pay MM-DD-YYYY
+    last_pay: date | None  # Last pay date two weeks prior to recent_pay MM-DD-YYYY
 
     @validator('recent_pay', 'last_pay', pre=True, allow_reuse=True)
     def check_date_format(cls, value): #the "value" is the recent_pay and last_pay
