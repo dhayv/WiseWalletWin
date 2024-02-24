@@ -1,21 +1,20 @@
 from fastapi import FastAPI
-from sqlmodel import SQLModel
-from . import models, database
-from routes.expenses import Expense
-from routes.income import Income
+from starlette.events import LifespanStartupComplete
+from starlette.middleware.base import BaseHTTPMiddleware
+from router.expenses import router as expense_router
+from router.income import router as income_router
+import database
 
-
+class StartupEventMiddleware(BaseHTTPMiddleware):
+    async def dispatch(self, request, call_next):
+        if isinstance(request, LifespanStartupComplete):
+            # Your startup code here
+            await database.create_db_and_tables()
+            print("Database Created")
+        response = await call_next(request)
+        return response
 
 app = FastAPI()
-
-
-def on_startup():
-    database.create_db_and_tables
-
-app.include_router
-app.include_router
-
-
-
-
-
+app.add_middleware(StartupEventMiddleware)
+app.include_router(income_router)
+app.include_router(expense_router)
