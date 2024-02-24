@@ -1,6 +1,8 @@
 from fastapi import FastAPI
 from sqlmodel import SQLModel
 from main import engine
+from routes.expenses import Expense
+from routes.income import Income
 
 
 app = FastAPI()
