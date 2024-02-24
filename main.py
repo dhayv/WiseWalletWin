@@ -12,9 +12,8 @@ app = FastAPI()
 def on_startup():
     database.create_db_and_tables
 
-
-
-
+app.include_router
+app.include_router
 
 
 
