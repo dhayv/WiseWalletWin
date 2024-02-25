@@ -7,18 +7,13 @@ import logging
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
-logging.info("line before api")
-
-logging.info("line after api")
+# Startup event before server starts
 @asynccontextmanager
 async def lifespan(app:FastAPI):
     database.create_db_and_tables()
     logging.info("Database Created")
-    #try:
     yield
-    #finally:
-        # Cleanup code here, if necessary
-        #print("Application shutdown")
+
 
 app = FastAPI(lifespan=lifespan)
 
