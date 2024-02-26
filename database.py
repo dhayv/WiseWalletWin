@@ -11,12 +11,8 @@ engine = create_engine(sqlite_url, echo=True)
 # Session conveyor belt
 @contextmanager
 def get_db():
-    session = Session(engine)
-    try:
+    with Session(engine) as session:
         yield session
-    finally:
-        session.close()
-
 
 
 #Create database and tables

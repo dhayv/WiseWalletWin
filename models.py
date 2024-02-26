@@ -1,7 +1,8 @@
 from sqlmodel import SQLModel, Field
-from datetime import date, datetime
 from typing import Optional
 from pydantic import validator
+from datetime import date, datetime
+
 
 class Income(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
@@ -24,7 +25,7 @@ class Expense(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     name: str
     amount: float
-    due_date: int | None # Due date of the expense (days of the month(1-30 or 31))
+    due_date: Optional[int] = None # Due date of the expense (days of the month(1-30 or 31))
     @validator('due_date')
     def check_due_date(cls, v):
         if v is None:
