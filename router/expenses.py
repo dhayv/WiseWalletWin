@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException, Response, status
 from models import Expense
 from sqlmodel import Session
 from database import get_db, engine
@@ -18,7 +18,35 @@ def create_expenses():
         # Commit the transaction
         session.commit()
 
-@router.get("/expenses")
-def read_expenses():
-    return [{"name": "Test Expense", "amount": 100, "due_date": 15}]
+@router.post("/expenses")
+def add_expense(expense: Expense, db: Session = Depends(get_db)):
+    db.add(expense)
+    db.commit()
+    return {"message": "Expense added successfully"}        
+
+@router.get("/expenses", response_model=list[Expense])
+def read_expenses(db: Session = Depends(get_db)):
+    expenses = db.query(Expense).all()
+    return expenses
+
+
+@router.put("/expenses/{expense_id}")
+def update_expense(expense_id: int ,expense_data: Expense, db: Session = Depends(get_db)):
+    db_expense = db.get(Expense, expense_id)
+    if not db_expense:
+        raise HTTPException(status_code=404, detail="Expense not found")
+    for var, value in vars(expense_data).items():
+        setattr(db_expense, var, value) if value else None
+    db.commit()
+    db.refresh(db_expense)
+    return db_expense
+
+@router.delete("expenses/{expense_id}", status_code=204)
+def delete_expense(expense_id: int, db: Session = Depends(get_db)):
+    db_expense = db.get(Expense, expense_id)
+    if not db_expense:
+        raise HTTPException(status_code=404, detail="Expense not found")
+    db.delete(db_expense)
+    db.commit()
+    return Response(status_code=status.HTTP_204_NO_CONTENT)
 
