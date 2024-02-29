@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException, Response, status
-from models import Expense
+from models import Expense, ExpenseUpdate
 from sqlmodel import Session
 from database import get_db, engine
 
@@ -31,12 +31,13 @@ def read_expenses(db: Session = Depends(get_db)):
 
 
 @router.put("/expenses/{expense_id}")
-def update_expense(expense_id: int ,expense_data: Expense, db: Session = Depends(get_db)):
+def update_expense(expense_id: int ,expense_data: ExpenseUpdate, db: Session = Depends(get_db)):
     db_expense = db.get(Expense, expense_id)
     if not db_expense:
         raise HTTPException(status_code=404, detail="Expense not found")
-    for var, value in vars(expense_data).items():
-        setattr(db_expense, var, value) if value else None
+    expense_data_dict = expense_data.dict(exclude_unset=True)
+    for key, value in expense_data_dict.items():
+        setattr(db_expense, key, value)
     db.commit()
     db.refresh(db_expense)
     return db_expense
