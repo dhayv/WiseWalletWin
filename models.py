@@ -1,6 +1,6 @@
 from sqlmodel import SQLModel, Field
 from typing import Optional
-from pydantic import validator
+from pydantic import validator, BaseModel
 from datetime import date, datetime
 
 
@@ -21,6 +21,12 @@ class Income(SQLModel, table=True):
             # Raise an error if the date does not match the format
             raise ValueError("Date must be in MM-DD-YYYY format")
         
+class Income(SQLModel, table=True):
+    id: Optional[int] = Field(default=None, primary_key=True)
+    source: str
+    amount: float
+    date_received: Optional[str] = None
+
 class Expense(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     name: str
@@ -33,3 +39,9 @@ class Expense(SQLModel, table=True):
         if v < 1 or v >= 31:
             raise ValueError("Due date must be between 1 and 31")
         return v
+
+# Pydantic Models for Request Validation and Serialization
+class ExpenseUpdate(BaseModel):
+    name: Optional[str] = None
+    amount: Optional[float] = None
+    due_date: Optional[int] = None    
