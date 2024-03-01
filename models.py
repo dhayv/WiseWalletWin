@@ -7,25 +7,28 @@ from datetime import date, datetime
 class Income(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     amount: float
-    recent_pay: date  # most recent pay day in format MM-DD-YYYY
-    last_pay: date | None  # Last pay date two weeks prior to recent_pay MM-DD-YYYY
+    recent_pay: date  # Ensuring this is a date object
+    last_pay: Optional[date] = None  # This can be None or a date object
 
-    @validator('recent_pay', 'last_pay', pre=True, allow_reuse=True)
-    def check_date_format(cls, value): #the "value" is the recent_pay and last_pay
-        if value is None:
-            return value
-        try:
-            # Attempt to parse the date string to ensure it matches the desired format
+    # Validator for recent_pay
+    @validator('recent_pay', pre=True)
+    def parse_recent_pay(cls, value):
+        if isinstance(value, str):
             return datetime.strptime(value, "%m-%d-%Y").date()
-        except ValueError:
-            # Raise an error if the date does not match the format
-            raise ValueError("Date must be in MM-DD-YYYY format")
+        return value
+
+    # Validator for last_pay
+    @validator('last_pay', pre=True)
+    def parse_last_pay(cls, value):
+        if value is not None and isinstance(value, str):
+            return datetime.strptime(value, "%m-%d-%Y").date()
+        return value
         
-class Income(SQLModel, table=True):
-    id: Optional[int] = Field(default=None, primary_key=True)
-    source: str
-    amount: float
-    date_received: Optional[str] = None
+class IncomeUpdate(BaseModel):
+    amount: Optional[float] = None
+    recent_pay: Optional[date] = None
+    last_pay: Optional[date] = None  # Last pay date two weeks prior to recent_pay MM-DD-YYYY
+
 
 class Expense(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)

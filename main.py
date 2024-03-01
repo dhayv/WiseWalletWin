@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from contextlib import asynccontextmanager
 from router.expenses import router as expense_router, create_expenses
-from router.income import router as income_router
+from router.income import router as income_router, create_income
 import database
 import logging
 
@@ -15,6 +15,8 @@ async def lifespan(app:FastAPI):
     database.create_db_and_tables()
     logging.info("Database Created")
     create_expenses()
+    create_income()
+
     yield
 
 
