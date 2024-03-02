@@ -1,5 +1,10 @@
 from sqlmodel import Session, create_engine, SQLModel
 from contextlib import contextmanager
+import logging
+
+
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+
 
 
 # database URL
@@ -9,10 +14,11 @@ sqlite_url = "sqlite:///./db.sqlite3"
 engine = create_engine(sqlite_url, echo=True)
 
 # Session conveyor belt
-@contextmanager
+
+
 def get_db():
-    with Session(engine) as session:
-        yield session
+    with Session(engine) as db:
+        yield db
 
 
 #Create database and tables

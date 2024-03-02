@@ -38,10 +38,18 @@ def add_income(income: Income, db: Session = Depends(get_db)):
 @router.get("/income")
 def read_all_incomes(db: Session = Depends(get_db)):
     statement = select(Income)
-    results = db.exec(statement)
-    incomes = results.all()
+    results = db.exec(statement)  
+    incomes = results.all()  
     return incomes
 
+@router.get("/test_income")
+def test_read_all_incomes():
+    with Session(engine) as session:
+        statement = select(Income)
+        results = session.exec(statement)
+        incomes = results.all()
+        return incomes
+    
 @router.put("/income/{income_id}")
 def update_income(income_id: int ,income_data: IncomeUpdate, db: Session = Depends(get_db)):
     db_income = db.get(Income, income_id)
