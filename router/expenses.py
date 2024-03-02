@@ -11,7 +11,7 @@ def create_expenses():
         expense1 = Expense(name="Water Bill", amount=50, due_date=15)
         expense2 = Expense(name="Electricity Bill", amount=75, due_date=18)
 
-
+        #check if data already in database
         statement1 = select(Expense).where(Expense.name== expense1.name, Expense.amount==expense1.amount, Expense.due_date==expense1.due_date)
         statement2 = select(Expense).where(Expense.name== expense2.name, Expense.amount==expense2.amount, Expense.due_date==expense2.due_date)
         result1 = session.exec(statement1).first()

@@ -48,3 +48,11 @@ class ExpenseUpdate(BaseModel):
     name: Optional[str] = None
     amount: Optional[float] = None
     due_date: Optional[int] = None    
+
+
+
+class Users(SQLModel, table=True):
+    id: Optional[int] = Field(default=None, primary_key=True)
+    username: str
+    email: str
+    hashed_password: str

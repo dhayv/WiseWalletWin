@@ -1,5 +1,4 @@
 from sqlmodel import Session, create_engine, SQLModel
-from contextlib import contextmanager
 import logging
 
 

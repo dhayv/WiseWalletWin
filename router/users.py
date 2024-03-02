@@ -8,11 +8,17 @@ from datetime import  datetime
 router = APIRouter()
 
 
-@router.post("/user")
+@router.post("/user", response_model=Users)
 def add_user(user: Users, db: Session = Depends(get_db)):
     db.add(Users)
     db.commit()
     return {"message": "New user"}
 
 
+@router.get("/user/{user_id}", response_model=Users)
 
+
+@router.put("/user/{user_id}", response_model=Users)
+
+
+@router.delete("/user/{user_id}", response_model=Users)
