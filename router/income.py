@@ -15,10 +15,13 @@ def create_income():
         recent_pay_date = datetime.strptime("03-01-2024", "%m-%d-%Y").date()
         last_pay_date = datetime.strptime("02-16-2024", "%m-%d-%Y").date()
 
-        income1 = Income(amount=6000, recent_pay=recent_pay_date, last_pay=last_pay_date)
-        
-        session.add(income1)
-        session.commit()
+        #check if data already in database
+        statement = select(Income).where(Income.recent_pay == recent_pay_date, Income.last_pay== last_pay_date)
+        result = session.exec(statement).first()
+        if not result:
+            income1 = Income(amount=6000, recent_pay=recent_pay_date, last_pay=last_pay_date)
+            session.add(income1)
+            session.commit()
 
 
 
@@ -55,7 +58,7 @@ def update_income(income_id: int ,income_data: IncomeUpdate, db: Session = Depen
     db_income = db.get(Income, income_id)
     if not db_income:
         raise HTTPException(status_code=404, detail="income not found")
-    income_data_dict = income_data.dict(exclude_unset=True)
+    income_data_dict = income_data.model_dump(exclude_unset=True)
     for key, value in income_data_dict.items():
         setattr(db_income, key, value)
     db.commit()

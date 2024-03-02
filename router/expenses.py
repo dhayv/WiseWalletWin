@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException, Response, status
 from models import Expense, ExpenseUpdate
-from sqlmodel import Session
+from sqlmodel import Session, select
 from database import get_db, engine
 
 router = APIRouter()
@@ -10,13 +10,22 @@ def create_expenses():
         # Create some dummy expenses
         expense1 = Expense(name="Water Bill", amount=50, due_date=15)
         expense2 = Expense(name="Electricity Bill", amount=75, due_date=18)
-        
-        # Add them to the session
-        session.add(expense1)
-        session.add(expense2)
-        
-        # Commit the transaction
-        session.commit()
+
+
+        statement1 = select(Expense).where(Expense.name== expense1.name, Expense.amount==expense1.amount, Expense.due_date==expense1.due_date)
+        statement2 = select(Expense).where(Expense.name== expense2.name, Expense.amount==expense2.amount, Expense.due_date==expense2.due_date)
+        result1 = session.exec(statement1).first()
+        result2 = session.exec(statement2).first()
+
+
+        if not result1:
+            session.add(expense1)
+
+        if not result2:
+            session.add(expense2)
+
+        if not result1 or not result2:
+            session.commit()
 
 @router.post("/expenses")
 def add_expense(expense: Expense, db: Session = Depends(get_db)):
@@ -26,7 +35,7 @@ def add_expense(expense: Expense, db: Session = Depends(get_db)):
 
 @router.get("/expenses", response_model=list[Expense])
 def read_expenses(db: Session = Depends(get_db)):
-    expenses = db.query(Expense).all()
+    expenses = db.exec(Expense).all()
     return expenses
 
 
@@ -35,7 +44,7 @@ def update_expense(expense_id: int ,expense_data: ExpenseUpdate, db: Session = D
     db_expense = db.get(Expense, expense_id)
     if not db_expense:
         raise HTTPException(status_code=404, detail="Expense not found")
-    expense_data_dict = expense_data.dict(exclude_unset=True)
+    expense_data_dict = expense_data.model_dump(exclude_unset=True)
     for key, value in expense_data_dict.items():
         setattr(db_expense, key, value)
     db.commit()
