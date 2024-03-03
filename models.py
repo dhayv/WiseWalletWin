@@ -49,13 +49,22 @@ class ExpenseUpdate(BaseModel):
     amount: Optional[float] = None
     due_date: Optional[int] = None    
 
-
-
-class BaseUser(SQLModel, table=True):
-    id: Optional[int] = Field(default=None, primary_key=True)
+# model to be shared across user classes excluding password
+class BaseUser(SQLModel):
     username: str
-    email: EmailStr
+    email: str
     first_name: Optional[str] = None
 
-class UserIn(SQLModel, ):
+# UserIn for input data, using EmailStr for validation
+class UserIn(BaseUser):
+    password: str  
+    email: EmailStr
+
+# in output model
+class UserOut(BaseUser):
+    id: int  
+
+
+class Users(BaseUser, table=True):
+    id: Optional[int] = Field(default=None, primary_key=True)
     hashed_password: str
