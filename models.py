@@ -1,6 +1,6 @@
 from sqlmodel import SQLModel, Field
 from typing import Optional
-from pydantic import validator, BaseModel
+from pydantic import validator, BaseModel, EmailStr
 from datetime import date, datetime
 
 
@@ -51,8 +51,11 @@ class ExpenseUpdate(BaseModel):
 
 
 
-class Users(SQLModel, table=True):
+class BaseUser(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     username: str
-    email: str
+    email: EmailStr
+    first_name: Optional[str] = None
+
+class UserIn(SQLModel, ):
     hashed_password: str
