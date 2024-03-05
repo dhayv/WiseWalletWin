@@ -3,7 +3,8 @@ from sqlmodel import Session, select
 from models import Users, UserIn, UserOut
 from database import get_db, engine
 from datetime import  datetime
-
+from typing import Annotated
+from auth import oauth2_scheme
 
 router = APIRouter()
 
@@ -19,7 +20,7 @@ def add_user(user: UserIn, db: Session = Depends(get_db)):
 
 
 @router.get("/user/me", response_model=UserOut)
-async def read_user_me(current_user: Users = Depends(get_db)):
+async def read_user_me(current_user: Annotated[str,Depends(oauth2_scheme)]):
     return current_user
 
 @router.get("/user/{user_id}", response_model=Users)
