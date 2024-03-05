@@ -6,6 +6,8 @@ from jose import JWTError, jwt
 from passlib.context import CryptContext
 from pydantic import BaseModel
 from database import Session, get_db
+from router.users import Users
+from sqlmodel import select
 
 
 SECRET_KEY = 
@@ -36,10 +38,10 @@ def verify_password(plain_password, hased_password):
 def get_password_hash(password):
     return pwd_context.hash(password)
 
-def get_user(db, username: str):
-    if username in db:
-        user_dict = db[username]
-        return
+def get_user(db: Session, username: str):
+    statement = select(Users).where(Users,username=username)
+    result = db.exec(statement).first()
+    return result
 
 
 
