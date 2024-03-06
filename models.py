@@ -52,13 +52,13 @@ class ExpenseUpdate(BaseModel):
 # model to be shared across user classes excluding password
 class BaseUser(SQLModel):
     username: str
-    email: str
+    email: EmailStr
     first_name: Optional[str] = None
 
 # UserIn for input data, using EmailStr for validation
 class UserIn(BaseUser):
     password: str  
-    email: EmailStr
+
 
 # in output model
 class UserOut(BaseUser):
@@ -68,3 +68,10 @@ class UserOut(BaseUser):
 class Users(BaseUser, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     hashed_password: str
+
+
+class UserUpdate(BaseModel):
+    username: Optional[str] = None
+    email: Optional[EmailStr] = None
+    first_name: Optional[str] = None
+    password: Optional[str] = None

@@ -70,7 +70,7 @@ async def get_current_user(db: Session = Depends(get_db), token: str = Depends(o
         token_data = TokenData(username=username)
     except JWTError:
         raise credentials_exception
-    user = get_user(db, username=token_data.username)
+    user = db.exec(select(Users).where(Users.username == token_data.username)).first()
     if user is None:
         raise credentials_exception
     return user

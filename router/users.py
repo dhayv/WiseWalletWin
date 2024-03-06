@@ -21,17 +21,35 @@ def add_user(user: UserIn, db: Session = Depends(get_db)):
 
 
 @router.get("/user/me", response_model=UserOut)
-async def read_user_me(current_user: Annotated[str,Depends(get_current_user)]):
+async def read_user_me(current_user: Users = Depends(get_current_user)):
     return current_user
 
-@router.get("/user/{user_id}", response_model=Users)
-async def read_user(user_id: str):
-    return {"user_id": user_id}
+@router.get("/user/{user_id}", response_model=UserOut)
+async def read_user(user_id: str, db: Session = Depends(get_db)):
+    statement = select(Users).where(Users.id == user_id)
+    result = db.exec(statement).first
+    if not result:
+        raise HTTPException(status_code=404, detail="User not found")
+    return result 
 
-@router.put("/user/{user_id}", response_model=Users)
-async def update_user(user_id: str):
-    return {"user_id": user_id}
+@router.put("/user/{user_id}", response_model=UserOut)
+async def update_user(user_id: str, user_update: UserUpdate, db: Session = Depends(get_db)):
+    statement = select(Users).where(Users.id == user_id)
+    result = db.exec(statement).first()
+    if not result:
+        raise HTTPException(status_code=404, detail="User not found")
+    updated_user = user.update.dict(exclude_unset=True)
+    for key, value in updated_user.items():
+        setattr(result, key, value)
+    db.add(result) 
+    db.commit()
+    db.refresh(result)
 
-@router.delete("/user/{user_id}", response_model=Users)
-async def delete_user(user_id: str):
+    return result
+
+@router.delete("/user/{user_id}", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_user(user_id: int, db: Session = Depends(get_db)):
+    statement = select(Users).where(Users.id == user_id)
+    result = db.exec(statement).first()
+    if not
     return {"user_id": user_id}
