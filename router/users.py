@@ -11,7 +11,7 @@ router = APIRouter()
 
 @router.post("/user", response_model=UserOut)
 def add_user(user: UserIn, db: Session = Depends(get_db)):
-    hashed_password = get_password_hash(user.password)  # Ensure you have a function to hash passwords
+    hashed_password = get_password_hash(user.password)  
     db_user = Users(username=user.username, email=user.email, hashed_password=hashed_password, first_name=user.first_name)
     db.add(db_user)
     db.commit()
@@ -25,22 +25,30 @@ async def read_user_me(current_user: Users = Depends(get_current_user)):
     return current_user
 
 @router.get("/user/{user_id}", response_model=UserOut)
-async def read_user(user_id: str, db: Session = Depends(get_db)):
+async def read_user(user_id: int, db: Session = Depends(get_db)):
     statement = select(Users).where(Users.id == user_id)
-    result = db.exec(statement).first
+    result = db.exec(statement).first()
     if not result:
         raise HTTPException(status_code=404, detail="User not found")
     return result 
 
 @router.put("/user/{user_id}", response_model=UserOut)
-async def update_user(user_id: str, user_update: UserUpdate, db: Session = Depends(get_db)):
+async def update_user(user_id: int, user_update: UserUpdate, db: Session = Depends(get_db)):
     statement = select(Users).where(Users.id == user_id)
     result = db.exec(statement).first()
     if not result:
         raise HTTPException(status_code=404, detail="User not found")
-    updated_user = user_update.model_dump(exclude_unset=True)
-    for key, value in updated_user.items():
-        setattr(result, key, value)
+    
+    update_data = user_update.model_dump(exclude_unset=True)
+
+    if "password" in update_data:
+        hashed_password = get_password_hash(update_data["password"])
+        update_data["password"] = hashed_password
+        del update_data["password"]
+
+    for key, value in update_data.items():
+        setattr(result, key if key != "hashed_password" else "hashed_password", value)
+
     db.add(result) 
     db.commit()
     db.refresh(result)
