@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException, Response, status
 from sqlmodel import Session, select
-from models import Users, UserIn, UserOut
+from models import Users, UserIn, UserOut, UserUpdate
 from database import get_db, engine
 from datetime import  datetime
 from typing import Annotated
@@ -38,18 +38,20 @@ async def update_user(user_id: str, user_update: UserUpdate, db: Session = Depen
     result = db.exec(statement).first()
     if not result:
         raise HTTPException(status_code=404, detail="User not found")
-    updated_user = user.update.dict(exclude_unset=True)
+    updated_user = user_update.model_dump(exclude_unset=True)
     for key, value in updated_user.items():
         setattr(result, key, value)
     db.add(result) 
     db.commit()
     db.refresh(result)
-
     return result
 
 @router.delete("/user/{user_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_user(user_id: int, db: Session = Depends(get_db)):
     statement = select(Users).where(Users.id == user_id)
     result = db.exec(statement).first()
-    if not
-    return {"user_id": user_id}
+    if not result:
+        raise HTTPException(status_code=404, detail="User not found")
+    db.delete(result)
+    db.commit()
+    return Response(status_code=status.HTTP_204_NO_CONTENT)
