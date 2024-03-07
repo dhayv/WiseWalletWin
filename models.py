@@ -6,8 +6,8 @@ from datetime import date, datetime
 
 class Income(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
-    amount: float
-    recent_pay: date  # Ensuring this is a date object
+    amount: float = Field(index=True)
+    recent_pay: date = Field(index=True) # Ensuring this is a date object
     last_pay: Optional[date] = None  # This can be None or a date object
 
     # Validator for recent_pay
@@ -32,9 +32,9 @@ class IncomeUpdate(BaseModel):
 
 class Expense(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
-    name: str
-    amount: float
-    due_date: Optional[int] = None # Due date of the expense (days of the month(1-30 or 31))
+    name: str = Field(index=True)
+    amount: float = Field(index=True)
+    due_date: Optional[int] = Field( default= None, index=True) # Due date of the expense (days of the month(1-30 or 31))
     @validator('due_date')
     def check_due_date(cls, v):
         if v is None:
