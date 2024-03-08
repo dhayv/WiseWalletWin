@@ -4,6 +4,8 @@ from pydantic import validator, BaseModel, EmailStr
 from datetime import date, datetime
 import re
 
+
+
 # model to be shared across user classes excluding password
 class BaseUser(SQLModel):
     username: str
@@ -22,10 +24,11 @@ class BaseUser(SQLModel):
         return v
 
 
+password_regex = "((?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[\W]).{8,64})"
 
 # UserIn for input data
 class UserIn(BaseUser):
-    password: str  
+    password: str  = Field(...,regex=password_regex)
 
 # in output model
 class UserOut(BaseUser):
