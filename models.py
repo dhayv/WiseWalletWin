@@ -5,23 +5,14 @@ from datetime import date, datetime
 import re
 
 
-
+phone_number_regex = r"^(?:\(\d{3}\)|\d{3}-?)\d{3}-?\d{4}$"
 # model to be shared across user classes excluding password
 class BaseUser(SQLModel):
     username: str
     email: str
     first_name: Optional[str] = None
-    phone_number: Optional[str] = Field(default=None, sa_column_kwargs={"unique": True})
+    phone_number: Optional[str] = Field(default=None, regex=phone_number_regex)
 
-    @validator("phone_number")
-    def phone_nymber_check(cls, v):
-        if v is not None:
-            # Remove common formatting characters
-            v = re.sub(r'[-()\s]', '', v).strip()
-            # Check if the phone number is exactly 10 digits after removing formatting
-            if not re.match(r'^\d{10}$', v).strip():
-                raise ValueError('Phone number must be 10 digits')
-        return v
 
 
 password_regex = "((?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[\W]).{8,64})"
