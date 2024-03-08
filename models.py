@@ -2,6 +2,44 @@ from sqlmodel import SQLModel, Field
 from typing import Optional
 from pydantic import validator, BaseModel, EmailStr
 from datetime import date, datetime
+import re
+
+# model to be shared across user classes excluding password
+class BaseUser(SQLModel):
+    username: str
+    email: str
+    first_name: Optional[str] = None
+    phone_number: Optional[str] = Field(default=None, sa_column_kwargs={"unique": True})
+
+    @validator("phone_number")
+    def phone_nymber_check(cls, v):
+        if v is not None:
+            # Remove common formatting characters
+            v = re.sub(r'[-()\s]', '', v).strip()
+            # Check if the phone number is exactly 10 digits after removing formatting
+            if not re.match(r'^\d{10}$', v).strip():
+                raise ValueError('Phone number must be 10 digits')
+        return v
+
+
+
+# UserIn for input data
+class UserIn(BaseUser):
+    password: str  
+
+# in output model
+class UserOut(BaseUser):
+    id: int  
+
+class Users(BaseUser, table=True):
+    id: Optional[int] = Field(default=None, primary_key=True)
+    hashed_password: str
+
+class UserUpdate(BaseModel):
+    username: Optional[str] = None
+    email: Optional[EmailStr] = None
+    first_name: Optional[str] = None
+    password: Optional[str] = None
 
 
 class Income(SQLModel, table=True):
@@ -49,29 +87,3 @@ class ExpenseUpdate(BaseModel):
     amount: Optional[float] = None
     due_date: Optional[int] = None    
 
-# model to be shared across user classes excluding password
-class BaseUser(SQLModel):
-    username: str
-    email: str
-    first_name: Optional[str] = None
-
-# UserIn for input data
-class UserIn(BaseUser):
-    password: str  
-
-
-# in output model
-class UserOut(BaseUser):
-    id: int  
-
-
-class Users(BaseUser, table=True):
-    id: Optional[int] = Field(default=None, primary_key=True)
-    hashed_password: str
-
-
-class UserUpdate(BaseModel):
-    username: Optional[str] = None
-    email: Optional[EmailStr] = None
-    first_name: Optional[str] = None
-    password: Optional[str] = None
