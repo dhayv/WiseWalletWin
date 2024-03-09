@@ -16,7 +16,7 @@ class BaseUser(SQLModel):
 
 
 
-password_regex = "((?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[\W]).{8,64})"
+password_regex = r"((?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[\W]).{8,64})"
 
 # UserIn for input data
 class UserIn(BaseUser):
@@ -46,14 +46,14 @@ class Income(SQLModel, table=True):
     user_id: Optional[int] = Field(default=None, foreign_key="users.id", unique=True, index=True)
 
     # Validator for recent_pay
-    @field_validator('recent_pay', pre=True)
+    @field_validator('recent_pay')
     def parse_recent_pay(cls, value):
         if isinstance(value, str):
             return datetime.strptime(value, "%m-%d-%Y").date()
         return value
 
     # Validator for last_pay
-    @field_validator('last_pay', pre=True)
+    @field_validator('last_pay')
     def parse_last_pay(cls, value):
         if value is not None and isinstance(value, str):
             return datetime.strptime(value, "%m-%d-%Y").date()
