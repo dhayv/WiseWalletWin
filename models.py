@@ -15,6 +15,7 @@ class BaseUser(SQLModel):
 
 
 
+
 password_regex = "((?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[\W]).{8,64})"
 
 # UserIn for input data
@@ -42,6 +43,8 @@ class Income(SQLModel, table=True):
     recent_pay: date = Field(index=True) # Ensuring this is a date object
     last_pay: Optional[date] = None  # This can be None or a date object
 
+    user_id = Optional[int] = Field(default=None, foreign_key="user.id", unique=True, index=True)
+
     # Validator for recent_pay
     @validator('recent_pay', pre=True)
     def parse_recent_pay(cls, value):
@@ -67,6 +70,9 @@ class Expense(SQLModel, table=True):
     name: str = Field(index=True)
     amount: float = Field(index=True)
     due_date: Optional[int] = Field( default= None, index=True) # Due date of the expense (days of the month(1-30 or 31))
+
+    user_id = Optional[int] = Field(default=None, foreign_key="user.id", index=True)
+    income_id = Optional[int] = Field(default=None, foreign_key="income.id", index=True)
     @validator('due_date')
     def check_due_date(cls, v):
         if v is None:
