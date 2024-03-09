@@ -1,6 +1,6 @@
 from sqlmodel import SQLModel, Field
 from typing import Optional
-from pydantic import validator, BaseModel, EmailStr
+from pydantic import field_validator, BaseModel, EmailStr
 from datetime import date, datetime
 import re
 
@@ -46,14 +46,14 @@ class Income(SQLModel, table=True):
     user_id: Optional[int] = Field(default=None, foreign_key="users.id", unique=True, index=True)
 
     # Validator for recent_pay
-    @validator('recent_pay', pre=True)
+    @field_validator('recent_pay', pre=True)
     def parse_recent_pay(cls, value):
         if isinstance(value, str):
             return datetime.strptime(value, "%m-%d-%Y").date()
         return value
 
     # Validator for last_pay
-    @validator('last_pay', pre=True)
+    @field_validator('last_pay', pre=True)
     def parse_last_pay(cls, value):
         if value is not None and isinstance(value, str):
             return datetime.strptime(value, "%m-%d-%Y").date()
@@ -73,7 +73,7 @@ class Expense(SQLModel, table=True):
 
     users_id: Optional[int] = Field(default=None, foreign_key="users.id", index=True)
     income_id: Optional[int] = Field(default=None, foreign_key="income.id", index=True)
-    @validator('due_date')
+    @field_validator('due_date')
     def check_due_date(cls, v):
         if v is None:
             return v
