@@ -1,3 +1,4 @@
+import pytest
 from fastapi.testclient import TestClient
 from sqlmodel import SQLModel, create_engine, Session
 from sqlmodel.pool import StaticPool
@@ -19,15 +20,18 @@ app.dependency_overrides[get_db] = override_get_db
 
 client = TestClient(app)
 
-def test_create_expense():
+@pytest.fixture(name="session")
+def session_fixture():
     engine = create_engine(
         "sqlite://", 
-        connect_args={"check_same_thread": False}, 
-        poolclass=StaticPool,
+        connect_args={"check_same_thread": False}, poolclass=StaticPool,
     )
     SQLModel.metadata.create_all(engine)
     with Session(engine) as session:
+        yield session
 
+
+def test_create_expense(session: Session):
         def get_session_override():
             return session
         
