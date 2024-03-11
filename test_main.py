@@ -7,7 +7,7 @@ from database import get_db
 from models import Users, Income, Expense 
 from auth import authenticate_user, get_user
 from unittest.mock import Mock
-from starlette.testclient import WSGITransport
+
 
 
 @pytest.fixture(name="session")
@@ -31,21 +31,26 @@ def client_fixture(session: Session):
         yield client
     app.dependency_overrides.clear()
      
-
-def test_create_expense(client: TestClient):
+# Check if user is created
+def test_create_user(client: TestClient):
         response = client.post(
-            "/expenses/", json={"name": "Food", "amount": 100, "due_date": 1}
+            "/user", json={
+        "username": "johndoe",
+        "email": "johndoe@example.com",
+        "first_name": "John",
+        "phone_number": "123-456-7890",
+        "password": "strongpassword"
+        }
         )
         data = response.json()
         print(response.status_code)
         print(data)
 
-        assert response.status_code == 200
-        assert 'name' in data, "Key 'name' not in response"
-        assert data["name"] == "Food"
-        assert data["amount"] == 100
-        assert data["due_date"] == 1
+        assert response.status_code == 201
+        assert 'username' in data, "Key 'username' not in response"
+        assert data["username"] == "johndoe"
+        assert data["email"] == "johndoe@example.com"
+        assert data["first_name"] == "John"
+        assert data["phone_number"] == "123-456-7890"
         assert data["id"] is not None
 
-#def test_create_expense_incomplete(client: TestClient):
-#     respons
