@@ -30,11 +30,30 @@ def client_fixture(session: Session):
     with TestClient(app) as client:
         yield client
     app.dependency_overrides.clear()
-     
+
+@pytest.fixture(scope="function")
+def create_test_user(client: TestClient):
+    user_data = {
+        "username": "johndoe",
+        "email": "johndoe@example.com",
+        "first_name": "John",
+        "phone_number": "123-456-7890",
+        "password": "strongpassword"
+    }
+    response = client.post("/user", json=user_data)
+    assert response.status_code == 201
+    user = response.json()
+    assert 'username' in user, "Key 'username' not in response"
+    assert user["username"] == "johndoe"
+    assert user["email"] == "johndoe@example.com"
+    assert user["first_name"] == "John"
+    assert user["phone_number"] == "123-456-7890"
+    assert user["id"] is not None
+
 # Check if user is created
 def test_create_user(client: TestClient):
-        response = client.post(
-            "/user", json={
+    response = client.post(
+        "/user", json={
         "username": "johndoe",
         "email": "johndoe@example.com",
         "first_name": "John",
@@ -42,15 +61,31 @@ def test_create_user(client: TestClient):
         "password": "strongpassword"
         }
         )
-        data = response.json()
-        print(response.status_code)
-        print(data)
+    data = response.json()
+    print(response.status_code)
+    print(data)
 
-        assert response.status_code == 201
-        assert 'username' in data, "Key 'username' not in response"
-        assert data["username"] == "johndoe"
-        assert data["email"] == "johndoe@example.com"
-        assert data["first_name"] == "John"
-        assert data["phone_number"] == "123-456-7890"
-        assert data["id"] is not None
+    assert response.status_code == 201
+    assert 'username' in data, "Key 'username' not in response"
+    assert data["username"] == "johndoe"
+    assert data["email"] == "johndoe@example.com"
+    assert data["first_name"] == "John"
+    assert data["phone_number"] == "123-456-7890"
+    assert data["id"] is not None
+
+
+def test_access_token(client: TestClient, create_test_user):
+    response = client.post(
+        "/token", data={
+            "username": "johndoe",
+            "password": "strongpassword"
+          }
+    )
+    token = response.json().get("access_token")
+    print(response.status_code)
+    print(token)
+
+    assert response.status_code == 200
+    assert token is not None
+
 
