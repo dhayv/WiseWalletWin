@@ -24,10 +24,16 @@ async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(
     return {"access_token": access_token, "token_type": "bearer"}
 
 
-@router.post("/user", response_model=UserOut)
+@router.post("/user", response_model=UserOut, status_code=status.HTTP_201_CREATED)
 def add_user(user: UserIn, db: Session = Depends(get_db)):
     hashed_password = get_password_hash(user.password)  
-    db_user = Users(username=user.username, email=user.email, hashed_password=hashed_password, first_name=user.first_name)
+    db_user = Users(
+        username=user.username, 
+        email=user.email, 
+        hashed_password=hashed_password, 
+        first_name=user.first_name,
+        phone_number=user.phone_number
+        )
     db.add(db_user)
     db.commit()
     db.refresh(db_user)
