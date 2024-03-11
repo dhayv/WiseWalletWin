@@ -21,6 +21,7 @@ password_regex = r"((?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[\W]).{8,64})"
 # UserIn for input data
 class UserIn(BaseUser):
     password: str  = Field(...,regex=password_regex)
+    phone_number: Optional[str] = Field(default=None, regex=phone_number_regex)
 
 # in output model
 class UserOut(BaseUser):
