@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException, Response, status
 from sqlmodel import Session, select
-from models import Income, IncomeUpdate
+from models import Income, IncomeUpdate, IncomeBase
 from database import get_db, engine
 from datetime import  datetime
 
@@ -25,11 +25,14 @@ def create_income():
 
 
 
-@router.post("/income")
-def add_income(income: Income, db: Session = Depends(get_db)):
-    db.add(income)
+@router.post("/income", response_model=Income, status_code=status.HTTP_201_CREATED)
+def add_income(income_data: IncomeBase, user_id: int, db: Session = Depends(get_db)):
+    db_income = Income(**income_data.model_dump(), user_id=user_id)
+    db.add(db_income)
     db.commit()
-    return {"Message": "Income added Successfully" }
+    db.refresh(db_income)
+    return db_income
+
 
 #@router.get("/income/{income_id}")
 #def read_income(income_id: int, db: Session = Depends(get_db)):
