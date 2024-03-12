@@ -38,13 +38,10 @@ class UserUpdate(BaseModel):
     password: Optional[str] = None
 
 
-class Income(SQLModel, table=True):
-    id: Optional[int] = Field(default=None, primary_key=True)
-    amount: float = Field(index=True)
-    recent_pay: date = Field(index=True) # Ensuring this is a date object
-    last_pay: Optional[date] = None  # This can be None or a date object
-
-    user_id: Optional[int] = Field(default=None, foreign_key="users.id", unique=True, index=True)
+class IncomeBase(BaseModel):
+    amount: float
+    recent_pay: date
+    last_pay: Optional[date] = None
 
     # Validator for recent_pay
     @field_validator('recent_pay')
@@ -59,6 +56,16 @@ class Income(SQLModel, table=True):
         if value is not None and isinstance(value, str):
             return datetime.strptime(value, "%m-%d-%Y").date()
         return value
+
+class Income(IncomeBase,SQLModel, table=True):
+    id: Optional[int] = Field(default=None, primary_key=True)
+    amount: float = Field(index=True)
+    recent_pay: date = Field(index=True) # Ensuring this is a date object
+    last_pay: Optional[date] = None  # This can be None or a date object
+
+    user_id: Optional[int] = Field(default=None, foreign_key="users.id", unique=True, index=True)
+
+
         
 class IncomeUpdate(BaseModel):
     amount: Optional[float] = None
