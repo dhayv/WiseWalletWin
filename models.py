@@ -57,6 +57,7 @@ class IncomeBase(BaseModel):
             return datetime.strptime(value, "%m-%d-%Y").date()
         return value
 
+
 class Income(IncomeBase,SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     amount: float = Field(index=True)
