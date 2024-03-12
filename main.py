@@ -17,8 +17,8 @@ async def lifespan(app:FastAPI):
     database.create_db_and_tables()
     logging.info("Database Created")
     
-    create_expenses()
-    create_income()
+    #create_expenses()
+    #create_income()
 
     yield
 
