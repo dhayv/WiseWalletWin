@@ -73,7 +73,7 @@ def test_create_user(client: TestClient):
     assert data["phone_number"] == "123-456-7890"
     assert data["id"] is not None
 
-
+@pytest.fixture(scope="function")
 def test_access_token(client: TestClient, create_test_user):
     response = client.post(
         "/token", data={
@@ -87,5 +87,25 @@ def test_access_token(client: TestClient, create_test_user):
 
     assert response.status_code == 200
     assert token is not None
+    return token
+
+
+def test_read_user_me(client: TestClient, test_access_token):
+    response = client.get(
+        "/user/me", 
+        headers={"Authorization": f"bearer {test_access_token}"}
+    )
+    assert response.status_code == 200
+    user_data = response.json()
+    assert 'username' in user_data
+    assert user_data["username"] == "johndoe"
+    assert user_data["email"] == "johndoe@example.com"
+    assert user_data["first_name"] == "John"
+    assert user_data["phone_number"] == "123-456-7890"
+    assert "id" in user_data
+
+
+
+
 
 
