@@ -3,6 +3,8 @@ from typing import Optional
 from pydantic import field_validator, BaseModel, EmailStr
 from datetime import date, datetime
 import re
+import logging
+import pydantic
 
 
 phone_number_regex = r"^(?:\(\d{3}\)|\d{3}-?)\d{3}-?\d{4}$"
@@ -44,17 +46,34 @@ class IncomeBase(BaseModel):
     last_pay: Optional[date] = None
 
     # Validator for recent_pay
-    @field_validator('recent_pay')
+    @field_validator('recent_pay', mode='before')
+    @classmethod
     def parse_recent_pay(cls, value):
+
+        #debugging
+        logging.info(f"Validating recent_pay: {value}")
         if isinstance(value, str):
-            return datetime.strptime(value, "%m-%d-%Y").date()
+            try:
+                return datetime.strptime(value, "%m-%d-%Y").date()
+            except ValueError as e:
+                logging.error(f"Error parsing recent_pay: {e}")
+                raise e
         return value
+        
 
     # Validator for last_pay
-    @field_validator('last_pay')
+    @field_validator('last_pay', mode='before')
+    @classmethod
     def parse_last_pay(cls, value):
+
+        #debugging
+        logging.info(f"Validating last_pay: {value}")
         if value is not None and isinstance(value, str):
-            return datetime.strptime(value, "%m-%d-%Y").date()
+            try:
+                return datetime.strptime(value, "%m-%d-%Y").date()
+            except ValueError as e:
+                logging.error(f"Error parsing last_pay: {e}")
+                raise e
         return value
 
 
