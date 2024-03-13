@@ -22,6 +22,9 @@ def create_income():
             income1 = Income(amount=6000, recent_pay=recent_pay_date, last_pay=last_pay_date)
             session.add(income1)
             session.commit()
+            session.refresh(income1)
+            return income1
+
 
 
 
