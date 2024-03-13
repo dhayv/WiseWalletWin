@@ -20,7 +20,7 @@ def create_income():
         result = session.exec(statement).first()
         if not result:
             income1 = Income(amount=6000, recent_pay=recent_pay_date, last_pay=last_pay_date)
-            session.add(income1)
+            session.add(income1) 
             session.commit()
             session.refresh(income1)
             return income1
