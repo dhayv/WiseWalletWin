@@ -122,8 +122,8 @@ def test_add_income(client: TestClient, test_access_token: str, create_test_user
     id_user = create_test_user['id']
     response = client.post(f"/income?user_id={id_user}", json={
         "amount": 5000,
-        "recent_pay": "2023-03-12",
-        "last_pay": "2023-03-12",
+        "recent_pay": "03-01-2024",
+        "last_pay": "02-16-2024",
     }, headers={"Authorization": f"bearer {test_access_token}"})
 
     # Print the response if the status code is not what we expect
@@ -136,8 +136,8 @@ def test_add_income(client: TestClient, test_access_token: str, create_test_user
 
     user_income = response.json()
     assert user_income["amount"] == 5000
-    assert user_income["recent_pay"] == "2023-03-12"
-    assert user_income["last_pay"] == "2023-03-12"
+    assert user_income["recent_pay"] == "2024-03-01"
+    assert user_income["last_pay"] == "2024-02-16"
     assert user_income["user_id"] == id_user
     assert "id" in user_income
 
