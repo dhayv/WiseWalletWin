@@ -44,11 +44,14 @@ def add_income(income_data: IncomeBase, user_id: int, db: Session = Depends(get_
    #     raise HTTPException(status_code=404, detail="Income not found")
     #return income#
 
-@router.get("/income", response_model=Income)
-def read_all_incomes(db: Session = Depends(get_db)):
-    statement = select(Income)
+@router.get("/income/user_id", response_model=list[Income])
+def read_all_incomes(user_id: int, db: Session = Depends(get_db)):
+    statement = select(Income).where(Income.user_id==user_id)
     results = db.exec(statement)  
-    incomes = results.all()  
+    incomes = results.all() 
+
+    if not incomes:
+        raise HTTPException(status_code=404, detail="Item not found")
     return incomes
 
 @router.get("/test_income", response_model=Income)
