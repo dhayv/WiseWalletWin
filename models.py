@@ -85,12 +85,13 @@ class Income(IncomeBase,SQLModel, table=True):
 
     user_id: Optional[int] = Field(default=None, foreign_key="users.id", unique=True, index=True)
 
-
-        
-class IncomeUpdate(BaseModel):
+# passed incomebase to reduce extra validation
+class IncomeUpdate(IncomeBase):
     amount: Optional[float] = None
     recent_pay: Optional[date] = None
     last_pay: Optional[date] = None  # Last pay date two weeks prior to recent_pay MM-DD-YYYY
+
+    
 
 
 class Expense(SQLModel, table=True):
