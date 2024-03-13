@@ -28,7 +28,7 @@ def create_income():
 
 
 
-@router.post("/income", response_model=Income, status_code=status.HTTP_201_CREATED)
+@router.post("/income/{user_id}", response_model=Income, status_code=status.HTTP_201_CREATED)
 def add_income(income_data: IncomeBase, user_id: int, db: Session = Depends(get_db)):
     db_income = Income(**income_data.model_dump(), user_id=user_id)
     db.add(db_income)
@@ -44,7 +44,7 @@ def add_income(income_data: IncomeBase, user_id: int, db: Session = Depends(get_
    #     raise HTTPException(status_code=404, detail="Income not found")
     #return income#
 
-@router.get("/income/user_id", response_model=list[Income])
+@router.get("/income/{user_id}", response_model=list[Income])
 def read_all_incomes(user_id: int, db: Session = Depends(get_db)):
     statement = select(Income).where(Income.user_id==user_id)
     results = db.exec(statement)  
