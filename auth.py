@@ -5,7 +5,7 @@ from jose import JWTError, jwt
 from passlib.context import CryptContext
 from pydantic import BaseModel
 from database import Session, get_db
-from router.users import Users
+from models import Users
 from sqlmodel import select
 
 
@@ -25,18 +25,12 @@ class Token(BaseModel):
 class TokenData(BaseModel):
     username: str | None = None
 
+def get_password_hash(password):
+    return pwd_context.hash(password)
 
 def verify_password(plain_password, hashed_password):
     return pwd_context.verify(plain_password, hashed_password)
 
-def get_password_hash(password):
-    return pwd_context.hash(password)
-
-
-def get_user(db: Session, username: str):
-    statement = select(Users).where(Users.username==username)
-    result = db.exec(statement).first()
-    return result
 
 def authenticate_user(db: Session, username: str, password: str ):
     user = get_user(db, username)
@@ -75,8 +69,18 @@ async def get_current_user(db: Session = Depends(get_db), token: str = Depends(o
         raise credentials_exception
     return user
 
+async def get_current_active_user(
+    current_user: Users = Depends(get_current_user)
+):
+    if current_user.disabled:
+        raise HTTPException(status_code=400, detail="Inactive user")
+    return current_user
 
 
 
+def get_user(db: Session, username: str):
+    statement = select(Users).where(Users.username==username)
+    result = db.exec(statement).first()
+    return result
 
 

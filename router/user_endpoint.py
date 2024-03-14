@@ -1,10 +1,13 @@
 from fastapi import APIRouter, Depends, HTTPException, Response, status
 from sqlmodel import Session, select
 from models import Users, UserIn, UserOut, UserUpdate
-from database import get_db, engine
+from database import get_db
 from datetime import  timedelta
-from typing import Annotated
-from auth import oauth2_scheme, OAuth2PasswordRequestForm, get_current_user, get_password_hash, Token, ACCESS_TOKEN_EXPIRES_MINUTES, create_access_token, authenticate_user
+from auth import (get_password_hash, Token, ACCESS_TOKEN_EXPIRES_MINUTES, 
+                  create_access_token, authenticate_user, get_current_active_user)
+from fastapi.security import OAuth2PasswordRequestForm
+
+
 
 router = APIRouter()
 
@@ -42,7 +45,7 @@ def add_user(user: UserIn, db: Session = Depends(get_db)):
 
 
 @router.get("/user/me", response_model=UserOut)
-async def read_user_me(current_user: Users = Depends(get_current_user)):
+async def read_user_me(current_user: Users = Depends(get_current_active_user)):
     return current_user
 
 @router.get("/user/{user_id}", response_model=UserOut)
