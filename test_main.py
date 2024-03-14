@@ -100,6 +100,7 @@ def test_read_user(client: TestClient, create_test_user: Dict[str, Any]) -> None
         assert user_data[key] == USER_DATA[key]
     assert "id" in user_data
 
+
 def test_update_user_info(client: TestClient, create_test_user: Dict[str, Any]) -> None:
     user_id = create_test_user['id']
     response = client.put(f"/user/{user_id}", json={"first_name": "Jane", "email": "janedoe@example.com", "password": "newpasword"}, )
@@ -309,4 +310,30 @@ def test_delete_expense(client: TestClient, income_info, test_access_token, crea
     print(create_expenses)
 
 
+@pytest.fixture
+def create_expenses_for_user(db: Session, user_id: int):
+    expenses = [
+        Expense(user_id=user_id, amount=100.00),
+        Expense(user_id=user_id, amount=150.00),
+    ]
+    db.add_all(expenses)
+    db.commit()
+    return expenses
 
+def test_read_total_expenses(client: TestClient, create_test_user: Dict[str, Any], create_expenses_for_user, test_access_token: str):
+    # Assuming create_test_user returns a user with an ID and test_access_token provides the authentication token
+    user = create_test_user
+    create_expenses_for_user(user['id'])
+
+    # Make a request to the endpoint
+    response = client.get("/users/me/total_expenses", headers={"Authorization": f"Bearer {test_access_token}"})
+
+    # Check the response status code
+    assert response.status_code == 200
+
+    # Calculate the expected sum of expenses directly from the database
+    db = next(get_db())
+    total_expenses = sum(expense.amount for expense in db.exec(select(Expense).where(Expense.user_id == user['id'])))
+
+    # Check the response data
+    assert response.json()['total_expenses'] == total_expenses
