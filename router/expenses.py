@@ -1,7 +1,8 @@
 from fastapi import APIRouter, Depends, HTTPException, Response, status
-from models import Expense, ExpenseUpdate
+from models import Expense, ExpenseUpdate, ExpenseBase, Income, Users
 from sqlmodel import Session, select
 from database import get_db, engine
+from auth import get_current_user
 
 router = APIRouter()
 
@@ -27,10 +28,17 @@ def create_expenses():
         if not result1 or not result2:
             session.commit()
 
-@router.post("/expenses")
-def add_expense(expense: Expense, db: Session = Depends(get_db)):
+@router.post("/expenses/{income_id}", response_model=Expense, status_code=status.HTTP_201_CREATED)
+def add_expense(expense_data: ExpenseBase, income_id: int, db: Session = Depends(get_db), current_user: Users = Depends(get_current_user)):
+    user_id= current_user.id
+    income = db.exec(Income).filter(Income.id == income_id, Income.user_id == current_user.id).first()
+
+    if not income:
+        raise HTTPException(status_code=404, detail="Income not found")
+    expense = Expense(**expense_data.model_dump(),  income_id=income_id)
     db.add(expense)
     db.commit()
+    db.refresh(expense)
     return {"message": "Expense added successfully"}        
 
 @router.get("/expenses", response_model=list[Expense])
