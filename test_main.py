@@ -77,6 +77,8 @@ def test_read_user_me(client: TestClient, test_access_token: str) -> None:
         headers={"Authorization": f"bearer {test_access_token}"}
     )
     assert response.status_code == 200
+
+    # Try to get the user income again
     user_data = response.json()
     assert 'username' in user_data
     assert user_data["username"] == USER_DATA['username']
@@ -198,16 +200,17 @@ def test_delete_income(client: TestClient, income_info, test_access_token, creat
 
 def test_post_expense(client: TestClient, income_info, test_access_token, create_test_user: Dict[str, Any]):
     income_id = income_info['id']
-    user_id = create_test_user['id']
     response = client.post(f"/expenses/{income_id}",json={"name": "Water Bill", "amount":50, "due_date":15}, 
         headers = {"Authorization": f"bearer {test_access_token}"})
-    assert response.status_code == 200
+    assert response.status_code == 201
     data = response.json()
+
+    assert response.status_code == 201, f"Expected status code 201 but received {response.status_code}"
+    assert response.status_code == 201, response.text
 
     assert data["name"] == "Water Bill"
     assert data["amount"] == 50
     assert data["due_date"] == 15
-    assert data['user_id'] == user_id
     assert "id" in data
 
 

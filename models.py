@@ -32,6 +32,7 @@ class UserOut(BaseUser):
 class Users(BaseUser, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     hashed_password: str
+    disabled: Optional[bool] = False
 
 class UserUpdate(BaseModel):
     username: Optional[str] = None

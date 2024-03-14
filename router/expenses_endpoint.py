@@ -29,8 +29,9 @@ def create_expenses():
             session.commit()
 
 @router.post("/expenses/{income_id}", response_model=Expense, status_code=status.HTTP_201_CREATED)
-def add_expense(expense_data: ExpenseBase, income_id: int, db: Session = Depends(get_db), current_user: Users = Depends(get_current_active_user))-> Users:
-    income = db.exec(Income).filter(Income.id == income_id, Income.user_id == current_user.id)
+def add_expense(expense_data: ExpenseBase, income_id: int, db: Session = Depends(get_db), current_user: Users = Depends(get_current_active_user)):
+    user_id = current_user.id
+    income = db.exec(select(Income).filter(Income.id == income_id, Income.user_id == user_id)).first()
 
     if not income:
         raise HTTPException(status_code=404, detail="Income not found")
@@ -38,7 +39,7 @@ def add_expense(expense_data: ExpenseBase, income_id: int, db: Session = Depends
     db.add(expense)
     db.commit()
     db.refresh(expense)
-    return {"message": "Expense added successfully"}        
+    return expense    
 
 @router.get("/expenses", response_model=list[Expense])
 def read_expenses(db: Session = Depends(get_db)):
