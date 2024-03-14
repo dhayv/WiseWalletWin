@@ -111,7 +111,7 @@ class Expense(SQLModel, table=True):
     amount: float = Field(index=True)
     due_date: Optional[int] = Field( default= None, index=True) # Due date of the expense (days of the month(1-30 or 31))
 
-    users_id: Optional[int] = Field(default=None, foreign_key="users.id", index=True)
+    user_id: Optional[int] = Field(default=None, foreign_key="users.id", index=True)
     income_id: Optional[int] = Field(default=None, foreign_key="income.id", index=True)
 
 

@@ -1,4 +1,4 @@
-from typing import Dict, Any
+from typing import Dict, Any, List
 import pytest
 from fastapi.testclient import TestClient
 from sqlmodel import SQLModel, create_engine, Session
@@ -45,6 +45,7 @@ def create_test_user(client: TestClient) -> Dict[str, Any]:
     response = client.post("/user", json=USER_DATA)
     assert response.status_code == 201
     user = response.json()
+    print(f"Created user: {user}")
     return user
 
 
@@ -198,6 +199,7 @@ def test_delete_income(client: TestClient, income_info, test_access_token, creat
     assert response.status_code == 404, response.text
     assert response.json() == {"detail": "Item not found"}
 
+
 def test_post_expense(client: TestClient, income_info, test_access_token, create_test_user: Dict[str, Any]):
     income_id = income_info['id']
     response = client.post(f"/expenses/{income_id}",json={"name": "Water Bill", "amount":50, "due_date":15}, 
@@ -208,11 +210,88 @@ def test_post_expense(client: TestClient, income_info, test_access_token, create
     assert response.status_code == 201, f"Expected status code 201 but received {response.status_code}"
     assert response.status_code == 201, response.text
 
+    get_response = client.get(
+        f"/expenses/{income_id}",
+        headers={"Authorization": f"Bearer {test_access_token}"}
+    )
+    assert get_response.status_code == 200
+
     assert data["name"] == "Water Bill"
     assert data["amount"] == 50
     assert data["due_date"] == 15
     assert "id" in data
 
+@pytest.fixture(scope="function")
+def create_expenses(client: TestClient, income_info, test_access_token, create_test_user: Dict[str, Any], count: int = 2):
+    expenses = []
+    income_id = income_info['id']
+    for i in range(count):
+        expense_data = {
+            "name": f"Expense {i}",
+            "amount": 50 * (i + 1),  # Just to have different amounts
+            "due_date": 10 + i  # Different due dates
+        }
+        response = client.post(f"/expenses/{income_id}", json=expense_data, 
+                               headers={"Authorization": f"bearer {test_access_token}"})
+        assert response.status_code == 201
+        expenses.append(response.json())
+    
+    return expenses
+
+
+
+def test_get_expenses(client: TestClient, income_info, test_access_token, create_test_user: Dict[str, Any], create_expenses: List[Dict[str, Any]]):
+    income_id = income_info['id']
+    response = client.get(f"/expenses/{income_id}",
+                          headers={"Authorization": f"bearer {test_access_token}"})
+
+    expenses = response.json()
+
+    assert response.status_code == 200
+    assert isinstance(expenses, list)
+    assert len(expenses) == len(create_expenses)  # Verify all created expenses are retrieved
+
+    # Verify that each created expense is in the retrieved list
+    for created_expense in create_expenses:
+        assert any(expense['id'] == created_expense['id'] for expense in expenses)
+
+    expense_id = expenses[0]['id']
+    print(f"{expense_id}")    
+    print(expenses)
+    print(create_expenses)
+
+def test_update_expense(client: TestClient, income_info, test_access_token, create_test_user: Dict[str, Any], create_expenses: List[Dict[str, Any]]):
+    # Targeting the first expense for update
+    expense_id = create_expenses[0]['id']
+    
+    # Update details
+    update_data = {"name": "Food", "amount": 200}
+    
+    # Send the PUT request to update the expense
+    response = client.put(f"/expenses/{expense_id}", json=update_data,
+        headers={"Authorization": f"bearer {test_access_token}"})
+    
+    assert response.status_code == 200
+    
+    # Fetch the updated expense
+    get_response = client.get(f"/expenses/{income_info['id']}",
+                          headers={"Authorization": f"bearer {test_access_token}"})
+    expenses_after_update = get_response.json()
+
+    # Verify the targeted expense is updated
+    updated_expense = next((exp for exp in expenses_after_update if exp['id'] == expense_id), None)
+    assert updated_expense is not None
+    assert updated_expense['name'] == update_data['name']
+    assert updated_expense['amount'] == update_data['amount']
+
+    # Verify that other expenses are not updated
+    for exp in expenses_after_update:
+        if exp['id'] != expense_id:
+            assert exp['name'] != update_data['name']
+            assert exp['amount'] != update_data['amount']
+
+    print(updated_expense)
+    print(exp)
 
 
 
