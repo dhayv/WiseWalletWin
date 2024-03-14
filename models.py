@@ -91,7 +91,17 @@ class IncomeUpdate(IncomeBase):
     recent_pay: Optional[date] = None
     last_pay: Optional[date] = None  # Last pay date two weeks prior to recent_pay MM-DD-YYYY
 
-    
+class ExpenseBase(BaseModel):   
+    name: str 
+    amount: float 
+    due_date: Optional[int]
+    @field_validator('due_date',mode="before")
+    def check_due_date(cls, v):
+        if v is None:
+            return v
+        if v < 1 or v >= 31:
+            raise ValueError("Due date must be between 1 and 31")
+        return v
 
 
 class Expense(SQLModel, table=True):
@@ -102,13 +112,7 @@ class Expense(SQLModel, table=True):
 
     users_id: Optional[int] = Field(default=None, foreign_key="users.id", index=True)
     income_id: Optional[int] = Field(default=None, foreign_key="income.id", index=True)
-    @field_validator('due_date')
-    def check_due_date(cls, v):
-        if v is None:
-            return v
-        if v < 1 or v >= 31:
-            raise ValueError("Due date must be between 1 and 31")
-        return v
+
 
 # Pydantic Models for Request Validation and Serialization
 class ExpenseUpdate(BaseModel):

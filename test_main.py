@@ -57,6 +57,7 @@ def test_add_user(create_test_user: Dict[str, Any]) -> None:
     assert user["phone_number"] == USER_DATA['phone_number']
     assert "id" in user
 
+# access token 
 @pytest.fixture(scope="function")
 def test_access_token(client: TestClient, create_test_user: Dict[str, Any]) -> str:
     response = client.post(
@@ -116,30 +117,98 @@ def test_delete_user(client: TestClient, create_test_user: Dict[str, Any]) -> No
     assert response.status_code == 404, response.text
     assert response.json() == {"detail": "User not found"}
 
-
+# income info 
+@pytest.fixture(scope="function")
+def income_info(client: TestClient, test_access_token: str, create_test_user: Dict[str, Any]) -> None:
+    id_user = create_test_user['id']
+    response = client.post(f"/income/{id_user}", 
+        json={"amount": 5000,
+            "recent_pay": "03-01-2024",
+            "last_pay": "02-16-2024",
+    }, headers={"Authorization": f"bearer {test_access_token}"})
+    assert response.status_code == 201
+    return response.json()
 
 def test_add_income(client: TestClient, test_access_token: str, create_test_user: Dict[str, Any]) -> None:
     id_user = create_test_user['id']
-    response = client.post(f"/income?user_id={id_user}", json={
+    response = client.post(f"/income/{id_user}", json={
         "amount": 5000,
         "recent_pay": "03-01-2024",
         "last_pay": "02-16-2024",
     }, headers={"Authorization": f"bearer {test_access_token}"})
 
-    # Print the response if the status code is not what we expect
-    if response.status_code != 201:
-        print("Response status code:", response.status_code)
-        print("Response JSON:", response.json())
-
-    assert response.status_code == 201, f"Expected status code 201 but received {response.status_code}"
-    print(response.json()) 
-
+    assert response.status_code == 201
     user_income = response.json()
     assert user_income["amount"] == 5000
     assert user_income["recent_pay"] == "2024-03-01"
     assert user_income["last_pay"] == "2024-02-16"
     assert user_income["user_id"] == id_user
     assert "id" in user_income
+
+    # Optional: GET request to verify the income data is correctly associated with the user
+    get_response = client.get(
+        f"/income/{id_user}",
+        headers={"Authorization": f"Bearer {test_access_token}"}
+    )
+    assert get_response.status_code == 200
+    get_response_data = get_response.json()
+
+    # Verify the income data in the GET response
+    # This assumes the GET endpoint returns a list of incomes
+    assert len(get_response_data) > 0
+    assert get_response_data[0]['user_id'] == id_user
+    assert get_response_data[0]['amount'] == user_income['amount']
+
+def test_get_income(client: TestClient, test_access_token, create_test_user: Dict[str, Any], income_info,):
+    id_user = create_test_user['id']
+    response = client.get(f"/income/{id_user}", headers={"Authorization": f"bearer {test_access_token}"})
+
+
+    data = response.json()
+    assert len(data) > 0
+    data = data[0]
+    assert response.status_code == 200
+    assert data["amount"]== 5000
+    assert data["recent_pay"]== "2024-03-01"
+    assert data["last_pay"]== "2024-02-16"
+    assert data["user_id"]== id_user
+
+def test_update_income(client: TestClient, income_info, test_access_token, create_test_user: Dict[str, Any]) -> None:
+    income_id = income_info['id']
+    response = client.put(f"/income/{income_id}", json={"amount": 6000, "recent_pay": "03-12-2024"},headers={"Authorization": f"bearer {test_access_token}"} )
+
+    assert response.status_code == 200, response.text
+    data = response.json()
+
+    print(response.json())
+    assert data["amount"] == 6000
+    assert data["recent_pay"] == "2024-03-12"
+    assert data["last_pay"] == income_info['last_pay']
+
+def test_delete_income(client: TestClient, income_info, test_access_token, create_test_user: Dict[str, Any]) -> None:
+    income_id = income_info['id']
+    response = client.delete(f"/income/{income_id}", headers={"Authorization": f"bearer {test_access_token}"})
+
+    assert response.status_code == 204, f"Expected status code 204 but received {response.status_code}"
+    assert response.status_code == 204, response.text
+    # Try to get the user income again
+    response = client.get(f"/income/{income_id}")
+    assert response.status_code == 404, response.text
+    assert response.json() == {"detail": "Item not found"}
+
+def test_post_expense(client: TestClient, income_info, test_access_token, create_test_user: Dict[str, Any]):
+    income_id = income_info['id']
+    user_id = create_test_user['id']
+    response = client.post(f"/expenses/{income_id}",json={"name": "Water Bill", "amount":50, "due_date":15}, 
+        headers = {"Authorization": f"bearer {test_access_token}"})
+    assert response.status_code == 200
+    data = response.json()
+
+    assert data["name"] == "Water Bill"
+    assert data["amount"] == 50
+    assert data["due_date"] == 15
+    assert data['user_id'] == user_id
+    assert "id" in data
 
 
 
