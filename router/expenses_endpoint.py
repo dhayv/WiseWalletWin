@@ -68,7 +68,7 @@ def update_expense(expense_id: int ,expense_data: ExpenseUpdate, db: Session = D
 def delete_expense(expense_id: int, db: Session = Depends(get_db)):
     db_expense = db.get(Expense, expense_id)
     if not db_expense:
-        raise HTTPException(status_code=404, detail="Expense not found")
+        raise HTTPException(status_code=404, detail="Not found")
     db.delete(db_expense)
     db.commit()
     return Response(status_code=status.HTTP_204_NO_CONTENT)

@@ -293,5 +293,20 @@ def test_update_expense(client: TestClient, income_info, test_access_token, crea
     print(updated_expense)
     print(exp)
 
+def test_delete_expense(client: TestClient, income_info, test_access_token, create_test_user: Dict[str, Any], create_expenses: List[Dict[str, Any]]):
+    # Targeting the first expense to delete
+    expense_id = create_expenses[0]['id']
+    response = client.delete(f"/expense/{expense_id}", headers={"Authorization": f"bearer {test_access_token}"})
+
+
+    # Try to get the user income again
+    response = client.get(f"/expense/{expense_id}")
+    assert response.status_code == 404, response.text
+    assert response.json() == {"detail": "Not Found"}
+
+    print(response.json())
+
+    print(create_expenses)
+
 
 
