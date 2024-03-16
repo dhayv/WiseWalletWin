@@ -7,6 +7,7 @@ from main import app  # Import your FastAPI instance
 from database import get_db
 from datetime import date, datetime
 
+
 # User data to be used in the tests
 USER_DATA = {
         "username": "johndoe",
@@ -310,30 +311,67 @@ def test_delete_expense(client: TestClient, income_info, test_access_token, crea
     print(create_expenses)
 
 
-@pytest.fixture
-def create_expenses_for_user(db: Session, user_id: int):
+
+def test_expenses_for_user(client: TestClient, income_info, test_access_token, create_test_user: Dict[str, Any]):
+    user_id = create_test_user['id']
+    income_id = income_info['id']
+    
     expenses = [
-        Expense(user_id=user_id, amount=100.00),
-        Expense(user_id=user_id, amount=150.00),
+        {"name": "Rent", "amount": 1000, "due_date": 1},
+        {"name": "Light Bill", "amount": 200, "due_date": 15},
+        {"name": "Water Bill", "amount": 100, "due_date": 23},
     ]
-    db.add_all(expenses)
-    db.commit()
-    return expenses
+    
+    for expense in expenses:
+        response = client.post(f"/expenses/{income_id}", json=expense, headers={"Authorization": f"bearer {test_access_token}"})
+        assert response.status_code == 201
 
-def test_read_total_expenses(client: TestClient, create_test_user: Dict[str, Any], create_expenses_for_user, test_access_token: str):
-    # Assuming create_test_user returns a user with an ID and test_access_token provides the authentication token
-    user = create_test_user
-    create_expenses_for_user(user['id'])
+    get_response = client.get(f"/expenses/{income_id}", headers={"Authorization": f"Bearer {test_access_token}"})
+    assert get_response.status_code == 200
 
-    # Make a request to the endpoint
-    response = client.get("/users/me/total_expenses", headers={"Authorization": f"Bearer {test_access_token}"})
+    data = get_response.json()
+    print(data)
+    assert len(data) == len(expenses)
+    for expense in data:
+        assert expense['user_id'] == user_id
 
-    # Check the response status code
+@pytest.fixture(scope="function")
+def create_expenses_for_user(client: TestClient, income_info, test_access_token, create_test_user: Dict[str, Any]):
+    user_id = create_test_user['id']
+    income_id = income_info['id']
+    
+    expenses = [
+        {"name": "Rent", "amount": 1000, "due_date": 1},
+        {"name": "Light Bill", "amount": 200, "due_date": 15},
+        {"name": "Water Bill", "amount": 100, "due_date": 23},
+    ]
+    
+    for expense in expenses:
+        response = client.post(f"/expenses/{income_id}", json=expense, headers={"Authorization": f"bearer {test_access_token}"})
+        assert response.status_code == 201
+
+
+def test_total_expenses(create_expenses_for_user, client: TestClient, income_info, test_access_token, create_test_user: Dict[str, Any]):
+    user_id = create_test_user['id']
+    response = client.get(f"/user/{user_id}/total_expenses", headers={"Authorization": f"Bearer {test_access_token}"})
+    
     assert response.status_code == 200
+    
+    # Check the total expenses
+    sum_of_expense = response.json()
+    assert sum_of_expense["total_expenses"] == 1300
 
-    # Calculate the expected sum of expenses directly from the database
-    db = next(get_db())
-    total_expenses = sum(expense.amount for expense in db.exec(select(Expense).where(Expense.user_id == user['id'])))
+    print(response.json())
 
-    # Check the response data
-    assert response.json()['total_expenses'] == total_expenses
+
+
+
+def test_income_minus_expenses(create_expenses_for_user, client: TestClient, income_info, test_access_token, create_test_user: Dict[str, Any]):
+    user_id = income_info['user_id']
+    response = client.get(f"/user/{user_id}/income_minus_expenses", headers={"Authorization": f"Bearer {test_access_token}"})
+    
+    assert response.status_code == 200
+    
+    # Check the total expenses
+    networth = response.json()
+    assert networth["income_minus_expense"] == 3700
