@@ -1,12 +1,12 @@
 from fastapi import APIRouter, Depends, HTTPException, Response, status
 from sqlmodel import Session, select
 from models import Users, UserIn, UserOut, UserUpdate, Expense
-from database import get_db
+from database.database import get_db
 from datetime import  timedelta
-from auth import (get_password_hash, Token, ACCESS_TOKEN_EXPIRES_MINUTES, 
+from Services.auth import (get_password_hash, Token, ACCESS_TOKEN_EXPIRES_MINUTES, 
                   create_access_token, authenticate_user, get_current_active_user)
 from fastapi.security import OAuth2PasswordRequestForm
-from calculations import sum_of_all_expenses, calc_income_minus_expenses
+from Services.calculations import sum_of_all_expenses, calc_income_minus_expenses
 
 
 

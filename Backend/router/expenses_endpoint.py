@@ -1,8 +1,8 @@
 from fastapi import APIRouter, Depends, HTTPException, Response, status
 from models import Expense, ExpenseUpdate, ExpenseBase, Income, Users
 from sqlmodel import Session, select
-from database import get_db, engine
-from auth import get_current_active_user
+from database.database import get_db, engine
+from Services.auth import get_current_active_user
 
 router = APIRouter()
 
