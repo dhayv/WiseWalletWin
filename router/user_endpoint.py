@@ -6,7 +6,7 @@ from datetime import  timedelta
 from auth import (get_password_hash, Token, ACCESS_TOKEN_EXPIRES_MINUTES, 
                   create_access_token, authenticate_user, get_current_active_user)
 from fastapi.security import OAuth2PasswordRequestForm
-from calculations import sum_of_all_expenses, income_minus_expenses
+from calculations import sum_of_all_expenses, calc_income_minus_expenses
 
 
 
@@ -68,8 +68,7 @@ def read_total_expenses(user_id: int, db: Session = Depends(get_db)):
 
 @router.get("/user/{user_id}/income_minus_expenses", response_model=dict)
 def read_total_income_minus_expenses(user_id: int, db: Session = Depends(get_db)):
-    user_id = Expense.user_id
-    total = income_minus_expenses(user_id, db)
+    total = calc_income_minus_expenses(user_id, db)
     return {"income_minus_expenses": total}
 
 

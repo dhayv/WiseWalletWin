@@ -367,11 +367,13 @@ def test_total_expenses(create_expenses_for_user, client: TestClient, income_inf
 
 
 def test_income_minus_expenses(create_expenses_for_user, client: TestClient, income_info, test_access_token, create_test_user: Dict[str, Any]):
-    user_id = income_info['user_id']
+    user_id = create_test_user['id'] 
     response = client.get(f"/user/{user_id}/income_minus_expenses", headers={"Authorization": f"Bearer {test_access_token}"})
     
     assert response.status_code == 200
     
     # Check the total expenses
-    networth = response.json()
-    assert networth["income_minus_expense"] == 3700
+    data = response.json()
+    assert data["income_minus_expenses"] == 3700
+    print(data)
+
