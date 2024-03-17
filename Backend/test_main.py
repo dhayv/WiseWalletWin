@@ -4,7 +4,7 @@ from fastapi.testclient import TestClient
 from sqlmodel import SQLModel, create_engine, Session
 from sqlmodel.pool import StaticPool
 from main import app  # Import your FastAPI instance
-from Backend.router.database.database import get_db
+from database.database import get_db
 from datetime import date, datetime
 
 
