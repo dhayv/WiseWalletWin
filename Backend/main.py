@@ -3,10 +3,21 @@ from contextlib import asynccontextmanager
 import database.database as database
 from router import expenses_endpoint as expense_router, income_endpoint as income_router, user_endpoint as user_router
 import logging
-
+from fastapi.middleware.cors import CORSMiddleware
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
+app = FastAPI()
+
+#connect to react
+origins = [
+    "http://localhost:3000"
+]
+
+app.add_middleware (
+    CORSMiddleware,
+    allow_origins=origins,
+)
 
 # Startup event before server starts
 @asynccontextmanager
@@ -20,7 +31,7 @@ async def lifespan():
     yield
 
 
-app = FastAPI()
+
 
 @app.get("/")
 def hello():
