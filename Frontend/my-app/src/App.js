@@ -18,5 +18,24 @@ import api from "./api"
 
 const App = () => {
   const [expense, setExpenses] = useState([]);
+  const [formData, setFormData] = useState({
+    name: '',
+    amount: '',
+    due_date: '',
+  });
+
+  const fetchExpenses = async () => {
+    const response = await api.get('/expenses/{income_id}');
+    setExpenses(response.data)
+  };
+  
+  useEffect(() => {
+    fetchExpenses
+  }, []);  
 }
+
+
+
+
+
 export default App;
