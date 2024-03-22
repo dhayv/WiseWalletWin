@@ -64,12 +64,15 @@ def test_add_user_with_invalid_password(client: TestClient) -> None:
     invalid_user_data['password'] = 'weak'  # This should fail the regex validation
     response = client.post("/user", json=invalid_user_data)
     assert response.status_code == 422, response.json()
+    print(response.json())
+    
 
 def test_add_user_with_invalid_phone(client: TestClient) -> None:
     invalid_user_data = USER_DATA.copy()
     invalid_user_data['phone_number'] = '1234567'  # This should fail the regex validation
     response = client.post("/user", json=invalid_user_data)
     assert response.status_code == 422, response.json()
+    print(response.json())
 
 
 

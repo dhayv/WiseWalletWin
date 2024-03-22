@@ -1,4 +1,4 @@
-from sqlmodel import SQLModel, Field
+from sqlmodel import SQLModel, Field, AutoString
 from typing import Optional
 from pydantic import field_validator, BaseModel, EmailStr
 from datetime import date, datetime
@@ -12,19 +12,18 @@ phone_number_regex = r"^(?:\(\d{3}\)|\d{3}-?)\d{3}-?\d{4}$"
 
 # Base user model for common user fields
 class BaseUser(SQLModel):
-    username: str
-    email: EmailStr
+    username: str = Field(index=True)
+    email: EmailStr = Field(unique=True, index=True, sa_type=AutoString)
     first_name: Optional[str] = None
-    phone_number: Optional[str] = Field(default=None, regex=phone_number_regex)
-
+    phone_number: Optional[str] 
 # Input model including password validation
 class UserIn(BaseModel):
     username: str
     email: EmailStr
     first_name: Optional[str] = None
-    phone_number: Optional[str] = Field(default=None, regex=phone_number_regex)
+    phone_number: Optional[str] = Field(regex=r"^(?:\(\d{3}\)|\d{3}-?)\d{3}-?\d{4}$")
     # Regex for password validation
-    password: str = Field(..., regex=r"((?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[\W]).{8,64})")
+    password: str = Field(regex=r"((?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[\W]).{8,64})")
 
 # Output model to send user data back to the client
 class UserOut(BaseUser):
