@@ -7,22 +7,25 @@ import logging
 import pydantic
 
 
+# This regex matches phone numbers in the following formats: (123)456-7890, 123-456-7890, or 1234567890
 phone_number_regex = r"^(?:\(\d{3}\)|\d{3}-?)\d{3}-?\d{4}$"
-# model to be shared across user classes excluding password
+
 class BaseUser(SQLModel):
     username: str
     email: str
     first_name: Optional[str] = None
+    # The phone number field uses the above regex for validation
     phone_number: Optional[str] = Field(default=None, regex=phone_number_regex)
 
-
-
-
+# This regex enforces a password policy that requires at least one digit, 
+# at least one lowercase letter, at least one uppercase letter, 
+# at least one special character, and a length of 8 to 64 characters
 password_regex = r"((?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[\W]).{8,64})"
 
-# UserIn for input data
 class UserIn(BaseUser):
+    # The password field uses the above regex for validation
     password: str  = Field(...,regex=password_regex)
+    # The phone number field uses the phone number regex for validation
     phone_number: Optional[str] = Field(default=None, regex=phone_number_regex)
 
 # in output model
