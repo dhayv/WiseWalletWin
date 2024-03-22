@@ -7,36 +7,36 @@ import logging
 import pydantic
 
 
-# This regex matches phone numbers in the following formats: (123)456-7890, 123-456-7890, or 1234567890
+# Regex for phone number validation
 phone_number_regex = r"^(?:\(\d{3}\)|\d{3}-?)\d{3}-?\d{4}$"
 
+# Base user model for common user fields
 class BaseUser(SQLModel):
     username: str
-    email: str
+    email: EmailStr
     first_name: Optional[str] = None
-    # The phone number field uses the above regex for validation
     phone_number: Optional[str] = Field(default=None, regex=phone_number_regex)
 
-# This regex enforces a password policy that requires at least one digit, 
-# at least one lowercase letter, at least one uppercase letter, 
-# at least one special character, and a length of 8 to 64 characters
-password_regex = r"((?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[\W]).{8,64})"
-
-class UserIn(BaseUser):
-    # The password field uses the above regex for validation
-    password: str  = Field(...,regex=password_regex)
-    # The phone number field uses the phone number regex for validation
+# Input model including password validation
+class UserIn(BaseModel):
+    username: str
+    email: EmailStr
+    first_name: Optional[str] = None
     phone_number: Optional[str] = Field(default=None, regex=phone_number_regex)
+    # Regex for password validation
+    password: str = Field(..., regex=r"((?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[\W]).{8,64})")
 
-# in output model
+# Output model to send user data back to the client
 class UserOut(BaseUser):
-    id: int  
+    id: int
 
+# SQLModel for ORM mapping, including hashed_password and disabled fields
 class Users(BaseUser, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     hashed_password: str
     disabled: Optional[bool] = False
 
+# Model for updating user information
 class UserUpdate(BaseModel):
     username: Optional[str] = None
     email: Optional[EmailStr] = None
