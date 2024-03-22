@@ -12,6 +12,7 @@ from Services.calculations import sum_of_all_expenses, calc_income_minus_expense
 
 router = APIRouter()
 
+# This endpoint is used for user login. It verifies the user's credentials and returns an access token.
 @router.post("/token", response_model=Token)
 async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
     user = authenticate_user(db, form_data.username, form_data.password)
@@ -27,7 +28,7 @@ async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(
     )
     return {"access_token": access_token, "token_type": "bearer"}
 
-
+# This endpoint is used for user signup. It adds a new user to the database.
 @router.post("/user", response_model=UserOut, status_code=status.HTTP_201_CREATED)
 def add_user(user: UserIn, db: Session = Depends(get_db)):
     hashed_password = get_password_hash(user.password)  
@@ -44,11 +45,12 @@ def add_user(user: UserIn, db: Session = Depends(get_db)):
     return db_user
 
 
-
+# This endpoint is used to get the profile of the currently logged in user.
 @router.get("/user/me", response_model=UserOut)
 async def read_user_me(current_user: Users = Depends(get_current_active_user)):
     return current_user
 
+# This endpoint is used to get the profile of a specific user based on their user_id.
 @router.get("/user/{user_id}", response_model=UserOut)
 async def read_user(user_id: int, db: Session = Depends(get_db)):
     statement = select(Users).where(Users.id == user_id)
@@ -58,14 +60,14 @@ async def read_user(user_id: int, db: Session = Depends(get_db)):
     return result 
 
 
-
+# This endpoint is used to get total expense of a specific user based on their user_id.
 @router.get("/user/{user_id}/total_expenses", response_model=dict)
 def read_total_expenses(user_id: int, db: Session = Depends(get_db)):
     total = sum_of_all_expenses(user_id, db)
     return {"total_expenses": total}
 
 
-
+# This endpoint is used to get the total income minus expenses of a specific user based on their user_id.
 @router.get("/user/{user_id}/income_minus_expenses", response_model=dict)
 def read_total_income_minus_expenses(user_id: int, db: Session = Depends(get_db)):
     total = calc_income_minus_expenses(user_id, db)
