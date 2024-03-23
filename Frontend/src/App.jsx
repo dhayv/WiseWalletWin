@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import SignUp from "./component/SignUp";
 
 const App = () => {
   const [message, setMessage] = useState("");
