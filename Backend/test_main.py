@@ -14,7 +14,7 @@ USER_DATA = {
         "email": "johndoe@example.com",
         "first_name": "John",
         "phone_number": "123-456-7890",
-        "password": "strongpassword"
+        "password": "Password123!"
     }
 
 
@@ -65,7 +65,7 @@ def test_add_user_with_invalid_password(client: TestClient) -> None:
     response = client.post("/user", json=invalid_user_data)
     assert response.status_code == 422, response.json()
     print(response.json())
-    
+
 
 def test_add_user_with_invalid_phone(client: TestClient) -> None:
     invalid_user_data = USER_DATA.copy()

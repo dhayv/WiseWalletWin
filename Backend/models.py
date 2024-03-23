@@ -1,6 +1,7 @@
 from sqlmodel import SQLModel, Field, AutoString
 from typing import Optional
-from pydantic import field_validator, BaseModel, EmailStr
+from typing_extensions import Annotated
+from pydantic import field_validator, BaseModel, EmailStr, StringConstraints
 from datetime import date, datetime
 import re
 import logging
@@ -13,18 +14,30 @@ phone_number_regex = r"^(?:\(\d{3}\)|\d{3}-?)\d{3}-?\d{4}$"
 # Base user model for common user fields
 class BaseUser(SQLModel):
     username: str = Field(index=True)
+    first_name: Optional[str] = None
     email: EmailStr = Field(unique=True, index=True, sa_type=AutoString)
     first_name: Optional[str] = None
     phone_number: Optional[str] 
+    
 # Input model including password validation
 class UserIn(BaseModel):
     username: str
-    email: EmailStr
     first_name: Optional[str] = None
-    phone_number: Optional[str] = Field(regex=r"^(?:\(\d{3}\)|\d{3}-?)\d{3}-?\d{4}$")
-    # Regex for password validation
-    password: str = Field(regex=r"((?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[\W]).{8,64})")
+    email: EmailStr
+    password: str = Field(..., min_length=8)
+    phone_number: Annotated[str, StringConstraints(strip_whitespace=True, pattern=r"^(?:\(\d{3}\)|\d{3})[-\s]?\d{3}[-\s]?\d{4}$")]
 
+    @field_validator('password')
+    def password_complexity(cls, value):
+        if not re.search(r"[a-z]", value):
+            raise ValueError("Password must contain at least one lowercase letter")
+        if not re.search(r"[A-Z]", value):
+            raise ValueError("Password must contain at least one uppercase letter")
+        if not re.search(r"\d", value):
+            raise ValueError("Password must contain at least one digit")
+        if not re.search(r"[!@#$%^&*(),.?\":{}|<>]", value):
+            raise ValueError("Password must contain at least one special character")
+        return value
 # Output model to send user data back to the client
 class UserOut(BaseUser):
     id: int
