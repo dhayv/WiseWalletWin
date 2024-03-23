@@ -50,6 +50,28 @@ def create_test_user(client: TestClient) -> Dict[str, Any]:
     return user
 
 
+def test_add_user_with_existing_username(client: TestClient, create_test_user: Dict[str, Any]) -> None:
+    existing_user = create_test_user
+    new_user_data = USER_DATA.copy()
+    new_user_data['username'] = existing_user['username']  # Use existing username
+    new_user_data['email'] = "newemail@example.com"  # Use a new email to avoid conflict
+    
+    response = client.post("/user", json=new_user_data)
+    assert response.status_code == 400, "Should not allow creating a user with an existing username"
+    assert "Username already exists" in response.json().get("detail", "")
+
+def test_add_user_with_existing_email(client: TestClient, create_test_user: Dict[str, Any]) -> None:
+    existing_user = create_test_user
+    new_user_data = USER_DATA.copy()
+    new_user_data['username'] = "newusername"  # Use a new username to avoid conflict
+    new_user_data['email'] = existing_user['email']  # Use existing email
+    
+    response = client.post("/user", json=new_user_data)
+    assert response.status_code == 400, "Should not allow creating a user with an existing email"
+    assert "Email already exists" in response.json().get("detail", "")
+
+
+
 # Check if user is created
 def test_add_user(create_test_user: Dict[str, Any]) -> None:
     user = create_test_user
@@ -73,6 +95,8 @@ def test_add_user_with_invalid_phone(client: TestClient) -> None:
     response = client.post("/user", json=invalid_user_data)
     assert response.status_code == 422, response.json()
     print(response.json())
+
+
 
 
 

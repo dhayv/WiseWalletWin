@@ -12,6 +12,16 @@ from Services.calculations import sum_of_all_expenses, calc_income_minus_expense
 
 router = APIRouter()
 
+def get_user_by_username(username: str, db: Session):
+    statement = select(Users).where(Users.username == username)
+    result = db.exec(statement).first()
+    return result
+
+def get_user_by_email(email: str, db: Session):
+    statement = select(Users).where(Users.email == email)
+    result = db.exec(statement).first()
+    return result
+
 # This endpoint is used for user login. It verifies the user's credentials and returns an access token.
 @router.post("/token", response_model=Token)
 async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
@@ -28,21 +38,32 @@ async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(
     )
     return {"access_token": access_token, "token_type": "bearer"}
 
-# This endpoint is used for user signup. It adds a new user to the database.
+# This endpoint is used for user signup. 
+# It adds a new user to the database.
+# Also Check if username or email exists in the database.
 @router.post("/user", response_model=UserOut, status_code=status.HTTP_201_CREATED)
 def add_user(user: UserIn, db: Session = Depends(get_db)):
-    hashed_password = get_password_hash(user.password)  
-    db_user = Users(
-        username=user.username, 
-        email=user.email, 
-        hashed_password=hashed_password, 
-        first_name=user.first_name,
-        phone_number=user.phone_number
-        )
-    db.add(db_user)
-    db.commit()
-    db.refresh(db_user)
-    return db_user
+
+    username_check = get_user_by_username(user.username, db)
+    email_check = get_user_by_email(user.email, db)
+
+    if username_check:
+        raise HTTPException(status_code=400, detail="Username already exists")
+    if email_check:
+        raise HTTPException(status_code=400, detail="Email already exists")
+    else:
+        hashed_password = get_password_hash(user.password)  
+        db_user = Users(
+            username=user.username, 
+            email=user.email, 
+            hashed_password=hashed_password, 
+            first_name=user.first_name,
+            phone_number=user.phone_number
+            )
+        db.add(db_user)
+        db.commit()
+        db.refresh(db_user)
+        return db_user
 
 
 # This endpoint is used to get the profile of the currently logged in user.
