@@ -21,3 +21,4 @@ def calc_income_minus_expenses(user_id: int, db: Session):
 
     total_income = sum(income.amount for income in income_info)
     return total_income - total_expense
+
