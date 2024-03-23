@@ -34,7 +34,7 @@ async def lifespan():
 
 
 @app.get("/api")
-async def root():
+def hello():
     return {"message": "Hello, World"}
 
 

@@ -14,7 +14,6 @@ phone_number_regex = r"^(?:\(\d{3}\)|\d{3}-?)\d{3}-?\d{4}$"
 # Base user model for common user fields
 class BaseUser(SQLModel):
     username: str = Field(index=True)
-    first_name: Optional[str] = None
     email: EmailStr = Field(unique=True, index=True, sa_type=AutoString)
     first_name: Optional[str] = None
     phone_number: Optional[str] 
