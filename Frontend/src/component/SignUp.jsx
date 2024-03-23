@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 
 import { UserContext } from "../context/UserContext";
 
@@ -14,7 +14,37 @@ const SignUp = () => {
     const [errorMessage, setErrorMessage] = useState("");
     const [passwordError, setPasswordError] = useState("");
 
-    const { token, setToken } = useContext(UserContext);
+    const {token , setToken } = useContext(UserContext);
+    const submitRegistration = async () => {
+        const requestOptions = {
+            method: "POST",
+                headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({
+                first_name: firstName,
+                email: email, 
+                hashed_password: password,
+                username: userName,
+                phone_number: phoneNumber}),
+        };
+
+            const response = await fetch('/user', requestOptions);
+                const data = await response.json();
+
+                if (!response.ok) {
+                    setErrorMessage(data.detail);
+                } else {
+                    setToken(data.access_token);
+                }
+    };
+
+        const handleSubmit = (e) => {
+            e.preventDefault();
+                if (password === confirmationPassword) {
+                    submitRegistration();
+                } else {
+                    setErrorMessage("Passwords don't match")
+                }
+        }
 
     const validatePassword = (password) => {
         if (!/[a-z]/.test(password)) return "Password must contain at least one lowercase letter";
@@ -34,7 +64,7 @@ const SignUp = () => {
 
         return(
             <div className="column">
-                <form className="box">
+                <form className="box" onSubmit={handleSubmit}>
                     <h1 className="title has-tex-centered">SignUp</h1>
                     {/* First Name */}
                     <div className="field">
@@ -59,6 +89,7 @@ const SignUp = () => {
                             value={userName} 
                             onChange={(e) => setUserName(e.target.value)}
                             className="input"
+                            required
                             />
                         </div>
                     </div>
@@ -67,11 +98,12 @@ const SignUp = () => {
                         <label className="label">Email Address</label>
                         <div className="control">
                             <input 
-                            type="text" 
+                            type="email" 
                             placeholder="Enter Email" 
                             value={email} 
                             onChange={(e) => setEmail(e.target.value)}
                             className="input"
+                            required
                             />
                         </div>
                     </div>
@@ -80,11 +112,13 @@ const SignUp = () => {
                         <label className="label">Password</label>
                         <div className="control">
                             <input 
-                            type="text" 
+                            type="password" 
                             placeholder="Enter Password" 
                             value={password} 
-                            onChange={(e) => setPassword(e.target.value)}
+                            onChange={handlePasswordChange}
                             className="input"
+                            minLength="8"
+                            required
                             />
                         </div>
                     </div>
@@ -93,12 +127,15 @@ const SignUp = () => {
                         <label className="label">Confirm Password</label>
                         <div className="control">
                             <input 
-                            type="text" 
+                            type="password" 
                             placeholder="Re-enter Password to Confirm" 
                             value={confirmationPassword} 
                             onChange={(e) => setConfirmationPassword(e.target.value)}
-                            className="input"
+                            className={`input ${passwordError ? 'is-danger' : ''}`}
+                            minLength="8"
+                            required
                             />
+                            {passwordError && <p className="help is-danger">{passwordError}</p>}
                         </div>
                     </div>
                     {/* Phone Number */}
@@ -110,6 +147,7 @@ const SignUp = () => {
                             placeholder="Enter Phone Number" 
                             value={phoneNumber} 
                             onChange={(e) => setPhoneNumber(e.target.value)}
+                            pattern="^(?:\(\d{3}\)|\d{3})[-\s]?\d{3}[-\s]?\d{4}$"
                             className="input"
                             />
                         </div>
