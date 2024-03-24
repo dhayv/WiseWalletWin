@@ -1,45 +1,69 @@
 import React, { useState, useContext } from "react";
 
 import { UserContext } from "../context/UserContext";
+import ErrorMessage from "./ErrorMessage";
+
+
 
 
 const SignUp = () => {
     const [firstName, setFirstName] = useState("");
     const [userName, setUserName] = useState("");
     const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
+    const [passWord, setPassword] = useState("");
 
     const [confirmationPassword, setConfirmationPassword] = useState("");
     const [phoneNumber, setPhoneNumber] = useState("");
     const [errorMessage, setErrorMessage] = useState("");
     const [passwordError, setPasswordError] = useState("");
 
-    const {token , setToken } = useContext(UserContext);
+    // Manages token globally
+    const {setToken } = useContext(UserContext);
+
+    // Function to submit user info(Post)
     const submitRegistration = async () => {
-        const requestOptions = {
+        //Post request to /user enpoint
+        let response = await fetch("/user", {
             method: "POST",
-                headers: {"Content-Type": "application/json"},
+            headers: {"Content-Type": "application/json"},
             body: JSON.stringify({
                 first_name: firstName,
                 email: email, 
-                hashed_password: password,
+                password: passWord,
                 username: userName,
-                phone_number: phoneNumber}),
-        };
+                phone_number: phoneNumber,
+            }),
+        });
 
-            const response = await fetch('/user', requestOptions);
-                const data = await response.json();
 
-                if (!response.ok) {
-                    setErrorMessage(data.detail);
-                } else {
-                    setToken(data.access_token);
-                }
+        if (!response.ok) {
+            setErrorMessage("Failed to Register");
+            return;
+        }
+        // Login: Post request to /token endpoint
+        response = await fetch("/token", {
+            method: "POST",
+            headers: {"Content-type": "application/x-www-form-urlencoded"},
+            body: new URLSearchParams({
+                username: userName,
+                password: passWord,
+            }),
+        });
+
+        if (!response.ok) {
+            setErrorMessage("Login failed");
+            return;
+        }
+
+        const data = await response.json();
+        localStorage.setItem('token', data.access_token);
+        setToken(data.access_token);
+
     };
 
         const handleSubmit = (e) => {
             e.preventDefault();
-                if (password === confirmationPassword) {
+                if (passWord === confirmationPassword) {
                     submitRegistration();
                 } else {
                     setErrorMessage("Passwords don't match")
@@ -50,7 +74,7 @@ const SignUp = () => {
         if (!/[a-z]/.test(password)) return "Password must contain at least one lowercase letter";
         if (!/[A-Z]/.test(password)) return "Password must contain at least one uppercase letter";
         if (!/\d/.test(password)) return "Password must contain at least one digit";
-        if (!/[!@#$%^&*(),.?\":{}|<>]/.test(password)) return "Password must contain at least one special character";
+        if (!/[!@#$%^&*(),.?\\":{}|<>]/.test(password)) return "Password must contain at least one special character";
         return "";
     };
 
@@ -114,7 +138,7 @@ const SignUp = () => {
                             <input 
                             type="password" 
                             placeholder="Enter Password" 
-                            value={password} 
+                            value={passWord} 
                             onChange={handlePasswordChange}
                             className="input"
                             minLength="8"
@@ -147,11 +171,15 @@ const SignUp = () => {
                             placeholder="Enter Phone Number" 
                             value={phoneNumber} 
                             onChange={(e) => setPhoneNumber(e.target.value)}
-                            pattern="^(?:\(\d{3}\)|\d{3})[-\s]?\d{3}[-\s]?\d{4}$"
+                            pattern="^(\\d{3}[-\\s]?){2}\\d{4}$"
+
                             className="input"
                             />
                         </div>
+                        
                     </div>
+                        <ErrorMessage message ={errorMessage}/>
+                    <br />
                     {/* Button */}
                     <button className="button is-primary" type="submit">
                         SignUp
@@ -162,4 +190,4 @@ const SignUp = () => {
     
 };
 
-export default SignUp
+export default SignUp;
