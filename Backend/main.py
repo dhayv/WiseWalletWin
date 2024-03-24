@@ -4,6 +4,7 @@ import database.database as database
 from router import expenses_endpoint as expense_router, income_endpoint as income_router, user_endpoint as user_router
 import logging
 from fastapi.middleware.cors import CORSMiddleware
+from router.expenses_endpoint import create_expenses
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
@@ -25,8 +26,8 @@ async def lifespan():
     database.create_db_and_tables()
     logging.info("Database Created")
     
-    #create_expenses()
-    #create_income()
+    create_expenses()
+    create_income()
 
     yield
 
