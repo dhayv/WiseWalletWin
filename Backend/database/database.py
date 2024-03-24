@@ -1,5 +1,6 @@
 from sqlmodel import Session, create_engine, SQLModel
 import logging
+from models import Income, Expense, BaseUser
 
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
