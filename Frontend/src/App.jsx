@@ -1,8 +1,12 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import SignUp from "./component/SignUp";
+import Header from "./component/Header";
+import { UserContext } from "./context/UserContext";
+
 
 const App = () => {
   const [message, setMessage] = useState("");
+  const {token} = useContext(UserContext);
 
   const getMessage = async () => {
     const requestOptions = {
@@ -31,11 +35,23 @@ const App = () => {
   }, []); // Added an empty dependency array to run only once after the component mounts
 
   return (
-    <div>
-      <h1>{message}</h1>
-      <SignUp/>
-      
-    </div>
+    <>
+    <Header title={message} />
+      <div className="columns">
+        <div className="column"></div>
+        <div className="column m-5 is-two-thirds">
+          {!token ? (
+              <div className="columns">
+                <SignUp/> <p>Login AGain</p>
+              </div>
+            ): (
+              <p>Table</p>
+            )
+          }
+        </div>
+        <div className="column"></div>
+      </div>
+    </>
   );
 };
 
