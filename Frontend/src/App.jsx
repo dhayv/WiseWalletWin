@@ -5,6 +5,7 @@ import Login from "./component/Login";
 import SignUp from "./component/SignUp";
 import Income from "./component/Income";
 import Remaining from "./component/Remaining";
+import NextCheck from "./component/NextCheck"
 
 const App = () => {
   const [message, setMessage] = useState("");
@@ -34,34 +35,53 @@ const App = () => {
     }
   };
 
-  useEffect(() => {
+useEffect(() => {
     getMessage();
-  }, []); // Added an empty dependency array to run only once after the component mounts
+  }, []);
 
   return (
     <>
-    <Header title={message} />
+      <Header title={message} />
       <div className="columns">
         <div className="column"></div>
         <div className="column m-5 is-two-thirds">
           {!token ? (
-              <div className="columns">
-                
-                {
-                /* {showSignUp ? (
-                <SignUp setShowSignUp={setShowSignUp} />
-                 ) : (
+            <div className="columns">
+              {/* Conditional rendering for SignUp/Login based on showSignUp state */}
+              {
+              /*
+             {showSignUp ? (
+                <div className="column">
+                  <SignUp setShowSignUp={setShowSignUp} />
+                </div>
+              ) : (
+                <div className="column">
                   <Login setShowSignUp={setShowSignUp} />
-                )} */
-                }
-                <Income/>
-                <Remaining/>
-               
+                </div>
+              )}
+              /*
+                } 
+              {/* Income and Remaining Components */}
+              <div className="columns">
+                <div className="column">
+                  <Income />
+                </div>
               </div>
-            ): (
-              <p>Table</p>
-            )
-          }
+              <div className="columns">
+                <div className="column">
+                  <Remaining />
+                </div>
+              </div>
+              <div className="columns">
+                <div className="column">
+                  <NextCheck />
+                </div>
+              </div>
+            <h3 class="title">Expenses</h3>
+            </div>
+          ) : (
+            <p>Table</p> // Placeholder for authenticated state
+          )}
         </div>
         <div className="column"></div>
       </div>

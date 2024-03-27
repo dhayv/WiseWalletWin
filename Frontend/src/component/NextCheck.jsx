@@ -2,11 +2,11 @@ import React from "react";
 import moment from "moment";
 
 
-const Remaining = () => {
+const NextCheck = () => {
     return        ( <div className="card">
     <div className="card-content">
         <div className="content">
-            <span>Remaining: $1040</span>
+            <span>Next Check: $640</span>
         </div>
     </div>
 </div>
@@ -14,4 +14,4 @@ const Remaining = () => {
 };
 
 
-export default Remaining
+export default NextCheck
