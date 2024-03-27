@@ -3,6 +3,7 @@ import Header from "./component/Header";
 import { UserContext } from "./context/UserContext";
 import Login from "./component/Login";
 import SignUp from "./component/SignUp";
+import Income from "./component/Income";
 
 const App = () => {
   const [message, setMessage] = useState("");
@@ -44,13 +45,16 @@ const App = () => {
         <div className="column m-5 is-two-thirds">
           {!token ? (
               <div className="columns">
-                {showSignUp ? (
-                  <SignUp setShowSignUp={setShowSignUp} />
-                ) : (
+                
+                {
+                /* {showSignUp ? (
+                <SignUp setShowSignUp={setShowSignUp} />
+                 ) : (
                   <Login setShowSignUp={setShowSignUp} />
-                )
-
+                )} */
                 }
+
+                <Income/>
                
               </div>
             ): (
