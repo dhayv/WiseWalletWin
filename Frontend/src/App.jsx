@@ -4,6 +4,7 @@ import { UserContext } from "./context/UserContext";
 import Login from "./component/Login";
 import SignUp from "./component/SignUp";
 import Income from "./component/Income";
+import Remaining from "./component/Remaining";
 
 const App = () => {
   const [message, setMessage] = useState("");
@@ -53,8 +54,8 @@ const App = () => {
                   <Login setShowSignUp={setShowSignUp} />
                 )} */
                 }
-
                 <Income/>
+                <Remaining/>
                
               </div>
             ): (
