@@ -36,7 +36,7 @@ const Income = ({}) => {
 };            
 
 
-    const submitIncome = async () => {
+    const submitIncome =  async () => {
         const requestOptions = {
             method: "POST",
             headers: {
@@ -77,6 +77,7 @@ const Income = ({}) => {
             <div className="card-content">
                 <div className="content">
                     {errorMessage && <p className="help is-danger">{errorMessage}</p>}
+
                     {showAddIncome && (
                         <div>
                             <label className="label">Amount</label>

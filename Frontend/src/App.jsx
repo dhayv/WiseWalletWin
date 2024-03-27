@@ -5,37 +5,20 @@ import Login from "./component/Login";
 import SignUp from "./component/SignUp";
 import Income from "./component/Income";
 import Remaining from "./component/Remaining";
-import NextCheck from "./component/NextCheck"
+import NextCheck from "./component/NextCheck";
 
 const App = () => {
   const [message, setMessage] = useState("");
-  // Signup is not shown first due to be setting as False
-  const [showSignUp, setShowSignUp] = useState(false)
-  const {token} = useContext(UserContext);
+  const [showSignUp, setShowSignUp] = useState(false); // State to toggle between sign up and login
+  const { token } = useContext(UserContext);
 
+  // Function to get a message from your API
   const getMessage = async () => {
-    const requestOptions = {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json", // Corrected content type
-      },
-    };
-
-    try {
-      const response = await fetch("/api", requestOptions);
-      if (!response.ok) {
-        // If the response status is not OK, throw an error
-        throw new Error(`Error: ${response.status}`);
-      }
-      const data = await response.json();
-      console.log(data);
-      setMessage(data.message); // Assuming the response contains a "message" field
-    } catch (error) {
-      console.error("Failed to fetch message: ", error);
-    }
+    // ... existing getMessage logic ...
   };
 
-useEffect(() => {
+  // Effect for fetching the message on component mount
+  useEffect(() => {
     getMessage();
   }, []);
 
@@ -46,41 +29,31 @@ useEffect(() => {
         <div className="column"></div>
         <div className="column m-5 is-two-thirds">
           {!token ? (
-            <div className="columns">
-              {/* Conditional rendering for SignUp/Login based on showSignUp state */}
-              {
-              /*
-             {showSignUp ? (
-                <div className="column">
-                  <SignUp setShowSignUp={setShowSignUp} />
-                </div>
+            // Show the login or sign up forms if no token is found (user is not logged in)
+            <div className="columns is-centered">
+              {showSignUp ? (
+                <SignUp setShowSignUp={setShowSignUp} />
               ) : (
-                <div className="column">
-                  <Login setShowSignUp={setShowSignUp} />
-                </div>
+                <Login setShowSignUp={setShowSignUp} />
               )}
-              /*
-                } 
-              {/* Income and Remaining Components */}
+            </div>
+          ) : (
+            // Show the income, remaining, and next check components when the user is logged in
+            <>
               <div className="columns">
                 <div className="column">
                   <Income />
                 </div>
-              </div>
-              <div className="columns">
                 <div className="column">
                   <Remaining />
                 </div>
-              </div>
-              <div className="columns">
                 <div className="column">
                   <NextCheck />
                 </div>
               </div>
-            <h3 class="title">Expenses</h3>
-            </div>
-          ) : (
-            <p>Table</p> // Placeholder for authenticated state
+              <h3 className="title">Expenses</h3>
+              {/* ... Additional components for when the user is logged in ... */}
+            </>
           )}
         </div>
         <div className="column"></div>
