@@ -180,6 +180,7 @@ const SignUp = () => {
                     </div>
                         <ErrorMessage message ={errorMessage}/>
                     <br />
+                    
                     {/* Button */}
                     <button className="button is-primary" type="submit">
                         SignUp
