@@ -5,6 +5,7 @@ export const UserContext = createContext();
 export const UserProvider = (props) => {
     // Start with a token from local storage if there's one
     const [token, setToken] = useState(localStorage.getItem("token"));
+    const [userId, setUserId] = useState(null); 
 
     useEffect(() => {
         const fetchUser = async () => {
@@ -22,8 +23,10 @@ export const UserProvider = (props) => {
                     },
                 };
                 const response = await fetch("/user/me", requestOptions);
-                if (!response.ok) {
-                    // If something's wrong, forget the token
+                if (response.ok) {
+                    const data = await response.json();
+                    setUserId(data.id);  // Set user ID here
+                } else {
                     setToken(null);
                 }
             }
@@ -33,7 +36,7 @@ export const UserProvider = (props) => {
 
     return (
         // This lets any component get the token and user data
-        <UserContext.Provider value={{token, setToken}}>
+        <UserContext.Provider value={{token, setToken, userId, setUserId}}>
             {props.children}
         </UserContext.Provider>
     );

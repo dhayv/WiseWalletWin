@@ -2,27 +2,65 @@ import React, { useContext, useEffect, useState } from "react";
 import { UserContext } from "../context/UserContext";
 import moment from "moment";
 
-const Income = () => {
+const Income = ({}) => {
     const { token, userId } = useContext(UserContext);
+    const [showAddIncome, setShowAddIncome] =useState(false);
     const [incomeData, setIncomeData] = useState(null);
     const [errorMessage, setErrorMessage] = useState("");
+    const [amount, setAmount] = useState("");
+    const [recentPay, setRecentPay ] = useState("")
+    const [lastPay, setLastPay] = useState("")
+
 
     const getIncome = async () => {
+        if (userId) {
+            const requestOptions = {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
+                },
+            };
+
+            try {
+                const response = await fetch(`/income/${userId}`, requestOptions);
+                if (!response.ok) {
+                    setErrorMessage('Could not load income information.');
+                }
+                const data = await response.json();
+                setIncomeData(data);
+            } catch (error) {
+                setErrorMessage(error.message);
+            } 
+        }
+};            
+
+
+    const submitIncome = async () => {
         const requestOptions = {
-            method: "GET",
+            method: "POST",
             headers: {
                 "Content-Type": "application/json",
                 Authorization: `Bearer ${token}`,
             },
+            body: JSON.stringify({
+                amount,
+                recent_pay: recentPay,
+                last_pay: lastPay,
+            }),
         };
-
         try {
             const response = await fetch(`/income/${userId}`, requestOptions);
             if (!response.ok) {
-                throw new Error('Something went wrong. Could not load income information.');
+                throw new Error('Failed to add income');
             }
             const data = await response.json();
-            setIncomeData(data);
+            // Close the dropdown and clear the form
+            setShowAddIncome(false);
+            setAmount("");
+            setRecentPay("");
+            setLastPay("");
+            // Handle the response data here
         } catch (error) {
             setErrorMessage(error.message);
         }
@@ -38,44 +76,39 @@ const Income = () => {
         <div className="card">
             <div className="card-content">
                 <div className="content">
-                    <span>Income: 2000</span>
-                        <button className="button is-info is-small" style={{ marginLeft: "10px" }}>
-                            {errorMessage && <p>{errorMessage}</p>}
-                            {incomeData ? (
-                                    <table className="table is-fullwidth">
-                                        <thead>
-                                            <tr>
-                                                <th>Amount</th>
-                                            </tr>
-                                            <tr>              \
-                                                <th>Recent Pay</th>
-                                            </tr>
-                                            <tr>
-                                                <th>Last Pay</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>  
-                                            {incomeData.map((incomeData) => (                                 
-                                                <tr  key={incomeData.id}>
-                                                    <td>{incomeData.amount}</td>
-                                                    <td>{moment(incomeData.recent_pay).format("MMM Do YY")}</td>
-                                                    <td>{moment(incomeData.last_pay).format("MMM Do YY")}</td>
-                                                    <td>
-                                                        <button className="button mr-2 is-info is-light">
-                                                            Update
-                                                        </button>
-                                                        <button className="button mr-2 is-danger is-light">
-                                                            Delete
-                                                        </button>
-                                                    </td>
-                                                </tr>
-                                            ))}               
-                                        </tbody>
-                                    </table>
-                                ) : (
-                                    <p>Edit</p>
-                            )}
-                        </button>
+                    {errorMessage && <p className="help is-danger">{errorMessage}</p>}
+                    {showAddIncome && (
+                        <div>
+                            <label className="label">Amount</label>
+                            <input 
+                                className="input mb-5" 
+                                type="number" 
+                                placeholder="Amount" 
+                                value={amount} 
+                                onChange={(e) => setAmount(e.target.value)} 
+                            />
+                            <label className="label">Recent Pay Date</label>
+                            <input 
+                                className="input mb-5" 
+                                type="date" 
+                                placeholder="Recent Pay Date" 
+                                value={recentPay} 
+                                onChange={(e) => setRecentPay(e.target.value)} 
+                            />
+                            <label className="label">Last Pay Date</label>
+                            <input 
+                                className="input mb-5" 
+                                type="date" 
+                                placeholder="Last Pay Date" 
+                                value={lastPay} 
+                                onChange={(e) => setLastPay(e.target.value)} 
+                            />
+                            <button className="button is-success " onClick={submitIncome}>
+                                Submit
+                            </button>
+                        </div>
+                    )}
+                    {/* Render existing incomeData here */}
                 </div>
             </div>
         </div>
