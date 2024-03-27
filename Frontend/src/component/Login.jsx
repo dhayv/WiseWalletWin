@@ -2,13 +2,15 @@ import React, { useState, useContext } from "react";
 import ErrorMessage from "./ErrorMessage";
 import { UserContext } from "../context/UserContext";
 
+
 // Define submitLogin inside the Login component if it uses component state or props
-const Login = () => {
+const Login = ({setShowSignUp}) => {
   const [userName, setUserName] = useState("");
   const [passWord, setPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
   const { setToken } = useContext(UserContext);
-  cont
+
+
 
   const submitLogin = async () => {
     const requestOptions = {
@@ -73,11 +75,13 @@ const Login = () => {
         </div>
         <ErrorMessage message={errorMessage} />
         <br />
+        
         {/* Button */}
         <button className="button is-primary" type="submit">
           Login
         </button>
       </form>
+      <button on onClick={()=> setShowSignUp(true)}>Don't have an account? Sign Up</button>
     </div>
   );
 };

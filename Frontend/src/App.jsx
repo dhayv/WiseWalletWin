@@ -1,13 +1,13 @@
 import React, { useContext, useEffect, useState } from "react";
-import SignUp from "./component/SignUp";
 import Header from "./component/Header";
 import { UserContext } from "./context/UserContext";
 import Login from "./component/Login";
-
+import SignUp from "./component/SignUp";
 
 const App = () => {
   const [message, setMessage] = useState("");
-  const [showLogin, setShowLogin] =useState(true);
+  // Signup is not shown first due to be setting as False
+  const [showSignUp, setShowSignUp] = useState(false)
   const {token} = useContext(UserContext);
 
   const getMessage = async () => {
@@ -44,12 +44,14 @@ const App = () => {
         <div className="column m-5 is-two-thirds">
           {!token ? (
               <div className="columns">
-                {showLogin ? <Login /> : <SignUp/>}
-                <button onClick={() => setShowLogin(!showLogin)}>
-                  {showLogin ? "Don't have an account? Sign Up" : " Already have an account? Login"}
-                </button>
-                
-                 
+                {showSignUp ? (
+                  <SignUp setShowSignUp={setShowSignUp} />
+                ) : (
+                  <Login setShowSignUp={setShowSignUp} />
+                )
+
+                }
+               
               </div>
             ): (
               <p>Table</p>

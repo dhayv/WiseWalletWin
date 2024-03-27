@@ -6,7 +6,7 @@ import ErrorMessage from "./ErrorMessage";
 
 
 
-const SignUp = () => {
+const SignUp = ({setShowSignUp}) => {
     const [firstName, setFirstName] = useState("");
     const [userName, setUserName] = useState("");
     const [email, setEmail] = useState("");
@@ -186,6 +186,7 @@ const SignUp = () => {
                         SignUp
                     </button>
                 </form>
+                <button onClick={() => setShowSignUp(false)}>Already have an account? Login</button>
             </div>
         );
     
