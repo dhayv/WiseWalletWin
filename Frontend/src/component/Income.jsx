@@ -35,9 +35,10 @@ const Income = ({}) => {
         }
 };           
 
-    const submitIncome =  async () => {
+    const submitIncome =  async (e) => {
         const formatRecent = recentPay && moment(recentPay).format("MM-DD-YYYY")
         const formatLast = lastPay && moment(lastPay).format("MM-DD-YYYY")
+        e.preventDefault();
         const requestOptions = {
             method: "POST",
             headers: {
@@ -56,12 +57,7 @@ const Income = ({}) => {
                 throw new Error('Failed to add income');
             }
             const data = await response.json();
-            // Close the dropdown and clear the form
-            setShowAddIncome(false);
-            setAmount("");
-            setRecentPay("");
-            setLastPay("");
-            // Handle the response data here
+            incomeData(data)
         } catch (error) {
             setErrorMessage(error.message);
         }
@@ -85,7 +81,6 @@ const Income = ({}) => {
                             Add Income
                         </button>
                     )}
-
                     {showAddIncome && (
                         <div>
                             <label className="label">Amount</label>
@@ -95,6 +90,7 @@ const Income = ({}) => {
                                 placeholder="Amount" 
                                 value={amount} 
                                 onChange={(e) => setAmount(e.target.value)} 
+                               
                             />
                             <label className="label">Recent Pay Date</label>
                             <input 
@@ -116,21 +112,25 @@ const Income = ({}) => {
                                 Submit
                             </button>
                         </div>
+
                         
                     )}
-                    <div className="column"></div>
-                        <div>
-                            <thead>
-                                <th>Amount</th>
-                            </thead>
-                            <thead>
-                                <th>Recent Pay</th>
-                            </thead>
-                            <thead>
-                                <th>Last Pay</th>
-                            </thead>
+                    {incomeData.map(income => (
+                        <div className="has add-ons">
+                            <div key={income.id}>
+                                <label className="label">Amount</label>
+                                    <p className="card">{income.amount}</p>
+                            </div>
+                            <div key={income.id}>                           
+                                <label className="label">Recent Pay Date</label>    
+                                    <p> {income.recent_pay}</p>                       
+                            </div>
+                            <div key={income.id}>
+                                <label className="label">Last Pay Date</label>                                                          
+                                    <p>Last Pay Date: {income.last_pay}</p>
+                            </div>
                         </div>
-                    {/* Render existing incomeData here */}
+                    ))}
                 </div>
             </div>
         </div>
