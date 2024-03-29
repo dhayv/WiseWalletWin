@@ -4,12 +4,12 @@ import moment from "moment";
 
 const Income = ({}) => {
     const { token, userId } = useContext(UserContext);
-    const [showAddIncome, setShowAddIncome] =useState(false);
+    const [showAddIncome, setShowAddIncome] =useState(true);
     const [incomeData, setIncomeData] = useState(null);
     const [errorMessage, setErrorMessage] = useState("");
     const [amount, setAmount] = useState("");
-    const [recentPay, setRecentPay ] = useState("")
-    const [lastPay, setLastPay] = useState("")
+    const [recentPay, setRecentPay ] = useState()
+    const [lastPay, setLastPay] = useState()
 
 
     const getIncome = async () => {
@@ -33,10 +33,11 @@ const Income = ({}) => {
                 setErrorMessage(error.message);
             } 
         }
-};            
-
+};           
 
     const submitIncome =  async () => {
+        const formatRecent = recentPay && moment(recentPay).format("MM-DD-YYYY")
+        const formatLast = lastPay && moment(lastPay).format("MM-DD-YYYY")
         const requestOptions = {
             method: "POST",
             headers: {
@@ -44,9 +45,9 @@ const Income = ({}) => {
                 Authorization: `Bearer ${token}`,
             },
             body: JSON.stringify({
-                amount,
-                recent_pay: recentPay,
-                last_pay: lastPay,
+                amount: amount,
+                recent_pay: formatRecent,
+                last_pay: formatLast,
             }),
         };
         try {
@@ -77,6 +78,13 @@ const Income = ({}) => {
             <div className="card-content">
                 <div className="content">
                     {errorMessage && <p className="help is-danger">{errorMessage}</p>}
+                    <span>Income: ${amount}</span>
+                    {/* Button to toggle add income form */}
+                    {!showAddIncome && (
+                        <button className="button is-info is-small" onClick={() => setShowAddIncome(true)}>
+                            Add Income
+                        </button>
+                    )}
 
                     {showAddIncome && (
                         <div>
@@ -101,14 +109,27 @@ const Income = ({}) => {
                                 className="input mb-5" 
                                 type="date" 
                                 placeholder="Last Pay Date" 
-                                value={lastPay} 
+                                value={lastPay}  
                                 onChange={(e) => setLastPay(e.target.value)} 
                             />
                             <button className="button is-success " onClick={submitIncome}>
                                 Submit
                             </button>
                         </div>
+                        
                     )}
+                    <div className="column"></div>
+                        <div>
+                            <thead>
+                                <th>Amount</th>
+                            </thead>
+                            <thead>
+                                <th>Recent Pay</th>
+                            </thead>
+                            <thead>
+                                <th>Last Pay</th>
+                            </thead>
+                        </div>
                     {/* Render existing incomeData here */}
                 </div>
             </div>
