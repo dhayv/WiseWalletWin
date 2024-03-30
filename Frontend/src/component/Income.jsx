@@ -8,8 +8,10 @@ const Income = ({}) => {
     const [incomeData, setIncomeData] = useState([]);
     const [errorMessage, setErrorMessage] = useState("");
     const [amount, setAmount] = useState("");
-    const [recentPay, setRecentPay ] = useState()
-    const [lastPay, setLastPay] = useState()
+    const [recentPay, setRecentPay ] = useState();
+    const [lastPay, setLastPay] = useState();
+    const formatRecent = recentPay && moment(recentPay).format("MM-DD-YYYY");
+    const formatLast = lastPay && moment(lastPay).format("MM-DD-YYYY");
 
 
     const getIncome = useCallback(async () => {
@@ -36,11 +38,20 @@ const Income = ({}) => {
     }, [userId, token]);       
 
     const submitIncome =  async (e) => {
-        const formatRecent = recentPay && moment(recentPay).format("MM-DD-YYYY")
-        const formatLast = lastPay && moment(lastPay).format("MM-DD-YYYY")
         e.preventDefault();
+        let url = '';
+        let method = '';
+        if (incomeData.length === 0) {
+            url = `/income/${userId}`;
+            method = "POST"
+        } else {
+            url = `/income/${incomeId}`;
+            method = "PUT";
+        }
+
+
         const requestOptions = {
-            method: "POST",
+            method: method,
             headers: {
                 "Content-Type": "application/json",
                 Authorization: `Bearer ${token}`,
@@ -52,16 +63,17 @@ const Income = ({}) => {
             }),
         };
         try {
-            const response = await fetch(`/income/${userId}`, requestOptions);
+            const response = await fetch(url, requestOptions);
             if (!response.ok) {
-                throw new Error('Failed to add income');
+                throw new Error(`Failed to ${method === "POST" ? 'add' : 'update'} income`);
             }
             const data = await response.json();
-            incomeData(data)
+            setIncomeData(prevData => method === "POST" ? [...prevData, data] : [data]);
         } catch (error) {
             setErrorMessage(error.message);
         }
     };
+
 
 
     useEffect(() => {        
@@ -74,6 +86,10 @@ const Income = ({}) => {
             setAmount(firstIncomeEntry.amount);
             setRecentPay(firstIncomeEntry.recent_pay);
             setLastPay(firstIncomeEntry.last_pay);
+        } else {
+            setAmount("");
+            setRecentPay("");
+            setLastPay("");
         }
     }, [incomeData]);
 
@@ -117,9 +133,10 @@ const Income = ({}) => {
                                         value={lastPay}  
                                         onChange={(e) => setLastPay(e.target.value)} 
                                     />
-                                    <button className="button is-success" onClick={submitIncome}>
-                                        Submit
+                                    <button className="button is-success mr-5" onClick={submitIncome}>
+                                    {incomeData.length === 0 ? 'Add' : 'Update'}
                                     </button>
+
                                 </div>
                             </div>
                         ))
