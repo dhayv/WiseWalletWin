@@ -4,6 +4,7 @@ import moment from "moment";
 
 const Income = ({}) => {
     const { token, userId } = useContext(UserContext);
+    const [incomeId, setIncomeId] = useState(null);
     const [showAddIncome, setShowAddIncome] =useState(true);
     const [incomeData, setIncomeData] = useState([]);
     const [errorMessage, setErrorMessage] = useState("");
@@ -31,6 +32,10 @@ const Income = ({}) => {
                 }
                 const data = await response.json();
                 setIncomeData(data);
+
+                if (data.length > 0) {
+                    setIncomeId(data[0].id);
+                }
             } catch (error) {
                 setErrorMessage(error.message);
             } 
@@ -98,8 +103,7 @@ const Income = ({}) => {
             } catch (error) {
                 setErrorMessage(error.message);
             } 
-        }
-    }, ;     
+    } ;     
 
 
     useEffect(() => {        
