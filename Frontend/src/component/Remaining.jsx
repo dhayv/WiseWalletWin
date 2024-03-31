@@ -1,9 +1,35 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
+import { UserContext } from "../context/UserContext";
 
 const Remaining = () => {
     const [isActive, setIsActive] = useState(false);
-
+    const {token, userId} = useContext(UserContext);
     const toggleDropdown = () => setIsActive(!isActive);
+    const [errorMessage, setErrorMessage] = useState("");
+    const [remain, setRemain] = useState("");
+    
+
+    const getremaining = async () => {
+        const requestOptions = {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`,
+            },
+        };
+
+        try {
+            const response = await fetch(`/user/${userId}/income_minus_expenses`, requestOptions);
+            if (!response.ok) {
+                throw new Error('Could not load remainder information.');
+            }
+            const data = await response.json();
+            setRemain(data);
+        } catch (error) {
+            setErrorMessage(error.message);
+        }
+    };
+
 
     return ( 
         <div className="card">
@@ -12,7 +38,7 @@ const Remaining = () => {
                     <div className={`dropdown ${isActive ? "is-active" : ""}`}>
                         <div className="dropdown-trigger">
                             <button className="" aria-haspopup="true" aria-controls="dropdown-menu" onClick={toggleDropdown}>
-                                <span class="card-header-title">Remaining: $1040</span>
+                                <span class="card-header-title">Remaining: ${getremaining}</span>
                                 <i className="fas fa-angle-down" aria-hidden="true"></i>
                             </button>
                         </div>

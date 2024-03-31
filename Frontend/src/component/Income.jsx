@@ -9,8 +9,8 @@ const Income = ({}) => {
     const [incomeData, setIncomeData] = useState([]);
     const [errorMessage, setErrorMessage] = useState("");
     const [amount, setAmount] = useState("");
-    const [recentPay, setRecentPay ] = useState();
-    const [lastPay, setLastPay] = useState();
+    const [recentPay, setRecentPay ] = useState("");
+    const [lastPay, setLastPay] = useState("");
     const formatRecent = recentPay && moment(recentPay).format("MM-DD-YYYY");
     const formatLast = lastPay && moment(lastPay).format("MM-DD-YYYY");
 
