@@ -74,6 +74,32 @@ const Income = ({}) => {
         }
     };
 
+    const deleteIncome = async () => {
+            const requestOptions = {
+                method: "DELETE",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
+                },
+                body: JSON.stringify({
+                    amount: amount,
+                    recent_pay: formatRecent,
+                    last_pay: formatLast,
+                })
+            };
+    
+            try {
+                const response = await fetch(`/income/${incomeId}`, requestOptions);
+                if (!response.ok) {
+                    setErrorMessage('Could not delete income information.');
+                }
+                const data = await response.json();
+                setIncomeData(data);
+            } catch (error) {
+                setErrorMessage(error.message);
+            } 
+        }
+    }, ;     
 
 
     useEffect(() => {        
