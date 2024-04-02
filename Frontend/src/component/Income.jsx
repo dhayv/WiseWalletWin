@@ -11,8 +11,12 @@ const Income = ({}) => {
     const [amount, setAmount] = useState("");
     const [recentPay, setRecentPay ] = useState("");
     const [lastPay, setLastPay] = useState("");
+    const [isActive, setIsActive] = useState(false);
+
     const formatRecent = recentPay && moment(recentPay).format("MM-DD-YYYY");
     const formatLast = lastPay && moment(lastPay).format("MM-DD-YYYY");
+    
+    const toggleDropdown = () => setIsActive(!isActive);
 
 
     const getIncome = useCallback(async () => {
@@ -127,50 +131,59 @@ const Income = ({}) => {
         <div className="card">
             <div className="card-content">
                 <div className="content">
-                    {errorMessage && <p className="help is-danger">{errorMessage}</p>}
-                    <span>Income: ${amount}</span>
-                    {/* Button to toggle add income form */}
-                    {!showAddIncome && (
-                        <button className="button is-info is-small" onClick={() => setShowAddIncome(true)}>
-                            Add Income
-                        </button>
-                    )}
-                    {showAddIncome && (
-                        incomeData.map(income => (
-                            <div key={income.id}>
-                                <div>
-                                    <label className="label">Amount</label>
-                                    <input 
-                                        className="input mb-5" 
-                                        type="number" 
-                                        placeholder="Amount"
-                                        value={income.amount} 
-                                        onChange={(e) => setAmount(e.target.value)} 
-                                    />
-                                    <label className="label">Recent Pay Date</label>
-                                    <input 
-                                        className="input mb-5" 
-                                        type="date" 
-                                        placeholder="Recent Pay Date" 
-                                        value={recentPay} 
-                                        onChange={(e) => setRecentPay(e.target.value)} 
-                                    />
-                                    <label className="label">Last Pay Date</label>
-                                    <input 
-                                        className="input mb-5" 
-                                        type="date" 
-                                        placeholder="Last Pay Date" 
-                                        value={lastPay}  
-                                        onChange={(e) => setLastPay(e.target.value)} 
-                                    />
-                                    <button className="button is-success mr-5" onClick={submitIncome}>
-                                    {incomeData.length === 0 ? 'Add' : 'Update'}
+                    <div className={`dropdown ${isActive ? "is-active" : ""}`} >
+                        <div className="dropdown-trigger" >
+                            <button className="button is-info" aria-haspopup="true" aria-controls="dropdown-menu" onClick={toggleDropdown} >
+                                <span>Income: ${amount}</span>
+                                <i className="fas fa-angle-down" aria-hidden="true" style={{marginLeft: '10px'}}></i>
+                            </button>
+                        </div>
+                        <div className="dropdown-menu" id="dropdown-menu" role="menu" style={{ width: 'auto' }}>
+                            <div className="dropdown-content" style={{ paddingLeft: '15px', paddingRight: '15px' }}>
+                                {errorMessage && <p className="help is-danger">{errorMessage}</p>}
+                                {!showAddIncome && (
+                                    <button className="button is-info is-small" onClick={() => setShowAddIncome(true)} style={{ margin: '0 auto'}}>
+                                        Add Income
                                     </button>
-
-                                </div>
+                                )}
+                                {showAddIncome && incomeData.map(income => (
+                                    <div key={income.id} style={{ alignItems: 'center' }}>
+                                            <div>
+                                                <label className="label">Amount</label>
+                                                <input 
+                                                    className="input mb-5" 
+                                                    type="number" 
+                                                    placeholder="Amount"
+                                                    value={amount} 
+                                                    onChange={(e) => setAmount(e.target.value)} 
+                                                />
+                                                <label className="label">Recent Pay Date</label>
+                                                <input 
+                                                    className="input mb-5" 
+                                                    type="date" 
+                                                    placeholder="Recent Pay Date" 
+                                                    value={recentPay} 
+                                                    onChange={(e) => setRecentPay(e.target.value)} 
+                                                />
+                                                <label className="label">Last Pay Date</label>
+                                                <input 
+                                                    className="input mb-5" 
+                                                    type="date" 
+                                                    placeholder="Last Pay Date" 
+                                                    value={lastPay}  
+                                                    onChange={(e) => setLastPay(e.target.value)} 
+                                                />
+                                                <button className="button is-success mr-5" onClick={submitIncome}>
+                                                {incomeData.length === 0 ? 'Add' : 'Update'}
+                                                </button>
+            
+                                            </div>
+                                        </div>
+                                    ))
+                                }
                             </div>
-                        ))
-                    )}
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

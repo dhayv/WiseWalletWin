@@ -1,0 +1,21 @@
+        <div className="card">
+            <div className="card-content">
+                <div className="content">
+                    <div className={`dropdown ${isActive ? "is-active" : ""}`}>
+                        <div className="dropdown-trigger">
+                            <button className="" aria-haspopup="true" aria-controls="dropdown-menu" onClick={toggleDropdown}>
+                                <span class="card-header-title">income: ${amount}</span>
+                                <i className="fas fa-angle-down" aria-hidden="true"></i>
+                            </button>
+                        </div>
+                        <div className="dropdown-menu" id="dropdown-menu" role="menu">
+                            <div className="dropdown-content">
+                                
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+};
