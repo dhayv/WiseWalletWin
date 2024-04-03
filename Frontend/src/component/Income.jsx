@@ -3,9 +3,8 @@ import { UserContext } from "../context/UserContext";
 import moment from "moment";
 import Expense from "./Expenses";
 
-const Income = ({}) => {
-    const { token, userId } = useContext(UserContext);
-    const [incomeId, setIncomeId] = useState(null);
+const Income = () => {
+    const { token, userId, incomeId, setIncomeId } = useContext(UserContext);
     const [showAddIncome, setShowAddIncome] =useState(true);
     const [incomeData, setIncomeData] = useState([]);
     const [errorMessage, setErrorMessage] = useState("");
@@ -45,7 +44,7 @@ const Income = ({}) => {
                 setErrorMessage(error.message);
             } 
         }
-    }, [userId, token]);       
+    }, [userId, token, setIncomeId, incomeId]);       
 
     const submitIncome =  async (e) => {
         e.preventDefault();
@@ -187,7 +186,7 @@ const Income = ({}) => {
                     </div>
                 </div>
             </div>
-            {incomeId && <Expense incomeId={incomeId} />}
+            
 
         </div>
     );

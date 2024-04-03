@@ -19,14 +19,14 @@ const appReducer = (state, action) => {
 };
 
 
-const Expense = ({incomeId}) => { // Assuming incomeId is passed as a prop
-    const { token} = useContext(UserContext);
+const Expense = () => { // Assuming incomeId is passed as a prop
+    const {token, incomeId} = useContext(UserContext);
     const [name, setName] = useState('');
     const [amount, setAmount] = useState('');
     const [dueDate, setDueDate] = useState('');
     const [errorMessage, setErrorMessage] = useState("");
     const [expenseData, setExpenseData] = useState([]);
-    const [expenseId, setExpenseId] = useState(null);
+    const [expenseId, setExpenseId] = useState([null]);
     const [state, dispatch] = useReducer(appReducer, initialState);
 
     useEffect(() => {
@@ -154,11 +154,11 @@ const Expense = ({incomeId}) => { // Assuming incomeId is passed as a prop
                         </tr>
                     </thead>
                     <tbody>
-                        {state.expenses.map(expense => (
-                            <tr key={expense.id}>
-                                <td>{expense.name}</td>
-                                <td>{expense.amount}</td>
-                                <td>{expense.duedate}</td>
+                        {state.expenses.map(exp => (
+                            <tr key={exp.id}>
+                                <td>{exp.name}</td>
+                                <td>{exp.amount}</td>
+                                <td>{exp.dueDate}</td>
                                 <td>
                                     <button className="button is-danger is-small">Delete</button>
                                 </td>

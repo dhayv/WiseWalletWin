@@ -6,7 +6,7 @@ export const UserProvider = (props) => {
     // Start with a token from local storage if there's one
     const [token, setToken] = useState(localStorage.getItem("token"));
     const [userId, setUserId] = useState(null); 
-
+    const [incomeId, setIncomeId] = useState(null);
     useEffect(() => {
         const fetchUser = async () => {
             // Grab the token we just got
@@ -36,7 +36,7 @@ export const UserProvider = (props) => {
 
     return (
         // This lets any component get the token and user data
-        <UserContext.Provider value={{token, setToken, userId, setUserId}}>
+        <UserContext.Provider value={{token, setToken, userId, setUserId, incomeId, setIncomeId}}>
             {props.children}
         </UserContext.Provider>
     );
