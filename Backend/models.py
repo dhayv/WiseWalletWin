@@ -114,9 +114,13 @@ class ExpenseBase(BaseModel):
     def check_due_date(cls, v):
         if v is None:
             return v
-        if v < 1 or v >= 31:
-            raise ValueError("Due date must be between 1 and 31")
-        return v
+        try:
+            v_int = int(v)
+            if not 1 <= v_int <= 31:
+                raise ValueError("Due date must be between 1 and 31")
+            return v_int
+        except ValueError:
+            raise ValueError("Due date must be an integer and between 1 and 31")
 
 
 class Expense(SQLModel, table=True):

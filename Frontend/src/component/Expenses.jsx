@@ -1,16 +1,37 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useState, useReducer, useEffect } from "react";
 import { UserContext } from "../context/UserContext";
 
-const Expense = ({ incomeId }) => { // Assuming incomeId is passed as a prop
-    const { token, userId } = useContext(UserContext);
+
+const initialState = {
+    FixedIncome: 2000,
+    expenses: [
+        {id: 1, name: 'rent', amount: 1200, duedate: 5},
+        {id: 12, name: 'food', amount: 200, duedate: 1},
+    ]
+};
+
+const appReducer = (state, action) => {
+    switch (action.type) {
+        default:
+            return state;
+    }
+
+};
+
+
+const Expense = ({incomeId}) => { // Assuming incomeId is passed as a prop
+    const { token} = useContext(UserContext);
     const [name, setName] = useState('');
     const [amount, setAmount] = useState('');
     const [dueDate, setDueDate] = useState('');
     const [errorMessage, setErrorMessage] = useState("");
     const [expenseData, setExpenseData] = useState([]);
     const [expenseId, setExpenseId] = useState(null);
+    const [state, dispatch] = useReducer(appReducer, initialState);
 
-    const getExpense = async () => {
+    useEffect(() => {
+        if (!incomeId) return;
+
         const requestOptions = {
             method: "GET",
             headers: {
@@ -19,6 +40,7 @@ const Expense = ({ incomeId }) => { // Assuming incomeId is passed as a prop
             },
         };
 
+        const getExpense = async () => {
         try {
             const response = await fetch(`/expenses/${incomeId}`, requestOptions);
             if (!response.ok) {
@@ -29,9 +51,18 @@ const Expense = ({ incomeId }) => { // Assuming incomeId is passed as a prop
         } catch (error) {
             setErrorMessage(error.message);
         }
-    };
+    }; 
+        getExpense();
+    }, [incomeId, token]);
 
     const submitExpense = async () => {
+
+        if (!incomeId) {
+            console.error("Invalid or undefined incomeId:", incomeId);
+            setErrorMessage("Invalid income ID.");
+            return;
+        }
+
         const requestOptions = {
             method: "POST",
             headers: {
@@ -40,8 +71,8 @@ const Expense = ({ incomeId }) => { // Assuming incomeId is passed as a prop
             },
             body: JSON.stringify({
                 name: name,
-                amount: amount,
-                due_date: dueDate,
+                amount: Number(amount),
+                due_date: Number(dueDate),
             }),
         };
 
@@ -105,55 +136,85 @@ const Expense = ({ incomeId }) => { // Assuming incomeId is passed as a prop
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        alert("name" + name +
-            "amount" + amount,
-            "due_date" + dueDate,);
         submitExpense();
     };
 
+
     return (
-        <form onSubmit={handleSubmit} className="expense-form">
-            <div className="row">
-                <div className="col-sm">
-                    <label htmlFor="expense-name">Name</label>
-                    <input
-                        required
-                        type="text"
-                        className="input mb-5"
-                        id="expense-name"
-                        value={name}
-                        onChange={(e) => setName(e.target.value)}
-                    />
-                </div>
-                <div className="col-sm">
-                    <label htmlFor="expense-amount">Amount</label>
-                    <input
-                        required
-                        type="number"
-                        className="input mb-5"
-                        id="expense-amount"
-                        value={amount}
-                        onChange={(e) => setAmount(e.target.value)}
-                    />
-                </div>
-                <div className="col-sm">
-                    <label htmlFor="expense-due-date">Due Date</label>
-                    <input
-                        type="number"
-                        className="input mb-5"
-                        id="expense-due-date"
-                        value={dueDate}
-                        onChange={(e) => setDueDate(e.target.value)}
-                    />
-                </div>
-                <div className="col-sm">
-                    <button type="submit" className="button is-primary">
-                        Save
-                    </button>
-                </div>
+        <div>
+
+            <div>
+                <table className="table is-fullwidth">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Amount</th>
+                            <th>Due Date</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {state.expenses.map(expense => (
+                            <tr key={expense.id}>
+                                <td>{expense.name}</td>
+                                <td>{expense.amount}</td>
+                                <td>{expense.duedate}</td>
+                                <td>
+                                    <button className="button is-danger is-small">Delete</button>
+                                </td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
             </div>
-        </form>
+            <h3 className="title mt-5">Add Expense</h3>
+            <form onSubmit={handleSubmit} className="expense-form">
+                <div className="row">
+                    <div className="col-sm">
+                        <label htmlFor="expense-name">Name</label>
+                        <input
+                            required
+                            type="text"
+                            className="input mb-5"
+                            id="expense-name"
+                            value={name}
+                            onChange={(e) => setName(e.target.value)}
+                        />
+                    </div>
+                    <div className="col-sm">
+                        <label htmlFor="expense-amount">Amount</label>
+                        <input
+                            required
+                            type="number"
+                            className="input mb-5"
+                            id="expense-amount"
+                            value={amount}
+                            onChange={(e) => setAmount(e.target.value)}
+                        />
+                    </div>
+                    <div className="col-sm">
+                        <label htmlFor="expense-due-date">Due Date</label>
+                        <input
+                            type="number"
+                            className="input mb-5"
+                            id="expense-due-date"
+                            placeholder="Due Day (1-31)"
+                            min= "1"
+                            max= "31"
+                            value={dueDate}
+                            onChange={(e) => setDueDate(e.target.value)}
+                        />
+                    </div>
+                    <div className="col-sm">
+                        <button type="submit" className="button is-primary">
+                            Save
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
     );
-}
+};
+
 
 export default Expense;

@@ -1,6 +1,7 @@
 import React, { useCallback, useContext, useEffect, useState } from "react";
 import { UserContext } from "../context/UserContext";
 import moment from "moment";
+import Expense from "./Expenses";
 
 const Income = ({}) => {
     const { token, userId } = useContext(UserContext);
@@ -35,11 +36,11 @@ const Income = ({}) => {
                     setErrorMessage('Could not load income information.');
                 }
                 const data = await response.json();
-                setIncomeData(data);
-
                 if (data.length > 0) {
                     setIncomeId(data[0].id);
+                    console.log(incomeId);
                 }
+                setIncomeData(data);
             } catch (error) {
                 setErrorMessage(error.message);
             } 
@@ -176,7 +177,7 @@ const Income = ({}) => {
                                                 <button className="button is-success mr-5" onClick={submitIncome}>
                                                 {incomeData.length === 0 ? 'Add' : 'Update'}
                                                 </button>
-            
+
                                             </div>
                                         </div>
                                     ))
@@ -186,6 +187,8 @@ const Income = ({}) => {
                     </div>
                 </div>
             </div>
+            {incomeId && <Expense incomeId={incomeId} />}
+
         </div>
     );
 };
