@@ -121,7 +121,6 @@ const Expense = ({ incomeId }) => { // Assuming incomeId is passed as a prop
                         type="text"
                         className="input mb-5"
                         id="expense-name"
-                        placeholder="Name"
                         value={name}
                         onChange={(e) => setName(e.target.value)}
                     />
@@ -133,7 +132,6 @@ const Expense = ({ incomeId }) => { // Assuming incomeId is passed as a prop
                         type="number"
                         className="input mb-5"
                         id="expense-amount"
-                        placeholder="Amount"
                         value={amount}
                         onChange={(e) => setAmount(e.target.value)}
                     />
@@ -144,7 +142,6 @@ const Expense = ({ incomeId }) => { // Assuming incomeId is passed as a prop
                         type="number"
                         className="input mb-5"
                         id="expense-due-date"
-                        placeholder="Due Date"
                         value={dueDate}
                         onChange={(e) => setDueDate(e.target.value)}
                     />
