@@ -103,13 +103,60 @@ const Expense = ({ incomeId }) => { // Assuming incomeId is passed as a prop
         }
     };
 
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        alert("name" + name +
+            "amount" + amount,
+            "due_date" + dueDate,);
+        submitExpense();
+    };
+
     return (
-        <div>
-            {/* Render your component UI here */}
-            {errorMessage && <p className="error">{errorMessage}</p>}
-            {/* Additional JSX based on your application's UI requirements */}
-        </div>
+        <form onSubmit={handleSubmit} className="expense-form">
+            <div className="row">
+                <div className="col-sm">
+                    <label htmlFor="expense-name">Name</label>
+                    <input
+                        required
+                        type="text"
+                        className="input mb-5"
+                        id="expense-name"
+                        placeholder="Name"
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
+                    />
+                </div>
+                <div className="col-sm">
+                    <label htmlFor="expense-amount">Amount</label>
+                    <input
+                        required
+                        type="number"
+                        className="input mb-5"
+                        id="expense-amount"
+                        placeholder="Amount"
+                        value={amount}
+                        onChange={(e) => setAmount(e.target.value)}
+                    />
+                </div>
+                <div className="col-sm">
+                    <label htmlFor="expense-due-date">Due Date</label>
+                    <input
+                        type="number"
+                        className="input mb-5"
+                        id="expense-due-date"
+                        placeholder="Due Date"
+                        value={dueDate}
+                        onChange={(e) => setDueDate(e.target.value)}
+                    />
+                </div>
+                <div className="col-sm">
+                    <button type="submit" className="button is-primary">
+                        Save
+                    </button>
+                </div>
+            </div>
+        </form>
     );
-};
+}
 
 export default Expense;
