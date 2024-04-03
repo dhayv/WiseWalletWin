@@ -3,11 +3,7 @@ import { UserContext } from "../context/UserContext";
 
 
 const initialState = {
-    FixedIncome: 2000,
-    expenses: [
-        {id: 1, name: 'rent', amount: 1200, duedate: 5},
-        {id: 12, name: 'food', amount: 200, duedate: 1},
-    ]
+    expenseData: []
 };
 
 const appReducer = (state, action) => {
@@ -154,11 +150,11 @@ const Expense = () => { // Assuming incomeId is passed as a prop
                         </tr>
                     </thead>
                     <tbody>
-                        {state.expenses.map(exp => (
+                        {expenseData.map(exp => (
                             <tr key={exp.id}>
                                 <td>{exp.name}</td>
                                 <td>{exp.amount}</td>
-                                <td>{exp.dueDate}</td>
+                                <td>{exp.due_date}</td>
                                 <td>
                                     <button className="button is-danger is-small">Delete</button>
                                 </td>
