@@ -2,9 +2,9 @@ import React, { useContext, useState, useEffect } from "react";
 import { UserContext } from "../context/UserContext";
 
 const Remaining = () => {
-    const { token, userId } = useContext(UserContext);
+    const { token, userId, refresher } = useContext(UserContext);
     const [errorMessage, setErrorMessage] = useState("");
-    const [remain, setRemain] = useState("");
+    const [remain, setRemain] = useState(0);
 
     useEffect(() => {
         const getremaining = async () => {
@@ -31,7 +31,8 @@ const Remaining = () => {
         if (token && userId) {
             getremaining();
         }
-    }, [token, userId]); // Run the effect on component mount and when token or userId changes
+        refresher();
+    }, [token, userId, refresher]); // Run the effect on component mount and when token or userId changes
 
     return (
         <div className="card">

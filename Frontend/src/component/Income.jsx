@@ -4,7 +4,7 @@ import moment from "moment";
 import Expense from "./Expenses";
 
 const Income = () => {
-    const { token, userId, incomeId, setIncomeId } = useContext(UserContext);
+    const { token, userId, incomeId, setIncomeId, refresher } = useContext(UserContext);
     const [showAddIncome, setShowAddIncome] =useState(true);
     const [incomeData, setIncomeData] = useState([]);
     const [errorMessage, setErrorMessage] = useState("");
@@ -44,7 +44,7 @@ const Income = () => {
                 setErrorMessage(error.message);
             } 
         }
-    }, [userId, token, setIncomeId, incomeId]);       
+    }, [userId, token, setIncomeId, incomeId, refresher]);       
 
     const submitIncome =  async (e) => {
         e.preventDefault();
@@ -81,6 +81,7 @@ const Income = () => {
         } catch (error) {
             setErrorMessage(error.message);
         }
+        refresher();
     };
 
     const deleteIncome = async () => {
@@ -107,6 +108,7 @@ const Income = () => {
             } catch (error) {
                 setErrorMessage(error.message);
             } 
+            refresher();
     } ;     
 
 

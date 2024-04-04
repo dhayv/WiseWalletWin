@@ -16,7 +16,7 @@ const appReducer = (state, action) => {
 
 
 const Expense = () => { // Assuming incomeId is passed as a prop
-    const {token, incomeId} = useContext(UserContext);
+    const {token, incomeId, refresher} = useContext(UserContext);
     const [name, setName] = useState('');
     const [amount, setAmount] = useState('');
     const [dueDate, setDueDate] = useState('');
@@ -49,7 +49,7 @@ const Expense = () => { // Assuming incomeId is passed as a prop
         }
     }; 
         getExpense();
-    }, [incomeId, token]);
+    }, [incomeId, token, refresher]);
 
     const submitExpense = async () => {
 
@@ -79,9 +79,11 @@ const Expense = () => { // Assuming incomeId is passed as a prop
             }
             const data = await response.json();
             setExpenseData([...expenseData, data]);
+            refresher();
         } catch (error) {
             setErrorMessage(error.message);
         }
+    
     };
 
     const updateExpense = async () => {
@@ -108,6 +110,7 @@ const Expense = () => { // Assuming incomeId is passed as a prop
         } catch (error) {
             setErrorMessage(error.message);
         }
+        refresher();
     };
 
     const deleteExpense = async () => {
@@ -128,6 +131,7 @@ const Expense = () => { // Assuming incomeId is passed as a prop
         } catch (error) {
             setErrorMessage(error.message);
         }
+        refresher();
     };
 
     const handleSubmit = (e) => {
