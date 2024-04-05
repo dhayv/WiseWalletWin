@@ -16,7 +16,7 @@ const appReducer = (state, action) => {
 
 
 const Expense = () => { // Assuming incomeId is passed as a prop
-    const {token, incomeId, refresher} = useContext(UserContext);
+    const {token, incomeId, refreshData, refresher} = useContext(UserContext);
     const [name, setName] = useState('');
     const [amount, setAmount] = useState('');
     const [dueDate, setDueDate] = useState('');
@@ -49,9 +49,10 @@ const Expense = () => { // Assuming incomeId is passed as a prop
         }
     }; 
         getExpense();
-    }, [incomeId, token, refresher]);
+    }, [incomeId, token, refreshData, refresher]);
 
-    const submitExpense = async () => {
+    const submitExpense = async (e) => {
+        e.preventDefault();
 
         if (!incomeId) {
             console.error("Invalid or undefined incomeId:", incomeId);
@@ -78,7 +79,7 @@ const Expense = () => { // Assuming incomeId is passed as a prop
                 throw new Error('Could not add expense information.');
             }
             const data = await response.json();
-            setExpenseData([...expenseData, data]);
+            setExpenseData(prevExpenses => [...prevExpenses, data]);
             refresher();
         } catch (error) {
             setErrorMessage(error.message);
@@ -136,7 +137,8 @@ const Expense = () => { // Assuming incomeId is passed as a prop
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        submitExpense();
+        submitExpense(e);
+        
     };
 
 

@@ -4,7 +4,7 @@ import moment from "moment";
 import Expense from "./Expenses";
 
 const Income = () => {
-    const { token, userId, incomeId, setIncomeId, refresher } = useContext(UserContext);
+    const { token, userId, incomeId, setIncomeId, refresher, refreshData } = useContext(UserContext);
     const [showAddIncome, setShowAddIncome] =useState(true);
     const [incomeData, setIncomeData] = useState([]);
     const [errorMessage, setErrorMessage] = useState("");
@@ -44,7 +44,7 @@ const Income = () => {
                 setErrorMessage(error.message);
             } 
         }
-    }, [userId, token, setIncomeId, incomeId, refresher]);       
+    }, [userId, token, setIncomeId, incomeId, refreshData, refresher]);       
 
     const submitIncome =  async (e) => {
         e.preventDefault();
@@ -175,7 +175,7 @@ const Income = () => {
                                                     value={lastPay}  
                                                     onChange={(e) => setLastPay(e.target.value)} 
                                                 />
-                                                <button className="button is-success mr-5" onClick={submitIncome}>
+                                                <button className="button is-success mr-5" onClick={() => { submitIncome(); refresher(); }}>
                                                 {incomeData.length === 0 ? 'Add' : 'Update'}
                                                 </button>
 

@@ -44,11 +44,11 @@ export const UserProvider = ({children}) => {
             }
         };
         fetchUser();
-    }, [token]);
+    }, [token, refreshData]);
 
     return (
         // This lets any component get the token and user data
-        <UserContext.Provider value={{token, setToken, userId, setUserId, incomeId, setIncomeId, refresher}}>
+        <UserContext.Provider value={{token, setToken, userId, setUserId, incomeId, setIncomeId, refresher, refreshData}}>
             {children}
         </UserContext.Provider>
     );
