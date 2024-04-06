@@ -7,7 +7,7 @@ import Income from "./component/Income";
 import Remaining from "./component/Remaining";
 import NextCheck from "./component/NextCheck";
 import Expenses from "./component/Expenses";
-
+import api from "./api";
 
 const App = () => {
   const [message, setMessage] = useState("");
