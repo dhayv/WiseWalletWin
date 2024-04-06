@@ -175,7 +175,7 @@ const Income = () => {
                                                     value={lastPay}  
                                                     onChange={(e) => setLastPay(e.target.value)} 
                                                 />
-                                                <button className="button is-success mr-5" onClick={() => { submitIncome(); refresher(); }}>
+                                                <button className="button is-success mr-5" onClick={() => { submitIncome(); }}>
                                                 {incomeData.length === 0 ? 'Add' : 'Update'}
                                                 </button>
 

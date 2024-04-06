@@ -49,7 +49,9 @@ const Expense = () => { // Assuming incomeId is passed as a prop
         }
     }; 
         getExpense();
-    }, [incomeId, token, refreshData, refresher]);
+        
+        refresher();
+    }, [incomeId, token]);
 
     const submitExpense = async (e) => {
         e.preventDefault();
@@ -108,13 +110,15 @@ const Expense = () => { // Assuming incomeId is passed as a prop
             }
             const data = await response.json();
             setExpenseData(expenseData.map(exp => exp.id === expenseId ? data : exp));
+            refresher();
         } catch (error) {
             setErrorMessage(error.message);
         }
-        refresher();
+        
     };
 
-    const deleteExpense = async () => {
+    const deleteExpense = async (expenseId) => {
+       
         const requestOptions = {
             method: "DELETE",
             headers: {
@@ -129,16 +133,22 @@ const Expense = () => { // Assuming incomeId is passed as a prop
                 throw new Error('Could not delete expense information.');
             }
             setExpenseData(expenseData.filter(exp => exp.id !== expenseId));
+            refresher()
         } catch (error) {
             setErrorMessage(error.message);
         }
-        refresher();
+        ;
     };
 
     const handleSubmit = (e) => {
         e.preventDefault();
         submitExpense(e);
         
+    };
+
+    const handleDelete = (expenseId) => (e) => {
+        e.preventDefault();
+        deleteExpense(expenseId);
     };
 
 
@@ -157,12 +167,12 @@ const Expense = () => { // Assuming incomeId is passed as a prop
                     </thead>
                     <tbody>
                         {expenseData.map(exp => (
-                            <tr key={exp.id}>
+                            <tr key={exp.id} >
                                 <td>{exp.name}</td>
                                 <td>{exp.amount}</td>
                                 <td>{exp.due_date}</td>
                                 <td>
-                                    <button className="button is-danger is-small">Delete</button>
+                                    <button className="button is-danger is-small" type="delete" onClick={handleDelete(exp.id)}>Delete</button>
                                 </td>
                             </tr>
                         ))}
