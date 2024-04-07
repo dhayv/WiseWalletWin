@@ -1,11 +1,12 @@
 import React, { useCallback, useContext, useEffect, useState } from "react";
 import { UserContext } from "../context/UserContext";
 import moment from "moment";
+import api from "../api";  // Importing your API instance
 import Expense from "./Expenses";
 
 const Income = () => {
-    const { token, userId, incomeId, setIncomeId, refresher, refreshData } = useContext(UserContext);
-    const [showAddIncome, setShowAddIncome] =useState(true);
+    const { setUserId ,userId, incomeId, setIncomeId, refresher, refreshData } = useContext(UserContext);
+    const [showAddIncome, setShowAddIncome] =useState(false);
     const [incomeData, setIncomeData] = useState([]);
     const [errorMessage, setErrorMessage] = useState("");
     const [amount, setAmount] = useState("");
@@ -19,65 +20,58 @@ const Income = () => {
     const toggleDropdown = () => setIsActive(!isActive);
 
 
-    const getIncome = useCallback(async () => {
-        if (userId) {
-            const requestOptions = {
-                method: "GET",
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${token}`,
-                },
-            };
-    
+    useEffect(() => {
+        const getIncome = async () => {
+            if (!userId) {
+                console.error("User ID is not set");
+                setErrorMessage("User ID is not set");
+                return;
+            }
             try {
-                const response = await fetch(`/income/${userId}`, requestOptions);
-                if (!response.ok) {
-                    setErrorMessage('Could not load income information.');
-                }
-                const data = await response.json();
-                if (data.length > 0) {
-                    setIncomeId(data[0].id);
-                    console.log(incomeId);
-                }
+                const response = await api.get(`/income/${userId}`);
+                const data = response.data;
                 setIncomeData(data);
+                setIncomeId(data.length > 0 ? data[0].id : null);
+                setShowAddIncome(data.length === 0);
+                setErrorMessage('');
             } catch (error) {
-                setErrorMessage(error.message);
-            } 
-        }
-    }, [userId, token, setIncomeId, incomeId, refreshData, refresher]);       
+                if (error.response?.status === 404) {
+                    // No income data found, so show the form for the user to add new income
+                    setShowAddIncome(true);
+                    setErrorMessage('');
+                } else {
+                    // An error other than 'not found'
+                    setErrorMessage("Failed to load income data.");
+                }
+                console.error("Error fetching income:", error);
+            }
+            getIncome();
+        }, [userId, setIncomeId]);  
+        
+    
+    useEffect(() => {
+        console.log("UserID in Income component:", userId);
+    }, [userId]);
 
     const submitIncome =  async (e) => {
         e.preventDefault();
         let url = '';
-        let method = '';
+        let method = incomeData.length === 0 ? 'post' : 'put';
+
         if (incomeData.length === 0) {
             url = `/income/${userId}`;
-            method = "POST"
         } else {
             url = `/income/${incomeId}`;
-            method = "PUT";
         }
 
-
-        const requestOptions = {
-            method: method,
-            headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${token}`,
-            },
-            body: JSON.stringify({
+        try {
+            const response = await api[method](url, {
                 amount: amount,
                 recent_pay: formatRecent,
                 last_pay: formatLast,
-            }),
-        };
-        try {
-            const response = await fetch(url, requestOptions);
-            if (!response.ok) {
-                throw new Error(`Failed to ${method === "POST" ? 'add' : 'update'} income`);
-            }
-            const data = await response.json();
-            setIncomeData(prevData => method === "POST" ? [...prevData, data] : [data]);
+            });
+            const data = response.data;
+            setIncomeData(prevData => method === 'post' ? [...prevData, data] : [data]);
         } catch (error) {
             setErrorMessage(error.message);
         }
@@ -85,36 +79,29 @@ const Income = () => {
     };
 
     const deleteIncome = async () => {
-            const requestOptions = {
-                method: "DELETE",
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${token}`,
-                },
-                body: JSON.stringify({
+        try {
+            const response = await api.delete(`/income/${incomeId}`, {
+                data: {
                     amount: amount,
                     recent_pay: formatRecent,
                     last_pay: formatLast,
-                })
-            };
-    
-            try {
-                const response = await fetch(`/income/${incomeId}`, requestOptions);
-                if (!response.ok) {
-                    setErrorMessage('Could not delete income information.');
                 }
-                const data = await response.json();
-                setIncomeData(data);
-            } catch (error) {
-                setErrorMessage(error.message);
-            } 
-            refresher();
-    } ;     
+            });
+            if (!response.ok) {
+                setErrorMessage('Could not delete income information.');
+            }
+            setIncomeData(response.data);
+        } catch (error) {
+            setErrorMessage(error.message);
+        } 
+        refresher();
+    };
 
-
-    useEffect(() => {        
-            getIncome();    
-    }, [getIncome]);
+    useEffect(() => {
+        if (userId) {
+            getIncome();
+        }
+    }, [userId, getIncome]); 
 
     useEffect(() => {
         if (incomeData.length > 0) {
@@ -175,7 +162,7 @@ const Income = () => {
                                                     value={lastPay}  
                                                     onChange={(e) => setLastPay(e.target.value)} 
                                                 />
-                                                <button className="button is-success mr-5" onClick={() => { submitIncome(); }}>
+                                                <button className="button is-success mr-5" onClick={() => setShowAddIncome(true)} style={{ margin: '0 auto' }}>
                                                 {incomeData.length === 0 ? 'Add' : 'Update'}
                                                 </button>
 

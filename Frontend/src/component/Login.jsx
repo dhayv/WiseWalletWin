@@ -1,6 +1,7 @@
 import React, { useState, useContext } from "react";
 import ErrorMessage from "./ErrorMessage";
 import { UserContext } from "../context/UserContext";
+import api from "../api";
 
 
 // Define submitLogin inside the Login component if it uses component state or props
@@ -8,29 +9,39 @@ const Login = ({setShowSignUp}) => {
   const [userName, setUserName] = useState("");
   const [passWord, setPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
-  const { setToken } = useContext(UserContext);
+  const { setToken, token, setUserId } = useContext(UserContext);
 
 
 
   const submitLogin = async () => {
-    const requestOptions = {
-      method: "POST",
-      headers: { "Content-type": "application/x-www-form-urlencoded" },
-      body: JSON.stringify(`grant_type=&username=${userName}&password=${passWord}&scope=&client_id=&client_secret=`),
-    };
+    try{
+      
+      const params = new URLSearchParams();
+      params.append('username', userName);
+      params.append('password', passWord);
+      params.append('grant_type', '');
+      params.append('scope', '');
+      params.append('client_id', '');
+      params.append('client_secret', '');
 
-    const response = await fetch("/token", requestOptions);
-
-    if (!response.ok) {
-      setErrorMessage("Login failed");
-      return;
+      const response = await api.post("/token", params);
+    
+      localStorage.setItem('token', response.data.access_token);
+      setToken(response.data.access_token);
+      
+      const userInfoResponse = await api.get("/user/me", {
+        headers: { 'Authorization': `Bearer ${response.data.access_token}` }
+    });
+    if (userInfoResponse.status === 200) {
+        const userData = userInfoResponse.data;
+        localStorage.setItem('userId', userData.id); // Save userId to local storage
+        setUserId(userData.id); // Update userId in the context
     }
+} catch (error) {
 
-    const data = await response.json();
-    localStorage.setItem('token', data.access_token);
-    setToken(data.access_token);
+      setErrorMessage(error.response?.data?.detail || "Login failed");
+    }
   };
-
   const handleSubmit = (e) => {
     e.preventDefault();
     submitLogin();

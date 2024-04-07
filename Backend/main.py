@@ -15,9 +15,6 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(
 async def lifespan(app: FastAPI):
     database.create_db_and_tables()
     logging.info("Database Created")
-    
-    #create_expenses()
-    #create_income()
 
     yield
 
@@ -31,7 +28,7 @@ origins = [
 app.add_middleware (
     CORSMiddleware,
     allow_origins=origins,
-    llow_origins=origins,
+
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

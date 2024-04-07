@@ -2,7 +2,7 @@ import React, { useState, useContext } from "react";
 
 import { UserContext } from "../context/UserContext";
 import ErrorMessage from "./ErrorMessage";
-
+import api from "../api";
 
 
 
@@ -17,58 +17,65 @@ const SignUp = ({setShowSignUp}) => {
     const [errorMessage, setErrorMessage] = useState("");
     const [passwordError, setPasswordError] = useState("");
 
-    // Manages token globally
-    const {setToken } = useContext(UserContext);
+      // Manages token globally
+      const {setToken, setUserId } = useContext(UserContext);
 
-    // Function to submit user info(Post)
-    const submitRegistration = async () => {
-        //Post request to /user enpoint
-        let response = await fetch("/user", {
-            method: "POST",
-            headers: {"Content-Type": "application/json"},
-            body: JSON.stringify({
+      // Function to submit user info(Post)
+      const submitRegistration = async () => {
+        if (passWord !== confirmationPassword) {
+            setErrorMessage("Passwords do not match.");
+            return;
+        }
+
+        try {
+            const userResponse = await api.post("/user", {
                 first_name: firstName,
-                email: email, 
-                password: passWord,
                 username: userName,
+                email: email,
+                password: passWord,
                 phone_number: phoneNumber,
-            }),
-        });
+            });
 
+            if (userResponse.status === 201) {
+                const params = new URLSearchParams();
+                params.append('username', userName);
+                params.append('password', passWord);
 
-        if (!response.ok) {
-            setErrorMessage("Failed to Register");
-            return;
+                const tokenResponse = await api.post("/token", params, {
+                    headers: { "Content-type": "application/x-www-form-urlencoded" }
+                });
+
+                if (tokenResponse.status === 200) {
+                    const data = tokenResponse.data;
+                    localStorage.setItem('token', data.access_token);
+                    setToken(data.access_token);
+
+                    const userInfoResponse = await api.get("/user/me", {
+                        headers: { 'Authorization': `Bearer ${data.access_token}` }
+                    });
+
+                    if (userInfoResponse.status === 200) {
+                        const userData = userInfoResponse.data;
+                        localStorage.setItem('userId', userData.id); // Save userId to local storage
+                        setUserId(userData.id); // Update userId in the context
+                    }
+                } else {
+                    setErrorMessage("Failed to register or log in");
+                }
+            } else {
+                setErrorMessage("Failed to register");
+            }
+        } catch (error) {
+            setErrorMessage(error.response?.data?.detail || "Registration failed");
         }
-        // Login: Post request to /token endpoint
-        response = await fetch("/token", {
-            method: "POST",
-            headers: {"Content-type": "application/x-www-form-urlencoded"},
-            body: new URLSearchParams({
-                username: userName,
-                password: passWord,
-            }),
-        });
-
-        if (!response.ok) {
-            setErrorMessage("Login failed");
-            return;
-        }
-
-        const data = await response.json();
-        localStorage.setItem('token', data.access_token);
-        setToken(data.access_token);
-
     };
 
         const handleSubmit = (e) => {
             e.preventDefault();
-                if (passWord === confirmationPassword) {
-                    submitRegistration();
-                } else {
-                    setErrorMessage("Passwords don't match")
-                }
-        }
+            
+            submitRegistration();
+            
+        };
 
     const validatePassword = (password) => {
         if (!/[a-z]/.test(password)) return "Password must contain at least one lowercase letter";
@@ -79,9 +86,9 @@ const SignUp = ({setShowSignUp}) => {
     };
 
     const handlePasswordChange = (e) => {
-        const { value } = e.target;
-        setPassword(value);
-        const errorMessage = validatePassword(value);
+        const newPass = e.target.value;
+        setPassword(newPass);
+        const errorMessage = validatePassword(newPass);
         setPasswordError(errorMessage);
     };
 

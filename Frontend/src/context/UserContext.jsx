@@ -1,5 +1,6 @@
 import React, { createContext, useEffect, useState } from "react";
 import { useCallback } from "react";
+import api from "../api";
 
 export const UserContext = createContext({
     refresher: () => {},
@@ -13,6 +14,7 @@ export const UserProvider = ({children}) => {
     const [userId, setUserId] = useState(null); 
     const [incomeId, setIncomeId] = useState(null);
     const [refreshData, setRefreshData] = useState(false);
+    const [userData, setUserData] = useState(null);
 
 
     const refresher = useCallback(() => {
@@ -20,35 +22,43 @@ export const UserProvider = ({children}) => {
     },[]);
 
     useEffect(() => {
+        const storedUserId = localStorage.getItem('userId');
+        if (storedUserId) {
+            setUserId(storedUserId);
+        }
+    }, []);
+    
+
+    useEffect(() => {
         const fetchUser = async () => {
-            // Grab the token we just got
-            const storedToken = localStorage.getItem("token");
-            if (storedToken) {
-                // If we have a token, let's use it
-                setToken(storedToken);
-                const requestOptions = {
-                    method: "GET",
-                    headers: {
-                        "Content-Type": "application/json",
-                        // Use the token to get user info
-                        Authorization: `Bearer ${storedToken}`,
-                    },
-                };
-                const response = await fetch("/user/me", requestOptions);
-                if (response.ok) {
-                    const data = await response.json();
+            if (token) {
+                try {
+                    const response = await api.get("/user/me");
+                if (response.status === 200) {
+                    const data = response.data;
+                    setUserData(data)
                     setUserId(data.id);  // Set user ID here
+                    console.log("User ID set to:", data.id);
                 } else {
                     setToken(null);
+                    localStorage.removeItem('token');
                 }
-            }
-        };
+            } catch (error) {
+                console.error("Failed to fetch user:", error);
+                setToken(null);
+                localStorage.removeItem('token');
+            }    
+        }else {
+            setUserData(null);
+            setUserId(null);
+        }    
+    };
         fetchUser();
-    }, [token, refreshData]);
+    }, [token]);
 
     return (
         // This lets any component get the token and user data
-        <UserContext.Provider value={{token, setToken, userId, setUserId, incomeId, setIncomeId, refresher, refreshData}}>
+        <UserContext.Provider value={{token, setToken, userId, setUserId, incomeId, setIncomeId, refresher, refreshData, userData}}>
             {children}
         </UserContext.Provider>
     );
