@@ -92,7 +92,7 @@ const Login = ({setShowSignUp}) => {
           Login
         </button>
       </form>
-      <button on onClick={()=> setShowSignUp(true)}>Don't have an account? Sign Up</button>
+      <button onClick={()=> setShowSignUp(true)}>Don't have an account? Sign Up</button>
     </div>
   );
 };

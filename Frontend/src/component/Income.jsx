@@ -5,7 +5,7 @@ import api from "../api";  // Importing your API instance
 import Expense from "./Expenses";
 
 const Income = () => {
-    const { setUserId ,userId, incomeId, setIncomeId, refresher, refreshData } = useContext(UserContext);
+    const { setUserId ,userId, incomeId, setIncomeId,} = useContext(UserContext);
     const [showAddIncome, setShowAddIncome] =useState(false);
     const [incomeData, setIncomeData] = useState([]);
     const [errorMessage, setErrorMessage] = useState("");
@@ -17,11 +17,14 @@ const Income = () => {
     const formatRecent = recentPay && moment(recentPay).format("MM-DD-YYYY");
     const formatLast = lastPay && moment(lastPay).format("MM-DD-YYYY");
     
-    const toggleDropdown = () => setIsActive(!isActive);
+    const toggleDropdown = () => {
+        setIsActive(!isActive);
+        setShowAddIncome(incomeData.length === 0);
+      };
 
 
-    useEffect(() => {
-        const getIncome = async () => {
+    
+    const getIncome = useCallback(async () => {
             if (!userId) {
                 console.error("User ID is not set");
                 setErrorMessage("User ID is not set");
@@ -30,23 +33,35 @@ const Income = () => {
             try {
                 const response = await api.get(`/income/${userId}`);
                 const data = response.data;
-                setIncomeData(data);
-                setIncomeId(data.length > 0 ? data[0].id : null);
-                setShowAddIncome(data.length === 0);
-                setErrorMessage('');
-            } catch (error) {
-                if (error.response?.status === 404) {
+                if (data.length > 0) {
+                  // Existing income data found
+                  setIncomeData(data);
+                  setIncomeId(data[0].id);
+                  setShowAddIncome(false); // Don't show the form as data exists
+                } else {
+                  // No existing income data found
+                  setShowAddIncome(true); // Show the form to add data
+                }
+                
+            } catch (error) {{
                     // No income data found, so show the form for the user to add new income
                     setShowAddIncome(true);
-                    setErrorMessage('');
-                } else {
+                    console.error("Error fetching income:", error);
                     // An error other than 'not found'
-                    setErrorMessage("Failed to load income data.");
+                    setErrorMessage("Add your Income");
                 }
-                console.error("Error fetching income:", error);
+                
             }
-            getIncome();
+        
+            
         }, [userId, setIncomeId]);  
+
+    
+        useEffect(() => {
+            if (userId) {
+                getIncome();
+            }
+        }, [userId]);     
         
     
     useEffect(() => {
@@ -55,8 +70,8 @@ const Income = () => {
 
     const submitIncome =  async (e) => {
         e.preventDefault();
-        let url = '';
-        let method = incomeData.length === 0 ? 'post' : 'put';
+        const url = '';
+        const method = incomeData.length === 0 ? 'post' : 'put';
 
         if (incomeData.length === 0) {
             url = `/income/${userId}`;
@@ -71,11 +86,13 @@ const Income = () => {
                 last_pay: formatLast,
             });
             const data = response.data;
-            setIncomeData(prevData => method === 'post' ? [...prevData, data] : [data]);
+            setIncomeData([...incomeData, response.data]);
+            setShowAddIncome(false);
+            setIsActive(false);
         } catch (error) {
             setErrorMessage(error.message);
         }
-        refresher();
+        
     };
 
     const deleteIncome = async () => {
@@ -94,14 +111,9 @@ const Income = () => {
         } catch (error) {
             setErrorMessage(error.message);
         } 
-        refresher();
+        
     };
 
-    useEffect(() => {
-        if (userId) {
-            getIncome();
-        }
-    }, [userId, getIncome]); 
 
     useEffect(() => {
         if (incomeData.length > 0) {
@@ -116,69 +128,71 @@ const Income = () => {
         }
     }, [incomeData]);
 
-    return (
+    const handleIncomeClick = () => {
+        setShowAddIncome(!showAddIncome); // Toggle visibility of add income form
+        setIsActive(!isActive); // Toggle the dropdown if you're using a dropdown menu
+      };
+
+      return (
         <div className="card">
-            <div className="card-content">
-                <div className="content">
-                    <div className={`dropdown ${isActive ? "is-active" : ""}`} >
-                        <div className="dropdown-trigger" >
-                            <button className="button is-info" aria-haspopup="true" aria-controls="dropdown-menu" onClick={toggleDropdown} >
-                                <span>Income: ${amount}</span>
-                                <i className="fas fa-angle-down" aria-hidden="true" style={{marginLeft: '10px'}}></i>
-                            </button>
-                        </div>
-                        <div className="dropdown-menu" id="dropdown-menu" role="menu" style={{ width: 'auto' }}>
-                            <div className="dropdown-content" style={{ paddingLeft: '15px', paddingRight: '15px' }}>
-                                {errorMessage && <p className="help is-danger">{errorMessage}</p>}
-                                {!showAddIncome && (
-                                    <button className="button is-info is-small" onClick={() => setShowAddIncome(true)} style={{ margin: '0 auto'}}>
-                                        Add Income
-                                    </button>
-                                )}
-                                {showAddIncome && incomeData.map(income => (
-                                    <div key={income.id} style={{ alignItems: 'center' }}>
-                                            <div>
-                                                <label className="label">Amount</label>
-                                                <input 
-                                                    className="input mb-5" 
-                                                    type="number" 
-                                                    placeholder="Amount"
-                                                    value={amount} 
-                                                    onChange={(e) => setAmount(e.target.value)} 
-                                                />
-                                                <label className="label">Recent Pay Date</label>
-                                                <input 
-                                                    className="input mb-5" 
-                                                    type="date" 
-                                                    placeholder="Recent Pay Date" 
-                                                    value={recentPay} 
-                                                    onChange={(e) => setRecentPay(e.target.value)} 
-                                                />
-                                                <label className="label">Last Pay Date</label>
-                                                <input 
-                                                    className="input mb-5" 
-                                                    type="date" 
-                                                    placeholder="Last Pay Date" 
-                                                    value={lastPay}  
-                                                    onChange={(e) => setLastPay(e.target.value)} 
-                                                />
-                                                <button className="button is-success mr-5" onClick={() => setShowAddIncome(true)} style={{ margin: '0 auto' }}>
-                                                {incomeData.length === 0 ? 'Add' : 'Update'}
-                                                </button>
-
-                                            </div>
-                                        </div>
-                                    ))
-                                }
-                            </div>
-                        </div>
-                    </div>
+          <div className="card-content">
+            <div className="content">
+              <div className={`dropdown ${isActive ? "is-active" : ""}`}>
+                <div className="dropdown-trigger">
+                  <button
+                    className="button is-info"
+                    aria-haspopup="true"
+                    aria-controls="dropdown-menu"
+                    onClick={toggleDropdown}
+                  >
+                    <span>Income: ${amount} || ''</span>
+                    <i className="fas fa-angle-down" aria-hidden="true" style={{ marginLeft: '10px' }}></i>
+                  </button>
                 </div>
+                <div className="dropdown-menu" id="dropdown-menu" role="menu" style={{ width: 'auto' }}>
+                  <div className="dropdown-content" style={{ paddingLeft: '15px', paddingRight: '15px' }}>
+                    {errorMessage && <p className="help is-danger">{errorMessage}</p>}
+                    {showAddIncome && (
+                      <div style={{ alignItems: 'center' }}>
+                        <div>
+                          <label className="label">Amount</label>
+                          <input
+                            className="input mb-5"
+                            type="number"
+                            placeholder="Amount"
+                            value={amount}
+                            onChange={(e) => setAmount(e.target.value)}
+                          />
+                          <label className="label">Recent Pay Date</label>
+                          <input
+                            className="input mb-5"
+                            type="date"
+                            placeholder="Recent Pay Date"
+                            value={recentPay}
+                            onChange={(e) => setRecentPay(e.target.value)}
+                          />
+                          <label className="label">Last Pay Date</label>
+                          <input
+                            className="input mb-5"
+                            type="date"
+                            placeholder="Last Pay Date"
+                            value={lastPay}
+                            onChange={(e) => setLastPay(e.target.value)}
+                          />
+                          <button className="button is-success mr-5" onClick={submitIncome}>
+                            {incomeData.length === 0 ? 'Add' : 'Update'} Income
+                          </button>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
             </div>
-            
-
+          </div>
         </div>
-    );
+      );
+      
 };
 
 export default Income;

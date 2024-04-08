@@ -2,9 +2,7 @@ import React, { createContext, useEffect, useState } from "react";
 import { useCallback } from "react";
 import api from "../api";
 
-export const UserContext = createContext({
-    refresher: () => {},
-});
+export const UserContext = createContext();
 
 
 
@@ -51,6 +49,8 @@ export const UserProvider = ({children}) => {
         }else {
             setUserData(null);
             setUserId(null);
+            localStorage.removeItem('userId')
+            localStorage.removeItem('token')
         }    
     };
         fetchUser();
