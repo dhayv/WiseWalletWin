@@ -50,8 +50,7 @@ def read_all_incomes(user_id: int, db: Session = Depends(get_db)):
     results = db.exec(statement)  
     incomes = results.all() 
 
-    if not incomes:
-        raise HTTPException(status_code=404, detail="Item not found")
+    
     return incomes
 
 @router.get("/test_income", response_model=Income)
