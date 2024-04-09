@@ -26,23 +26,17 @@ const Income = () => {
     
     const getIncome = useCallback(async () => {
             if (!userId) {
-                console.error("User ID is not set");
-                setErrorMessage("User ID is not set");
+                setShowAddIncome(true);
                 return;
             }
             try {
                 const response = await api.get(`/income/${userId}`);
-                const data = response.data;
-                if (data.length > 0) {
-                  // Existing income data found
-                  setIncomeData(data);
-                  setIncomeId(data[0].id);
-                  setShowAddIncome(false); // Don't show the form as data exists
-                } else {
-                  // No existing income data found
-                  setShowAddIncome(true); // Show the form to add data
-                }
+                const data = response.data || [];
                 
+                setIncomeData(data);
+                setIncomeId(data[0]?.id);
+                setShowAddIncome(data.length === 0); // Show form if no data
+                setErrorMessage('');
             } catch (error) {{
                     // No income data found, so show the form for the user to add new income
                     setShowAddIncome(true);
@@ -54,7 +48,7 @@ const Income = () => {
             }
         
             
-        }, [userId, setIncomeId]);  
+        }, [userId, setIncomeId, setShowAddIncome]);  
 
     
         useEffect(() => {
@@ -70,27 +64,27 @@ const Income = () => {
 
     const submitIncome =  async (e) => {
         e.preventDefault();
-        const url = '';
-        const method = incomeData.length === 0 ? 'post' : 'put';
-
-        if (incomeData.length === 0) {
-            url = `/income/${userId}`;
-        } else {
-            url = `/income/${incomeId}`;
-        }
+        e.stopPropagation();
+        const endpointUrl = incomeData.length === 0 ? `/income/${userId}` : `/income/${incomeId}`;
+        const method = incomeData.length === 0 ? 'post' : 'put'
 
         try {
-            const response = await api[method](url, {
-                amount: amount,
-                recent_pay: formatRecent,
-                last_pay: formatLast,
+            const response = await api({
+                method: method,
+                url: endpointUrl,
+                data: {
+                    amount: amount,
+                    recent_pay: formatRecent,
+                    last_pay: formatLast,
+                },
             });
-            const data = response.data;
-            setIncomeData([...incomeData, response.data]);
+            const newData = response.data;
+            setIncomeData(method === 'post' ? [newData] : [newData, ...incomeData.slice(1)]);
             setShowAddIncome(false);
             setIsActive(false);
         } catch (error) {
-            setErrorMessage(error.message);
+            setErrorMessage(error.response?.data?.message || error.message);
+            setIsActive(true);
         }
         
     };
@@ -114,6 +108,9 @@ const Income = () => {
         
     };
 
+    useEffect(() => {        
+        getIncome();    
+}, [userId, getIncome]);
 
     useEffect(() => {
         if (incomeData.length > 0) {
@@ -131,6 +128,9 @@ const Income = () => {
     const handleIncomeClick = () => {
         setShowAddIncome(!showAddIncome); // Toggle visibility of add income form
         setIsActive(!isActive); // Toggle the dropdown if you're using a dropdown menu
+        if (!incomeData.length) {
+            setShowAddIncome(!showAddIncome);
+          }
       };
 
       return (
@@ -145,7 +145,7 @@ const Income = () => {
                     aria-controls="dropdown-menu"
                     onClick={toggleDropdown}
                   >
-                    <span>Income: ${amount} || ''</span>
+                    <span>Income: ${amount || ''} </span>
                     <i className="fas fa-angle-down" aria-hidden="true" style={{ marginLeft: '10px' }}></i>
                   </button>
                 </div>
@@ -179,7 +179,7 @@ const Income = () => {
                             value={lastPay}
                             onChange={(e) => setLastPay(e.target.value)}
                           />
-                          <button className="button is-success mr-5" onClick={submitIncome}>
+                          <button className="button is-success mr-5" type='submit' onClick={() => setShowAddIncome(true)}>
                             {incomeData.length === 0 ? 'Add' : 'Update'} Income
                           </button>
                         </div>
