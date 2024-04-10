@@ -2,7 +2,6 @@ import React, { useCallback, useContext, useEffect, useState } from "react";
 import { UserContext } from "../context/UserContext";
 import moment from "moment";
 import api from "../api";  // Importing your API instance
-import Expense from "./Expenses";
 
 const Income = () => {
     const { setUserId ,userId, incomeId, setIncomeId,} = useContext(UserContext);
@@ -17,10 +16,10 @@ const Income = () => {
     const formatRecent = recentPay && moment(recentPay).format("MM-DD-YYYY");
     const formatLast = lastPay && moment(lastPay).format("MM-DD-YYYY");
     
-    const toggleDropdown = () => {
+    const toggleDropdown = () => 
         setIsActive(!isActive);
-        setShowAddIncome(incomeData.length === 0);
-      };
+ 
+      ;
 
 
     
@@ -34,37 +33,28 @@ const Income = () => {
                 const data = response.data || [];
                 
                 setIncomeData(data);
-                setIncomeId(data[0]?.id);
                 setShowAddIncome(data.length === 0); // Show form if no data
-                setErrorMessage('');
-            } catch (error) {{
-                    // No income data found, so show the form for the user to add new income
-                    setShowAddIncome(true);
-                    console.error("Error fetching income:", error);
-                    // An error other than 'not found'
-                    setErrorMessage("Add your Income");
-                }
+                if (data.length > 0) {
+                    setIncomeId(data[0].id);
                 
-            }
+                }
+                setIncomeData(data);
+            } catch (error) {
+                setErrorMessage(error.message);
+            } 
+        
+                
+            
         
             
-        }, [userId, setIncomeId, setShowAddIncome]);  
-
-    
-        useEffect(() => {
-            if (userId) {
-                getIncome();
-            }
-        }, [userId]);     
+        }, [userId, setIncomeId, setShowAddIncome, setIncomeId, incomeId]);      
         
     
-    useEffect(() => {
-        console.log("UserID in Income component:", userId);
-    }, [userId]);
+
 
     const submitIncome =  async (e) => {
         e.preventDefault();
-        e.stopPropagation();
+        
         const endpointUrl = incomeData.length === 0 ? `/income/${userId}` : `/income/${incomeId}`;
         const method = incomeData.length === 0 ? 'post' : 'put'
 
@@ -78,13 +68,12 @@ const Income = () => {
                     last_pay: formatLast,
                 },
             });
-            const newData = response.data;
-            setIncomeData(method === 'post' ? [newData] : [newData, ...incomeData.slice(1)]);
-            setShowAddIncome(false);
-            setIsActive(false);
+            const data = response.data;
+            setIncomeData(prevData => method === "POST" ? [...prevData, data] : [data]);
+            getIncome();
         } catch (error) {
             setErrorMessage(error.response?.data?.message || error.message);
-            setIsActive(true);
+            
         }
         
     };
@@ -126,11 +115,7 @@ const Income = () => {
     }, [incomeData]);
 
     const handleIncomeClick = () => {
-        setShowAddIncome(!showAddIncome); // Toggle visibility of add income form
-        setIsActive(!isActive); // Toggle the dropdown if you're using a dropdown menu
-        if (!incomeData.length) {
-            setShowAddIncome(!showAddIncome);
-          }
+        toggleDropdown()
       };
 
       return (
@@ -143,7 +128,7 @@ const Income = () => {
                     className="button is-info"
                     aria-haspopup="true"
                     aria-controls="dropdown-menu"
-                    onClick={toggleDropdown}
+                    onClick={handleIncomeClick}
                   >
                     <span>Income: ${amount || ''} </span>
                     <i className="fas fa-angle-down" aria-hidden="true" style={{ marginLeft: '10px' }}></i>
@@ -152,7 +137,9 @@ const Income = () => {
                 <div className="dropdown-menu" id="dropdown-menu" role="menu" style={{ width: 'auto' }}>
                   <div className="dropdown-content" style={{ paddingLeft: '15px', paddingRight: '15px' }}>
                     {errorMessage && <p className="help is-danger">{errorMessage}</p>}
-                    {showAddIncome && (
+                
+                      
+                    {isActive && (
                       <div style={{ alignItems: 'center' }}>
                         <div>
                           <label className="label">Amount</label>
@@ -179,20 +166,19 @@ const Income = () => {
                             value={lastPay}
                             onChange={(e) => setLastPay(e.target.value)}
                           />
-                          <button className="button is-success mr-5" type='submit' onClick={() => setShowAddIncome(true)}>
-                            {incomeData.length === 0 ? 'Add' : 'Update'} Income
+                          <button className="button is-success mr-5" type='submit' onClick={submitIncome}>
+                            {incomeData.length === 0 ? 'Add Income' : 'Update Income'} 
                           </button>
                         </div>
                       </div>
-                    )}
+                        )}
                   </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
-      );
-      
-};
+    );
+}    
 
 export default Income;

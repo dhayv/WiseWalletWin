@@ -1,5 +1,7 @@
 import React, { useContext, useState, useEffect } from "react";
 import { UserContext } from "../context/UserContext";
+import api
+ from "../api";
 
 const Remaining = () => {
     const { token, userId, refreshData } = useContext(UserContext);
@@ -10,20 +12,13 @@ const Remaining = () => {
 
     useEffect(() => {
         const getremaining = async () => {
-            const requestOptions = {
-                method: "GET",
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${token}`,
-                },
-            };
-
+        
             try {
-                const response = await fetch(`/user/${userId}/income_minus_expenses`, requestOptions);
+                const response = await api.get(`/user/${userId}/income_minus_expenses`);
                 if (!response.ok) {
                     throw new Error('Could not load remainder information.');
                 }
-                const data = await response.json();
+                const data = await response.data;
                 setRemain(data.income_minus_expenses);
             } catch (error) {
                 setErrorMessage(error.message);

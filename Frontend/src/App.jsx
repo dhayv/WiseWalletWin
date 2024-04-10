@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from "react";
 import Header from "./component/Header";
-import { UserContext } from "./context/UserContext";
+import { UserContext} from "./context/UserContext";
 import Login from "./component/Login";
 import SignUp from "./component/SignUp";
 import Income from "./component/Income";
@@ -12,7 +12,7 @@ import api from "./api";
 const App = () => {
   const [message, setMessage] = useState("");
   const [showSignUp, setShowSignUp] = useState(false); // State to toggle between sign up and login
-  const { token } = useContext(UserContext);
+  const { token , totalExpenses} = useContext(UserContext);
 
   // Function to get a message from your API
   const getMessage = async () => {
@@ -54,7 +54,7 @@ const App = () => {
                 </div>
               </div>
               
-              <h3 className="title">Expenses</h3>
+              <h3 className="title">Expenses: {totalExpenses?.total}</h3>
                 <Expenses/>
               {/* ... Additional components for when the user is logged in ... */}
             </>

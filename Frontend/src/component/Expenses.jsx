@@ -1,5 +1,6 @@
 import React, { useContext, useState, useReducer, useEffect } from "react";
 import { UserContext } from "../context/UserContext";
+import api from "../api";
 
 
 const initialState = {
@@ -16,7 +17,7 @@ const appReducer = (state, action) => {
 
 
 const Expense = () => { // Assuming incomeId is passed as a prop
-    const {token, incomeId, refreshData, refresher} = useContext(UserContext);
+    const {token, incomeId, refreshData, refresher, userId} = useContext(UserContext);
     const [name, setName] = useState('');
     const [amount, setAmount] = useState('');
     const [dueDate, setDueDate] = useState('');
@@ -28,30 +29,29 @@ const Expense = () => { // Assuming incomeId is passed as a prop
     useEffect(() => {
         if (!incomeId) return;
 
-        const requestOptions = {
-            method: "GET",
-            headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${token}`,
-            },
-        };
-
         const getExpense = async () => {
+        
         try {
-            const response = await fetch(`/expenses/${incomeId}`, requestOptions);
-            if (!response.ok) {
+            
+            const response = await api.get(`/expenses/${incomeId}`);
+            if (response.status !== 200) {
                 throw new Error('Could not load expense information.');
             }
-            const data = await response.json();
+            const data = await response.data;
             setExpenseData(data);
+            setExpenseId(data.id)
         } catch (error) {
             setErrorMessage(error.message);
         }
     }; 
+
+        
+
         getExpense();
         
+        
         refresher();
-    }, [incomeId, token]);
+    }, [incomeId, token, setExpenseId]);
 
     const submitExpense = async (e) => {
         e.preventDefault();
@@ -61,54 +61,41 @@ const Expense = () => { // Assuming incomeId is passed as a prop
             setErrorMessage("Invalid income ID.");
             return;
         }
+           
 
-        const requestOptions = {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${token}`,
-            },
-            body: JSON.stringify({
+        try {
+            const response = await api.post(`/expenses/${incomeId}`, {
                 name: name,
                 amount: Number(amount),
                 due_date: Number(dueDate),
-            }),
-        };
+            });
 
-        try {
-            const response = await fetch(`/expenses/${incomeId}`, requestOptions);
             if (!response.ok) {
                 throw new Error('Could not add expense information.');
             }
-            const data = await response.json();
+            const data = await response.data;
             setExpenseData(prevExpenses => [...prevExpenses, data]);
             refresher();
+            setExpenseId(data.id)
         } catch (error) {
             setErrorMessage(error.message);
         }
+
+        
     
     };
 
     const updateExpense = async () => {
-        const requestOptions = {
-            method: "PUT",
-            headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${token}`,
-            },
-            body: JSON.stringify({
+        try {
+            const response = await api.put(`/expenses/${expenseId}`, {
                 name: name,
                 amount: amount,
                 due_date: dueDate,
-            }),
-        };
-
-        try {
-            const response = await fetch(`/expenses/${expenseId}`, requestOptions);
+            });
             if (!response.ok) {
                 throw new Error('Could not update expense information.');
             }
-            const data = await response.json();
+            const data = await response.data;
             setExpenseData(expenseData.map(exp => exp.id === expenseId ? data : exp));
             refresher();
         } catch (error) {
@@ -118,17 +105,10 @@ const Expense = () => { // Assuming incomeId is passed as a prop
     };
 
     const deleteExpense = async (expenseId) => {
-       
-        const requestOptions = {
-            method: "DELETE",
-            headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${token}`,
-            },
-        };
-
+        if (
+            expenseId);
         try {
-            const response = await fetch(`/expenses/${expenseId}`, requestOptions);
+            const response = await api.delete(`/expenses/${expenseId}`);
             if (!response.ok) {
                 throw new Error('Could not delete expense information.');
             }
@@ -139,6 +119,10 @@ const Expense = () => { // Assuming incomeId is passed as a prop
         }
         ;
     };
+
+    
+
+
 
     const handleSubmit = (e) => {
         e.preventDefault();
