@@ -167,7 +167,7 @@ const Income = () => {
                             onChange={(e) => setLastPay(e.target.value)}
                           />
                           <button className="button is-success mr-5" type='submit' onClick={submitIncome}>
-                            {incomeData.length === 0 ? 'Add Income' : 'Update Income'} 
+                            {incomeData.length === 0 ? 'Add Income' : 'Update'} 
                           </button>
                         </div>
                       </div>
