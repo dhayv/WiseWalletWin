@@ -70,7 +70,7 @@ export const UserProvider = ({children}) => {
       }
     } catch (error) {
       console.error('Error fetching total expenses:', error);
-      setTotalExpenses({ total: 0 }); // Set a default value in case of error
+      setTotalExpenses({ total_expenses: 0 }); // Set a default value in case of error
     }
   };
 
