@@ -84,7 +84,7 @@ export const UserProvider = ({children}) => {
 
     return (
         // This lets any component get the token and user data
-        <UserContext.Provider value={{token, setToken, userId, setUserId, incomeId, setIncomeId, refresher, refreshData, userData, totalExpenses, setTotalExpenses, recentPay, setRecentPay}}>
+        <UserContext.Provider value={{token, setToken, userId, setUserId, incomeId, setIncomeId, refresher, refreshData, userData, totalExpenses, setTotalExpenses, recentPay, setRecentPay, incomeData, setIncomeData}}>
             {children}
         </UserContext.Provider>
     );

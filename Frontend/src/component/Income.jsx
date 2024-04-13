@@ -36,7 +36,7 @@ const Income = () => {
                         setIncomeId(data[0].id);
                     
                     }
-                    setIncomeData(data);
+                    
                 } catch (error) {
                     setErrorMessage(error.message);
                 } 
@@ -97,17 +97,18 @@ const Income = () => {
 
 
     useEffect(() => {
-        if (incomeData.length > 0) {
-            const firstIncomeEntry = incomeData[0];
-            setAmount(firstIncomeEntry.amount);
-            setRecentPay(firstIncomeEntry.recent_pay);
-            setLastPay(firstIncomeEntry.last_pay);
+        if (incomeData && incomeData.length > 0) {
+            const { amount, recent_pay, last_pay } = incomeData[0];
+            setAmount(amount);
+            setRecentPay(recent_pay);
+            setLastPay(last_pay);
         } else {
             setAmount("");
             setRecentPay("");
             setLastPay("");
         }
     }, [incomeData]);
+    
 
     const handleIncomeClick = () => {
         toggleDropdown()
