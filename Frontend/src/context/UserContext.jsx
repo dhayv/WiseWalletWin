@@ -15,6 +15,7 @@ export const UserProvider = ({children}) => {
     const [userData, setUserData] = useState(null);
     const [totalExpenses, setTotalExpenses] = useState({total: 0});
     const [recentPay, setRecentPay ] = useState("");
+    const [incomeData, setIncomeData] = useState([]);
 
 
     const refresher = useCallback(() => {
