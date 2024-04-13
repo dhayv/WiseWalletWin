@@ -63,8 +63,6 @@ const Expense = () => { // Assuming incomeId is passed as a prop
             if (response.status === 200) {
                 const data = await response.data;
                 setExpenseData(prevExpenses => [...prevExpenses, data]);
-                
-                
                 refresher();
             } else {throw new Error('Could not add expense information.');
         };

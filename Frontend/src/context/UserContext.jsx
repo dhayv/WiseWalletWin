@@ -14,6 +14,7 @@ export const UserProvider = ({children}) => {
     const [refreshData, setRefreshData] = useState(false);
     const [userData, setUserData] = useState(null);
     const [totalExpenses, setTotalExpenses] = useState({total: 0});
+    const [recentPay, setRecentPay ] = useState("");
 
 
     const refresher = useCallback(() => {
@@ -82,7 +83,7 @@ export const UserProvider = ({children}) => {
 
     return (
         // This lets any component get the token and user data
-        <UserContext.Provider value={{token, setToken, userId, setUserId, incomeId, setIncomeId, refresher, refreshData, userData, totalExpenses, setTotalExpenses}}>
+        <UserContext.Provider value={{token, setToken, userId, setUserId, incomeId, setIncomeId, refresher, refreshData, userData, totalExpenses, setTotalExpenses, recentPay, setRecentPay}}>
             {children}
         </UserContext.Provider>
     );

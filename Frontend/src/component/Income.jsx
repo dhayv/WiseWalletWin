@@ -4,12 +4,11 @@ import moment from "moment";
 import api from "../api";  // Importing your API instance
 
 const Income = () => {
-    const { setUserId ,userId, incomeId, setIncomeId, refreshData, refresher} = useContext(UserContext);
+    const { setUserId ,userId, incomeId, setIncomeId, refreshData, refresher, recentPay, setRecentPay} = useContext(UserContext);
     const [showAddIncome, setShowAddIncome] =useState(false);
     const [incomeData, setIncomeData] = useState([]);
     const [errorMessage, setErrorMessage] = useState("");
     const [amount, setAmount] = useState("");
-    const [recentPay, setRecentPay ] = useState("");
     const [lastPay, setLastPay] = useState("");
     const [isActive, setIsActive] = useState(false);
 
