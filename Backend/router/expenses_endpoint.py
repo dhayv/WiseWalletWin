@@ -64,7 +64,7 @@ def update_expense(expense_id: int ,expense_data: ExpenseUpdate, db: Session = D
     db.refresh(db_expense)
     return db_expense
 
-@router.delete("expenses/{expense_id}", status_code=204)
+@router.delete("/expenses/{expense_id}", status_code=204)
 def delete_expense(expense_id: int, db: Session = Depends(get_db)):
     db_expense = db.get(Expense, expense_id)
     if not db_expense:

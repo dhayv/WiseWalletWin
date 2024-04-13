@@ -15,11 +15,11 @@ const Remaining = () => {
         
             try {
                 const response = await api.get(`/user/${userId}/income_minus_expenses`);
-                if (!response.ok) {
-                    throw new Error('Could not load remainder information.');
+                if (response.status === 200) {
+                    const data = await response.data;
+                    setRemain(data.income_minus_expenses);;
                 }
-                const data = await response.data;
-                setRemain(data.income_minus_expenses);
+                
             } catch (error) {
                 setErrorMessage(error.message);
             }

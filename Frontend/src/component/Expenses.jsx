@@ -1,30 +1,18 @@
-import React, { useContext, useState, useReducer, useEffect } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import { UserContext } from "../context/UserContext";
 import api from "../api";
 
 
-const initialState = {
-    expenseData: []
-};
-
-const appReducer = (state, action) => {
-    switch (action.type) {
-        default:
-            return state;
-    }
-
-};
 
 
 const Expense = () => { // Assuming incomeId is passed as a prop
-    const {token, incomeId, refreshData, refresher, userId} = useContext(UserContext);
+    const {token, incomeId, refreshData, refresher} = useContext(UserContext);
     const [name, setName] = useState('');
     const [amount, setAmount] = useState('');
     const [dueDate, setDueDate] = useState('');
     const [errorMessage, setErrorMessage] = useState("");
     const [expenseData, setExpenseData] = useState([]);
-    const [expenseId, setExpenseId] = useState([null]);
-    const [state, dispatch] = useReducer(appReducer, initialState);
+    const [expenseId, setExpenseId] = useState(null);
 
     useEffect(() => {
         if (!incomeId) return;
@@ -34,12 +22,14 @@ const Expense = () => { // Assuming incomeId is passed as a prop
         try {
             
             const response = await api.get(`/expenses/${incomeId}`);
-            if (response.status !== 200) {
+            if (response.status === 200) {
+                const data = await response.data;
+                setExpenseData(data);
+                setExpenseId(expenseData.map(exp => exp.id))
+            } else {
                 throw new Error('Could not load expense information.');
             }
-            const data = await response.data;
-            setExpenseData(data);
-            setExpenseId(data.id)
+            
         } catch (error) {
             setErrorMessage(error.message);
         }
@@ -50,8 +40,8 @@ const Expense = () => { // Assuming incomeId is passed as a prop
         getExpense();
         
         
-        refresher();
-    }, [incomeId, token, setExpenseId]);
+        
+    }, [incomeId, token, setExpenseId, refreshData, setExpenseData]);
 
     const submitExpense = async (e) => {
         e.preventDefault();
@@ -70,13 +60,15 @@ const Expense = () => { // Assuming incomeId is passed as a prop
                 due_date: Number(dueDate),
             });
 
-            if (!response.ok) {
-                throw new Error('Could not add expense information.');
-            }
-            const data = await response.data;
-            setExpenseData(prevExpenses => [...prevExpenses, data]);
-            refresher();
-            setExpenseId(data.id)
+            if (response.status === 200) {
+                const data = await response.data;
+                setExpenseData(prevExpenses => [...prevExpenses, data]);
+                
+                
+                refresher();
+            } else {throw new Error('Could not add expense information.');
+        };
+            
         } catch (error) {
             setErrorMessage(error.message);
         }
@@ -92,12 +84,14 @@ const Expense = () => { // Assuming incomeId is passed as a prop
                 amount: amount,
                 due_date: dueDate,
             });
-            if (!response.ok) {
+            if (response.status === 200) {
+                const data = await response.data;
+                setExpenseData(expenseData.map(exp => exp.id === expenseId ? data : exp));
+                refresher();
+            } else {
                 throw new Error('Could not update expense information.');
             }
-            const data = await response.data;
-            setExpenseData(expenseData.map(exp => exp.id === expenseId ? data : exp));
-            refresher();
+            
         } catch (error) {
             setErrorMessage(error.message);
         }
@@ -105,15 +99,15 @@ const Expense = () => { // Assuming incomeId is passed as a prop
     };
 
     const deleteExpense = async (expenseId) => {
-        if (
-            expenseId);
+       
         try {
             const response = await api.delete(`/expenses/${expenseId}`);
-            if (!response.ok) {
+            if (response.status === 204) {
+            setExpenseData(expenseData => expenseData.filter(exp => exp.id !== expenseId));
+            refresher();
+        }   else {
                 throw new Error('Could not delete expense information.');
-            }
-            setExpenseData(expenseData.filter(exp => exp.id !== expenseId));
-            refresher()
+        }
         } catch (error) {
             setErrorMessage(error.message);
         }
@@ -130,9 +124,8 @@ const Expense = () => { // Assuming incomeId is passed as a prop
         
     };
 
-    const handleDelete = (expenseId) => (e) => {
-        e.preventDefault();
-        deleteExpense(expenseId);
+    const handleDelete = async (expenseId) => {
+        await deleteExpense(expenseId);
     };
 
 
@@ -156,7 +149,9 @@ const Expense = () => { // Assuming incomeId is passed as a prop
                                 <td>{exp.amount}</td>
                                 <td>{exp.due_date}</td>
                                 <td>
-                                    <button className="button is-danger is-small" type="delete" onClick={handleDelete(exp.id)}>Delete</button>
+                                    <button className="button is-danger is-small" onClick={() => handleDelete(exp.id)}>
+                                        Delete
+                                    </button>
                                 </td>
                             </tr>
                         ))}

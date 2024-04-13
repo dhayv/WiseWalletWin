@@ -4,7 +4,7 @@ import moment from "moment";
 import api from "../api";  // Importing your API instance
 
 const Income = () => {
-    const { setUserId ,userId, incomeId, setIncomeId,} = useContext(UserContext);
+    const { setUserId ,userId, incomeId, setIncomeId, refreshData, refresher} = useContext(UserContext);
     const [showAddIncome, setShowAddIncome] =useState(false);
     const [incomeData, setIncomeData] = useState([]);
     const [errorMessage, setErrorMessage] = useState("");
@@ -22,34 +22,32 @@ const Income = () => {
       ;
 
 
-    
-    const getIncome = useCallback(async () => {
-            if (!userId) {
-                setShowAddIncome(true);
-                return;
-            }
-            try {
-                const response = await api.get(`/income/${userId}`);
-                const data = response.data || [];
-                
-                setIncomeData(data);
-                setShowAddIncome(data.length === 0); // Show form if no data
-                if (data.length > 0) {
-                    setIncomeId(data[0].id);
-                
+    useEffect(() => {
+        const getIncome = async( ) => {
+                if (!userId) {
+                    setShowAddIncome(true);
+                    return;
                 }
-                setIncomeData(data);
-            } catch (error) {
-                setErrorMessage(error.message);
-            } 
-        
+                try {
+                    const response = await api.get(`/income/${userId}`);
+                    const data = response.data || [];
+                    
+                    setIncomeData(data);
+                    setShowAddIncome(data.length === 0); // Show form if no data
+                    if (data.length > 0) {
+                        setIncomeId(data[0].id);
+                    
+                    }
+                    setIncomeData(data);
+                } catch (error) {
+                    setErrorMessage(error.message);
+                } 
+            };
+            getIncome();
                 
+            }, [userId, setShowAddIncome, setIncomeId, incomeId, refreshData]);      
             
         
-            
-        }, [userId, setIncomeId, setShowAddIncome, setIncomeId, incomeId]);      
-        
-    
 
 
     const submitIncome =  async (e) => {
@@ -70,7 +68,8 @@ const Income = () => {
             });
             const data = response.data;
             setIncomeData(prevData => method === "POST" ? [...prevData, data] : [data]);
-            getIncome();
+           
+            refresher();
         } catch (error) {
             setErrorMessage(error.response?.data?.message || error.message);
             
@@ -87,19 +86,17 @@ const Income = () => {
                     last_pay: formatLast,
                 }
             });
-            if (!response.ok) {
-                setErrorMessage('Could not delete income information.');
+            if (response.status === 200) {
+                setIncomeData(response.data);
             }
-            setIncomeData(response.data);
+            
         } catch (error) {
             setErrorMessage(error.message);
         } 
+       
         
     };
 
-    useEffect(() => {        
-        getIncome();    
-}, [userId, getIncome]);
 
     useEffect(() => {
         if (incomeData.length > 0) {

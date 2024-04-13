@@ -77,7 +77,7 @@ export const UserProvider = ({children}) => {
   if (userId) {
     getSum(); // Only call the function if userId is available
   }
-}, [userId]); 
+}, [userId, refreshData]); 
  
 
     return (
