@@ -6,7 +6,6 @@ from datetime import  datetime
 
 
 
-
 router = APIRouter()
 
 def create_income():
@@ -73,11 +72,3 @@ def update_income(income_id: int ,income_data: IncomeUpdate, db: Session = Depen
     db.refresh(db_income)
     return db_income
 
-@router.delete("/income/{income_id}", status_code=204)
-def delete_income(income_id: int, db: Session = Depends(get_db)):
-    db_income = db.get(Income, income_id)
-    if not db_income:
-        raise HTTPException(status_code=404, detail="income not found")
-    db.delete(db_income)
-    db.commit()
-    return Response(status_code=status.HTTP_204_NO_CONTENT)

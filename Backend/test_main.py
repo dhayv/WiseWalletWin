@@ -231,16 +231,6 @@ def test_update_income(client: TestClient, income_info, test_access_token, creat
     assert data["recent_pay"] == "2024-03-12"
     assert data["last_pay"] == income_info['last_pay']
 
-def test_delete_income(client: TestClient, income_info, test_access_token, create_test_user: Dict[str, Any]) -> None:
-    income_id = income_info['id']
-    response = client.delete(f"/income/{income_id}", headers={"Authorization": f"bearer {test_access_token}"})
-
-    assert response.status_code == 204, f"Expected status code 204 but received {response.status_code}"
-    assert response.status_code == 204, response.text
-    # Try to get the user income again
-    response = client.get(f"/income/{income_id}")
-    assert response.status_code == 404, response.text
-    assert response.json() == {"detail": "Item not found"}
 
 
 def test_post_expense(client: TestClient, income_info, test_access_token, create_test_user: Dict[str, Any]):
