@@ -3,7 +3,7 @@ services:
   - name: backend
     dockerfile_path: backend/Dockerfile
     github:
-      repo: hellomottoworld/SpendSmart
+      repo: "https://github.com/hellomottoworld/SpendSmart/"
       branch: main
     http_port: 8000
     environment_variables:
@@ -13,7 +13,7 @@ services:
   - name: frontend
     dockerfile_path: frontend/Dockerfile
     github:
-      repo: hellomottoworld/SpendSmart
+      repo: "https://github.com/hellomottoworld/SpendSmart/"
       branch: main
     http_port: 3000
     environment_variables:
