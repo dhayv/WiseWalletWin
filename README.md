@@ -1,34 +1,36 @@
-# SpendSmart
-A monthly budget program that helps you determine how much you have to spend in expenses for your next your pay check.
+# SpendSmartly APP
 
-Personal Finance Management App
 
-Project Overview
+**Project Overview**
+This is full-stack web application I created to help users manage their personal finances by tracking income, logging expenses, to keep track of their expenses on a check to check basis. Designed to improve financial literacy and decision-making without need for a spreadsheet. A database is used to store all pertinent data for the user and a UI to interact with with a server sandwiched in between to to ensure proper security data validation and communication.
 
-This full-stack web application helps users manage their personal finances by tracking income, logging expenses, and planning budgets. It provides a comprehensive toolset for financial oversight and analysis, designed to improve financial literacy and decision-making.
+**Technologies Used**
 
-Technologies Used
-
-Backend
+**Backend**
 FastAPI: Used for its rapid development capabilities and ease of use, serving as the backbone for creating scalable APIs.
 SQLAlchemy with SQLite: Managed through SQLModel, this setup handles database operations efficiently, facilitating robust data manipulation and retrieval.
 CORS Middleware: Ensures secure cross-origin requests, critical for integrating the ReactJS frontend with the FastAPI backend.
+JWT and Oauth2 Authentication: Provides a secure login system, maintaining user confidentiality and data integrity.
 PyTest: Implements thorough testing of all API endpoints, ensuring they perform as expected before moving forward to frontend integration.
 
-Frontend
-ReactJS: Builds a responsive and user-friendly interface, allowing users to interact seamlessly with the application.
-Node API using Axios: Employs Axios to handle HTTP requests, connecting the frontend to the backend efficiently.
-JWT Authentication: Provides a secure login system, maintaining user confidentiality and data integrity.
+**Database**
+SqLite - to create a lightweight database.
 
-Containerization and Deployment
+**Frontend**
+ReactJS: Built a responsive and user-friendly interface, allowing users to create an account, login feature and add their their income and expense data.
+Node API using Axios: Used an Axios api to handle HTTP requests, connecting the frontend to the backend efficiently.
+
+
+**Containerization and Deployment**
+Github actions - Used Gitgub actions to create a CI/CD pipeline.
 Docker and Docker-Compose: Utilizes Docker for containerizing the application, ensuring consistency across various development and production environments. Docker-Compose is used to orchestrate the containers, simplifying the build and deployment process.
 DigitalOcean: Plans for deployment on DigitalOcean to host the application, offering reliable and scalable cloud hosting.
 
-Features
+**Features**
 Secure User Authentication: Utilizes JWT for robust security during user registration and login processes.
 CRUD Operations: Allows users to add, update, retrieve, and delete financial entries, supporting comprehensive financial management.
 
-Financial Insights: Offers analytical tools to visualize financial health, track expenditures, and assess budget compliance.
+
 
 (Notes)
 I decided to abandon the idea of incorporating Flask into my project. Moving forward, the project will be based on using FastAPI and a database. I plan to use Pydantic models to feed user data to the API, which will be connected and stored in a SQLite database using SQLAlchemy to perform CRUD operations. I am going to focus on developing the backend first and then work my way backwards from the ground up.
