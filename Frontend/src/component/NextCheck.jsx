@@ -68,7 +68,7 @@ export const NextCheck = () => {
         <div className="card">
             <div className="card-content">
                 <div className="content">
-                    <span>Next Check: {nextPayDate || 'Calculating...'} for $640</span>
+                    <span className="has-text-weight-bold ">Next Check: {nextPayDate || 'Calculating...'} for $640</span>
                 </div>
             </div>
         </div>

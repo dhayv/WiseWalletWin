@@ -159,7 +159,7 @@ const Expense = () => { // Assuming incomeId is passed as a prop
             <h3 className="title mt-5">Add Expense</h3>
             <form onSubmit={handleSubmit} className="expense-form">
                 <div className="row">
-                    <div className="col-sm">
+                    <div className="field">
                         <label htmlFor="expense-name">Name</label>
                         <input
                             required
@@ -170,7 +170,7 @@ const Expense = () => { // Assuming incomeId is passed as a prop
                             onChange={(e) => setName(e.target.value)}
                         />
                     </div>
-                    <div className="col-sm">
+                    <div className="field">
                         <label htmlFor="expense-amount">Amount</label>
                         <input
                             required
@@ -181,7 +181,7 @@ const Expense = () => { // Assuming incomeId is passed as a prop
                             onChange={(e) => setAmount(e.target.value)}
                         />
                     </div>
-                    <div className="col-sm">
+                    <div className="field">
                         <label htmlFor="expense-due-date">Due Date</label>
                         <input
                             type="number"

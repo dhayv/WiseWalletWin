@@ -33,8 +33,11 @@ const Remaining = () => {
 
     return (
         <div className="card">
-            <span className="card-header-title">Remaining: ${formattedRemain}</span>
-            {errorMessage && <p className="help is-danger">{errorMessage}</p>}
+            <div className="card-content">
+                <span className="has-text-weight-bold ">Remaining: ${formattedRemain}</span>
+                {errorMessage && <p className="help is-danger">{errorMessage}</p>}
+            </div>
+                
         </div>
     );
 };

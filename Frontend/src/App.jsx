@@ -24,12 +24,6 @@ const App = () => {
     getMessage();
   }, []);
 
-  const fixedSizeStyle = {
-    width: '200px',
-    minWidth: '200px',
-    maxWidth: '200px',
-  };
-
   return (
     <>
       <Header title={message} />
@@ -60,7 +54,7 @@ const App = () => {
                 </div>
               </div>
               
-              <h3 className="subtitle">Expenses: ${totalExpenses?.total_expenses}</h3>
+              <h3 className="title">Expenses: ${totalExpenses?.total_expenses}</h3>
                 <Expenses/>
               {/* ... Additional components for when the user is logged in ... */}
             </>

@@ -43,7 +43,7 @@ const Income = () => {
             };
             getIncome();
                 
-            }, [userId, setShowAddIncome, setIncomeId, incomeId, refreshData]);      
+            }, [userId, setShowAddIncome, setIncomeId, incomeId, refreshData, setIncomeData]);      
             
         
 
@@ -107,7 +107,7 @@ const Income = () => {
             setRecentPay("");
             setLastPay("");
         }
-    }, [incomeData]);
+    }, [incomeData, setRecentPay]);
     
 
     const handleIncomeClick = () => {
@@ -121,12 +121,12 @@ const Income = () => {
               <div className={`dropdown ${isActive ? "is-active" : ""}`}>
                 <div className="dropdown-trigger">
                   <button
-                    className="button is-info"
+                    
                     aria-haspopup="true"
                     aria-controls="dropdown-menu"
                     onClick={handleIncomeClick}
                   >
-                    <span>Income: ${amount || ''} </span>
+                    <span class="has-text-weight-bold ">Income: ${amount || ''} </span>
                     <i className="fas fa-angle-down" aria-hidden="true" style={{ marginLeft: '10px' }}></i>
                   </button>
                 </div>
