@@ -24,6 +24,12 @@ const App = () => {
     getMessage();
   }, []);
 
+  const fixedSizeStyle = {
+    width: '200px',
+    minWidth: '200px',
+    maxWidth: '200px',
+  };
+
   return (
     <>
       <Header title={message} />
@@ -43,10 +49,10 @@ const App = () => {
             // Show the income, remaining, and next check components when the user is logged in
             <>
               <div className="columns">
-                <div className="column">
+                <div className="column" >
                   <Income />
                 </div>
-                <div className="column">
+                <div className="column" >
                   <Remaining />
                 </div>
                 <div className="column">
