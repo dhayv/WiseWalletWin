@@ -7,9 +7,10 @@ from pydantic import BaseModel
 from database.database import Session, get_db
 from models import Users
 from sqlmodel import select
+import os
 
 
-SECRET_KEY = "d1fa1da047e93881bfac5d200343e24abef2950559bc868d0d419508a2c2e51f"
+SECRET_KEY = os.getenv("SECRET_KEY", "default_secret_if_not_set")
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRES_MINUTES = 30
 
