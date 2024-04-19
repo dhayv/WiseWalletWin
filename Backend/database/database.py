@@ -1,10 +1,9 @@
 from sqlmodel import Session, create_engine, SQLModel
 import logging
-from models import Income, Expense, BaseUser
 
-
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
-
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
+)
 
 
 # database URL
@@ -21,11 +20,6 @@ def get_db():
         yield db
 
 
-#Create database and tables
-def create_db_and_tables(): 
+# Create database and tables
+def create_db_and_tables():
     SQLModel.metadata.create_all(engine)
-
-
-
-#if __name__ == "__main__":
-    #create_db_and_tables() 
