@@ -1,202 +1,197 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext } from 'react'
 
-import { UserContext } from "../context/UserContext";
-import ErrorMessage from "./ErrorMessage";
-import api from "../api";
+import { UserContext } from '../context/UserContext'
+import ErrorMessage from './ErrorMessage'
+import api from '../api'
 
+const SignUp = ({ setShowSignUp }) => {
+  const [firstName, setFirstName] = useState('')
+  const [userName, setUserName] = useState('')
+  const [email, setEmail] = useState('')
+  const [passWord, setPassword] = useState('')
 
+  const [confirmationPassword, setConfirmationPassword] = useState('')
+  const [phoneNumber, setPhoneNumber] = useState('')
+  const [errorMessage, setErrorMessage] = useState('')
+  const [passwordError, setPasswordError] = useState('')
 
-const SignUp = ({setShowSignUp}) => {
-    const [firstName, setFirstName] = useState("");
-    const [userName, setUserName] = useState("");
-    const [email, setEmail] = useState("");
-    const [passWord, setPassword] = useState("");
+  // Manages token globally
+  const { setToken, setUserId } = useContext(UserContext)
 
-    const [confirmationPassword, setConfirmationPassword] = useState("");
-    const [phoneNumber, setPhoneNumber] = useState("");
-    const [errorMessage, setErrorMessage] = useState("");
-    const [passwordError, setPasswordError] = useState("");
+  // Function to submit user info(Post)
+  const submitRegistration = async () => {
+    if (passWord !== confirmationPassword) {
+      setErrorMessage('Passwords do not match.')
+      return
+    }
 
-      // Manages token globally
-      const {setToken, setUserId } = useContext(UserContext);
+    try {
+      const userResponse = await api.post('/user', {
+        first_name: firstName,
+        username: userName,
+        email,
+        password: passWord,
+        phone_number: phoneNumber
+      })
 
-      // Function to submit user info(Post)
-      const submitRegistration = async () => {
-        if (passWord !== confirmationPassword) {
-            setErrorMessage("Passwords do not match.");
-            return;
+      if (userResponse.status === 201) {
+        const params = new URLSearchParams()
+        params.append('username', userName)
+        params.append('password', passWord)
+
+        const tokenResponse = await api.post('/token', params, {
+          headers: { 'Content-type': 'application/x-www-form-urlencoded' }
+        })
+
+        if (tokenResponse.status === 200) {
+          const data = tokenResponse.data
+          localStorage.setItem('token', data.access_token)
+          setToken(data.access_token)
+
+          const userInfoResponse = await api.get('/user/me', {
+            headers: { Authorization: `Bearer ${data.access_token}` }
+          })
+
+          if (userInfoResponse.status === 200) {
+            const userData = userInfoResponse.data
+            localStorage.setItem('userId', userData.id) // Save userId to local storage
+            setUserId(userData.id) // Update userId in the context
+          }
+        } else {
+          setErrorMessage('Failed to register or log in')
         }
+      } else {
+        setErrorMessage('Failed to register')
+      }
+    } catch (error) {
+      setErrorMessage(error.response?.data?.detail || 'Registration failed')
+    }
+  }
 
-        try {
-            const userResponse = await api.post("/user", {
-                first_name: firstName,
-                username: userName,
-                email: email,
-                password: passWord,
-                phone_number: phoneNumber,
-            });
+  const handleSubmit = (e) => {
+    e.preventDefault()
 
-            if (userResponse.status === 201) {
-                const params = new URLSearchParams();
-                params.append('username', userName);
-                params.append('password', passWord);
+    submitRegistration()
+  }
 
-                const tokenResponse = await api.post("/token", params, {
-                    headers: { "Content-type": "application/x-www-form-urlencoded" }
-                });
+  const validatePassword = (password) => {
+    if (!/[a-z]/.test(password)) return 'Password must contain at least one lowercase letter'
+    if (!/[A-Z]/.test(password)) return 'Password must contain at least one uppercase letter'
+    if (!/\d/.test(password)) return 'Password must contain at least one digit'
+    if (!/[!@#$%^&*(),.?\\":{}|<>]/.test(password)) return 'Password must contain at least one special character'
+    return ''
+  }
 
-                if (tokenResponse.status === 200) {
-                    const data = tokenResponse.data;
-                    localStorage.setItem('token', data.access_token);
-                    setToken(data.access_token);
+  const handlePasswordChange = (e) => {
+    const newPass = e.target.value
+    setPassword(newPass)
+    const errorMessage = validatePassword(newPass)
+    setPasswordError(errorMessage)
+  }
 
-                    const userInfoResponse = await api.get("/user/me", {
-                        headers: { 'Authorization': `Bearer ${data.access_token}` }
-                    });
+  return (
+    <div className='column'>
+      <form className='box' onSubmit={handleSubmit}>
+        <h1 className='title has-tex-centered'>SignUp</h1>
+        {/* First Name */}
+        <div className='field'>
+          <label className='label'>First Name</label>
+          <div className='control'>
+            <input
+              type='text'
+              placeholder='Enter First Name'
+              value={firstName}
+              onChange={(e) => setFirstName(e.target.value)}
+              className='input'
+            />
+          </div>
+        </div>
+        {/* UserName */}
+        <div className='field'>
+          <label className='label'>Username</label>
+          <div className='control'>
+            <input
+              type='text'
+              placeholder='Enter Username'
+              value={userName}
+              onChange={(e) => setUserName(e.target.value)}
+              className='input'
+              required
+            />
+          </div>
+        </div>
+        {/* Email */}
+        <div className='field'>
+          <label className='label'>Email Address</label>
+          <div className='control'>
+            <input
+              type='email'
+              placeholder='Enter Email'
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className='input'
+              required
+            />
+          </div>
+        </div>
+        {/* Password */}
+        <div className='field'>
+          <label className='label'>Password</label>
+          <div className='control'>
+            <input
+              type='password'
+              placeholder='Enter Password'
+              value={passWord}
+              onChange={handlePasswordChange}
+              className='input'
+              minLength='8'
+              required
+            />
+          </div>
+        </div>
+        {/* Password confirmation */}
+        <div className='field'>
+          <label className='label'>Confirm Password</label>
+          <div className='control'>
+            <input
+              type='password'
+              placeholder='Re-enter Password to Confirm'
+              value={confirmationPassword}
+              onChange={(e) => setConfirmationPassword(e.target.value)}
+              className={`input ${passwordError ? 'is-danger' : ''}`}
+              minLength='8'
+              required
+            />
+            {passwordError && <p className='help is-danger'>{passwordError}</p>}
+          </div>
+        </div>
+        {/* Phone Number */}
+        <div className='field'>
+          <label className='label'>Phone Number</label>
+          <div className='control'>
+            <input
+              type='text'
+              placeholder='Enter Phone Number'
+              value={phoneNumber}
+              onChange={(e) => setPhoneNumber(e.target.value)}
+              pattern='^(\\d{3}[-\\s]?){2}\\d{4}$'
 
-                    if (userInfoResponse.status === 200) {
-                        const userData = userInfoResponse.data;
-                        localStorage.setItem('userId', userData.id); // Save userId to local storage
-                        setUserId(userData.id); // Update userId in the context
-                    }
-                } else {
-                    setErrorMessage("Failed to register or log in");
-                }
-            } else {
-                setErrorMessage("Failed to register");
-            }
-        } catch (error) {
-            setErrorMessage(error.response?.data?.detail || "Registration failed");
-        }
-    };
+              className='input'
+            />
+          </div>
 
-        const handleSubmit = (e) => {
-            e.preventDefault();
-            
-            submitRegistration();
-            
-        };
+        </div>
+        <ErrorMessage message={errorMessage} />
+        <br />
 
-    const validatePassword = (password) => {
-        if (!/[a-z]/.test(password)) return "Password must contain at least one lowercase letter";
-        if (!/[A-Z]/.test(password)) return "Password must contain at least one uppercase letter";
-        if (!/\d/.test(password)) return "Password must contain at least one digit";
-        if (!/[!@#$%^&*(),.?\\":{}|<>]/.test(password)) return "Password must contain at least one special character";
-        return "";
-    };
+        {/* Button */}
+        <button className='button is-primary' type='submit'>
+          SignUp
+        </button>
+      </form>
+      <button onClick={() => setShowSignUp(false)}>Already have an account? Login</button>
+    </div>
+  )
+}
 
-    const handlePasswordChange = (e) => {
-        const newPass = e.target.value;
-        setPassword(newPass);
-        const errorMessage = validatePassword(newPass);
-        setPasswordError(errorMessage);
-    };
-
-
-        return(
-            <div className="column">
-                <form className="box" onSubmit={handleSubmit}>
-                    <h1 className="title has-tex-centered">SignUp</h1>
-                    {/* First Name */}
-                    <div className="field">
-                        <label className="label">First Name</label>
-                        <div className="control">
-                            <input 
-                            type="text" 
-                            placeholder="Enter First Name" 
-                            value={firstName} 
-                            onChange={(e) => setFirstName(e.target.value)}
-                            className="input"
-                            />
-                        </div>
-                    </div>
-                    {/* UserName */}
-                    <div className="field">
-                        <label className="label">Username</label>
-                        <div className="control">
-                            <input 
-                            type="text" 
-                            placeholder="Enter Username" 
-                            value={userName} 
-                            onChange={(e) => setUserName(e.target.value)}
-                            className="input"
-                            required
-                            />
-                        </div>
-                    </div>
-                    {/* Email */}
-                    <div className="field">
-                        <label className="label">Email Address</label>
-                        <div className="control">
-                            <input 
-                            type="email" 
-                            placeholder="Enter Email" 
-                            value={email} 
-                            onChange={(e) => setEmail(e.target.value)}
-                            className="input"
-                            required
-                            />
-                        </div>
-                    </div>
-                    {/* Password */}
-                    <div className="field">
-                        <label className="label">Password</label>
-                        <div className="control">
-                            <input 
-                            type="password" 
-                            placeholder="Enter Password" 
-                            value={passWord} 
-                            onChange={handlePasswordChange}
-                            className="input"
-                            minLength="8"
-                            required
-                            />
-                        </div>
-                    </div>
-                    {/* Password confirmation */}
-                    <div className="field">
-                        <label className="label">Confirm Password</label>
-                        <div className="control">
-                            <input 
-                            type="password" 
-                            placeholder="Re-enter Password to Confirm" 
-                            value={confirmationPassword} 
-                            onChange={(e) => setConfirmationPassword(e.target.value)}
-                            className={`input ${passwordError ? 'is-danger' : ''}`}
-                            minLength="8"
-                            required
-                            />
-                            {passwordError && <p className="help is-danger">{passwordError}</p>}
-                        </div>
-                    </div>
-                    {/* Phone Number */}
-                    <div className="field">
-                        <label className="label">Phone Number</label>
-                        <div className="control">
-                            <input 
-                            type="text" 
-                            placeholder="Enter Phone Number" 
-                            value={phoneNumber} 
-                            onChange={(e) => setPhoneNumber(e.target.value)}
-                            pattern="^(\\d{3}[-\\s]?){2}\\d{4}$"
-
-                            className="input"
-                            />
-                        </div>
-                        
-                    </div>
-                        <ErrorMessage message ={errorMessage}/>
-                    <br />
-                    
-                    {/* Button */}
-                    <button className="button is-primary" type="submit">
-                        SignUp
-                    </button>
-                </form>
-                <button onClick={() => setShowSignUp(false)}>Already have an account? Login</button>
-            </div>
-        );
-    
-};
-
-export default SignUp;
+export default SignUp
