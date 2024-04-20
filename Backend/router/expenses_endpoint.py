@@ -1,40 +1,27 @@
 from fastapi import APIRouter, Depends, HTTPException, Response, status
 from models import Expense, ExpenseUpdate, ExpenseBase, Income, Users
 from sqlmodel import Session, select
-from database.database import get_db, engine
+from database.database import get_db
 from Services.auth import get_current_active_user
 
 router = APIRouter()
 
 
-def create_expenses():
-    with Session(engine) as session:
-        # Create some dummy expenses
-        expense1 = Expense(name="Water Bill", amount=50, due_date=15)
-        expense2 = Expense(name="Electricity Bill", amount=75, due_date=18)
+class ExpenseService:
+    def __init__(self, db_session: Session):
+        self.db = db_session
 
-        # check if data already in database
-        statement1 = select(Expense).where(
-            Expense.name == expense1.name,
-            Expense.amount == expense1.amount,
-            Expense.due_date == expense1.due_date,
-        )
-        statement2 = select(Expense).where(
-            Expense.name == expense2.name,
-            Expense.amount == expense2.amount,
-            Expense.due_date == expense2.due_date,
-        )
-        result1 = session.exec(statement1).first()
-        result2 = session.exec(statement2).first()
+    def add_expense(self):
+        pass
 
-        if not result1:
-            session.add(expense1)
+    def get_expense(self):
+        pass
 
-        if not result2:
-            session.add(expense2)
+    def update_expense(self):
+        pass
 
-        if not result1 or not result2:
-            session.commit()
+    def delete_expense(self):
+        pass
 
 
 @router.post(
