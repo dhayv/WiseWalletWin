@@ -48,7 +48,7 @@ const Expense = () => { // Assuming incomeId is passed as a prop
         due_date: Number(dueDate)
       })
 
-      if (response.status === 200) {
+      if (response.status === 201) {
         const data = response.data
         
         setExpenseData(prevExpenses => [...prevExpenses, ...[response.data]])

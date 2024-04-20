@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, Response, status
 from sqlmodel import Session, select
-from models import Users, UserIn, UserOut, UserUpdate, Expense
-from database.database import get_db
+from models import Users, UserIn, UserOut, UserUpdate
+from data_base.database import get_db
 from datetime import timedelta
 from Services.auth import (
     get_password_hash,

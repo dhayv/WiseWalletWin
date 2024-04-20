@@ -1,7 +1,7 @@
-from fastapi import APIRouter, Depends, HTTPException, Response, status
+from fastapi import APIRouter, Depends, HTTPException, status
 from sqlmodel import Session, select
 from models import Income, IncomeUpdate, IncomeBase
-from database.database import get_db, engine
+from data_base.database import get_db, engine
 from datetime import datetime
 
 

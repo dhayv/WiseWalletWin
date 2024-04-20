@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from contextlib import asynccontextmanager
-from database import database
+from data_base import database
 from router import (
     expenses_endpoint as expense_router,
     income_endpoint as income_router,

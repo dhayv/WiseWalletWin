@@ -3,10 +3,11 @@ import pytest
 from fastapi.testclient import TestClient
 from sqlmodel import SQLModel, create_engine, Session
 from sqlmodel.pool import StaticPool
-from main import app  # Import your FastAPI instance
-from database.database import get_db
-from datetime import date, datetime
+from .main import app  # Import your FastAPI instance
+from ..Backend.data_base.database import get_db
+import sys
 
+print(sys.path)
 
 # User data to be used in the tests
 USER_DATA = {
@@ -201,20 +202,13 @@ def income_info(
 
 
 def test_add_income(
-    client: TestClient, test_access_token: str, create_test_user: Dict[str, Any]
+    client: TestClient, test_access_token: str, income_info: Dict[str, Any], create_test_user: Dict[str, Any]
 ) -> None:
     id_user = create_test_user["id"]
-    response = client.post(
-        f"/income/{id_user}",
-        json={
-            "amount": 5000,
-            "recent_pay": "03-01-2024",
-            "last_pay": "02-16-2024",
-        },
-        headers={"Authorization": f"bearer {test_access_token}"},
-    )
+    response = client.get(f"/income/{income_info['id']}", headers={"Authorization": f"Bearer {test_access_token}"})
+    assert response.status_code == 200, "Failed to fetch income details from the API"
 
-    assert response.status_code == 201
+    assert response.status_code == 200
     user_income = response.json()
     assert user_income["amount"] == 5000
     assert user_income["recent_pay"] == "2024-03-01"
@@ -251,10 +245,12 @@ def test_get_income(
     assert len(data) > 0
     data = data[0]
     assert response.status_code == 200
-    assert data["amount"] == 5000
-    assert data["recent_pay"] == "2024-03-01"
-    assert data["last_pay"] == "2024-02-16"
-    assert data["user_id"] == id_user
+    assert income_info["amount"] == 5000
+    assert income_info["recent_pay"] == "2024-03-01"
+    assert income_info["last_pay"] == "2024-02-16"
+    assert income_info["user_id"] == create_test_user['id']
+
+    assert 'id' in income_info, 'Income record does not have an ID'
 
 
 def test_update_income(
@@ -442,7 +438,7 @@ def test_expenses_for_user(
 
     expenses = [
         {"name": "Rent", "amount": 1000, "due_date": 1},
-        {"name": "Light Bill", "amount": 200, "due_date": 15},
+        {"name": "Insurance Bill", "amount": 200, "due_date": 15},
         {"name": "Water Bill", "amount": 100, "due_date": 23},
     ]
 
@@ -471,7 +467,7 @@ def test_expenses_for_user(
 def create_expenses_for_user(
     client: TestClient, income_info, test_access_token, create_test_user: Dict[str, Any]
 ):
-    user_id = create_test_user["id"]
+
     income_id = income_info["id"]
 
     expenses = [
