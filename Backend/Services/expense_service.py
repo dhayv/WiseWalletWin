@@ -16,8 +16,8 @@ class ExpenseService:
 
         expense = Expense(**expense_data.model_dump(), income_id=income_id, user_id=user_id)
         self.db.add(expense)
-        self.commit()
-        self.refresh(expense)
+        self.db.commit()
+        self.db.refresh(expense)
         return expense
 
     def read_expense(self, income_id: int, user_id: int):

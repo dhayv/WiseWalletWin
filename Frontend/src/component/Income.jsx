@@ -110,7 +110,7 @@ const Income = () => {
                 aria-controls='dropdown-menu'
                 onClick={handleIncomeClick}
               >
-                <span class='has-text-weight-bold '>Income: ${amount || ''} </span>
+                <span className='has-text-weight-bold '>Income: ${amount || ''} </span>
                 <i className='fas fa-angle-down' aria-hidden='true' style={{ marginLeft: '10px' }} />
               </button>
             </div>

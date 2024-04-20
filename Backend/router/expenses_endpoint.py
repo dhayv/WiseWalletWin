@@ -3,13 +3,13 @@ from models import Expense, ExpenseUpdate, ExpenseBase, Users
 from sqlmodel import Session
 from database.database import get_db
 from Services.auth import get_current_active_user
-from Services.
+from Services.expense_service import ExpenseService
 
 router = APIRouter()
 
 
 @router.post(
-    "/expenses/{income_id}", response_model=Expense, status_code=status.HTTP_201_CREATED
+    "/expenses/{income_id}", response_model=Expense, status_code=status.HTTP_200_OK
 )
 def add_expense(
     expense_data: ExpenseBase,
