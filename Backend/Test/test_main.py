@@ -239,7 +239,6 @@ def test_add_income(
     assert income_data_fetched["id"] == income_response["id"], "Income ID mismatch on retrieval"
 
 
-
 def test_get_income(
     client: TestClient,
     test_access_token,
