@@ -15,6 +15,7 @@ jobs:
         env: 
           DEFAULT_BRANCH: main
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    
+          VALIDATE_PYTHON_MYPY: true
+          PYTHON_MYPY_CONFIG_FILE: mypy.ini
 
 
