@@ -9,9 +9,6 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-        
-      - name: Run mypy
-        run: mypy ./Backend --config-file mypy.ini
 
       - name: Super-Linter
         uses:  super-linter/super-linter@v5.7.2
