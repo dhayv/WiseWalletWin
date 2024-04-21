@@ -3,11 +3,17 @@ import pytest
 from fastapi.testclient import TestClient
 from sqlmodel import SQLModel, create_engine, Session
 from sqlmodel.pool import StaticPool
-from .main import app  # Import your FastAPI instance
-from ..Backend.data_base.database import get_db
+from main import app  # Import your FastAPI instance
+from data_base import database
 import sys
 
-print(sys.path)
+
+sys.path.append('/Users/ecud/Desktop/python/text_my_budget/Backend')
+
+
+def test_print_sys_path():
+    print(sys.path)
+
 
 # User data to be used in the tests
 USER_DATA = {
@@ -38,7 +44,7 @@ def client_fixture(session: Session):
     def get_session_override():
         return session
 
-    app.dependency_overrides[get_db] = get_session_override
+    app.dependency_overrides[database.get_db] = get_session_override
     with TestClient(app) as client:
         yield client
     app.dependency_overrides.clear()
@@ -179,7 +185,7 @@ def test_delete_user(client: TestClient, create_test_user: Dict[str, Any]) -> No
     # Try to get the user again
     response = client.get(f"/user/{user_id}")
     assert response.status_code == 404, response.text
-    assert response.json() == {"detail": "User not found"}
+    assert response.json() == {"detail": "User account not found"}
 
 
 # income info
@@ -202,32 +208,36 @@ def income_info(
 
 
 def test_add_income(
-    client: TestClient, test_access_token: str, income_info: Dict[str, Any], create_test_user: Dict[str, Any]
+    client: TestClient, test_access_token: str, create_test_user: Dict[str, Any]
 ) -> None:
-    id_user = create_test_user["id"]
-    response = client.get(f"/income/{income_info['id']}", headers={"Authorization": f"Bearer {test_access_token}"})
-    assert response.status_code == 200, "Failed to fetch income details from the API"
-
-    assert response.status_code == 200
-    user_income = response.json()
-    assert user_income["amount"] == 5000
-    assert user_income["recent_pay"] == "2024-03-01"
-    assert user_income["last_pay"] == "2024-02-16"
-    assert user_income["user_id"] == id_user
-    assert "id" in user_income
-
-    # Optional: GET request to verify the income data is correctly associated with the user
-    get_response = client.get(
-        f"/income/{id_user}", headers={"Authorization": f"Bearer {test_access_token}"}
+    user_id = create_test_user['id']
+    income_data = {
+        "amount": 5000,
+        "recent_pay": "03-01-2024",
+        "last_pay": "02-16-2024",
+    }
+    response = client.post(
+        f"/income/{user_id}",
+        json=income_data,
+        headers={"Authorization": f"Bearer {test_access_token}"}
     )
-    assert get_response.status_code == 200
-    get_response_data = get_response.json()
+    assert response.status_code == 201, f"Failed to add income, received status {response.status_code}"
+    income_response = response.json()
 
-    # Verify the income data in the GET response
-    # This assumes the GET endpoint returns a list of incomes
-    assert len(get_response_data) > 0
-    assert get_response_data[0]["user_id"] == id_user
-    assert get_response_data[0]["amount"] == user_income["amount"]
+    # Check if the returned income matches the submitted data
+    assert income_response["amount"] == income_data["amount"], "The returned amount does not match the expected amount"
+    assert income_response["recent_pay"] == "2024-03-01", "The returned recent pay date is incorrect"
+    assert income_response["last_pay"] == "2024-02-16", "The returned last pay date is incorrect"
+    assert income_response["user_id"] == user_id, "The user ID does not match"
+
+    # Optionally verify the income data by fetching it again
+    get_response = client.get(
+        f"/income/{user_id}", headers={"Authorization": f"Bearer {test_access_token}"}
+    )
+    assert get_response.status_code == 200, "Failed to fetch income details"
+    income_data_fetched = get_response.json()[0]  # Assuming the GET returns a list
+    assert income_data_fetched["id"] == income_response["id"], "Income ID mismatch on retrieval"
+
 
 
 def test_get_income(
@@ -438,7 +448,7 @@ def test_expenses_for_user(
 
     expenses = [
         {"name": "Rent", "amount": 1000, "due_date": 1},
-        {"name": "Insurance Bill", "amount": 200, "due_date": 15},
+        {"name": "Light Bill", "amount": 200, "due_date": 15},
         {"name": "Water Bill", "amount": 100, "due_date": 23},
     ]
 

@@ -9,7 +9,7 @@ class ExpenseService:
 
     def add_expense(self, expense_data: ExpenseBase, income_id: int, user_id: int):
         income = self.db.exec(
-            select(Income).filter(Income.id == income_id, Income.id == user_id)
+            select(Income).filter(Income.id == income_id, Income.user_id == user_id)
         ).first()
         if not income:
             raise HTTPException(status_code=404, detail="Income not found")
@@ -22,14 +22,14 @@ class ExpenseService:
 
     def read_expense(self, income_id: int, user_id: int):
         statement = select(Expense).where(
-            Expense.income_id == income_id, Expense.user_id == user_id.id
+            Expense.income_id == income_id, Expense.user_id == user_id
         )
         results = self.db.exec(statement)
         expenses = results.all()
 
         return expenses
 
-    def update_expense(self, expense_data: ExpenseUpdate, expense_id: int):
+    def update_expense(self, expense_id: int, expense_data: ExpenseUpdate,):
         db_expense = self.db.get(Expense, expense_id)
         if not db_expense:
             raise HTTPException(status_code=404, detail="Expense not found")

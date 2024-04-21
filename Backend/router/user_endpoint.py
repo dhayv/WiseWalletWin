@@ -137,7 +137,7 @@ async def delete_user(user_id: int, db: Session = Depends(get_db)):
     statement = select(Users).where(Users.id == user_id)
     result = db.exec(statement).first()
     if not result:
-        raise HTTPException(status_code=404, detail="User not found")
+        raise HTTPException(status_code=404, detail="User account not found")
     db.delete(result)
     db.commit()
     return Response(status_code=status.HTTP_204_NO_CONTENT)

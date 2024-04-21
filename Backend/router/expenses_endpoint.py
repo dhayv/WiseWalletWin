@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, Response, status
+from fastapi import APIRouter, Depends, Response, status, HTTPException
 from models import Expense, ExpenseUpdate, ExpenseBase, Users
 from sqlmodel import Session
 from data_base.database import get_db
@@ -28,7 +28,7 @@ def read_expenses(
     current_user: Users = Depends(get_current_active_user),
 ):
     service = ExpenseService(db)
-    return service.read_expense(income_id, current_user)
+    return service.read_expense(income_id, current_user.id)
 
 
 @router.put("/expenses/{expense_id}")
@@ -38,7 +38,10 @@ def update_expense(
     db: Session = Depends(get_db)
 ):
     service = ExpenseService(db)
-    return service.update_expense(expense_id, expense_data)
+    updated_expense = service.update_expense(expense_id, expense_data)
+    if not updated_expense:
+        raise HTTPException(status_code=404, detail="Expense not found")
+    return updated_expense
 
 
 @router.delete("/expenses/{expense_id}", status_code=204)
