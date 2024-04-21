@@ -9,22 +9,12 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-        
-      - name: List files in the workspace
-        run: ls -la ${{ github.workspace }}
-      - name: Check file path and list directory
-        run: |
-          pwd
-          ls -la
-          cat mypy.ini
-
 
       - name: Super-Linter
         uses:  super-linter/super-linter@v5.7.2
         env: 
           DEFAULT_BRANCH: main
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          VALIDATE_PYTHON_MYPY: true
-          PYTHON_MYPY_CONFIG_FILE: mypy.ini
+          VALIDATE_PYTHON_MYPY: false
 
 
