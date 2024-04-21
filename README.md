@@ -30,6 +30,15 @@ DigitalOcean: Plans for deployment on DigitalOcean to host the application, offe
 Secure User Authentication: Utilizes JWT for robust security during user registration and login processes.
 CRUD Operations: Allows users to add, update, retrieve, and delete financial entries, supporting comprehensive financial management.
 
+### `mypy.ini`
+
+This project uses `mypy` for static type checking to maintain high code quality and consistency. The `mypy.ini` file contains configurations that define the rules and behaviors of `mypy` checks. 
+
+* **What's Configured?**
+  - Ignore missing imports to avoid errors on third-party libraries not having type hints.
+  - Specific error suppressions for known issues that do not impact functionality.
+
+
 
 
 (Notes)
