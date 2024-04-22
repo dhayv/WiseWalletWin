@@ -14,7 +14,9 @@ class ExpenseService:
         if not income:
             raise HTTPException(status_code=404, detail="Income not found")
 
-        expense = Expense(**expense_data.model_dump(), income_id=income_id, user_id=user_id)
+        expense = Expense(
+            **expense_data.model_dump(), income_id=income_id, user_id=user_id
+        )
         self.db.add(expense)
         self.db.commit()
         self.db.refresh(expense)
@@ -29,7 +31,11 @@ class ExpenseService:
 
         return expenses
 
-    def update_expense(self, expense_id: int, expense_data: ExpenseUpdate,):
+    def update_expense(
+        self,
+        expense_id: int,
+        expense_data: ExpenseUpdate,
+    ):
         db_expense = self.db.get(Expense, expense_id)
         if not db_expense:
             raise HTTPException(status_code=404, detail="Expense not found")

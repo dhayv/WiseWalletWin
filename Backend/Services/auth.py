@@ -46,8 +46,7 @@ def authenticate_user(db: Session, username: str, password: str):
 
 
 def create_access_token(
-    data: dict, expires_delta: timedelta
-    | None = None, db: Session = Depends(get_db)
+    data: dict, expires_delta: timedelta | None = None, db: Session = Depends(get_db)
 ):
     to_encode = data.copy()
     if expires_delta:
@@ -75,15 +74,13 @@ async def get_current_user(
         token_data = TokenData(username=username)
     except JWTError:
         raise credentials_exception
-    user = db.exec(
-        select(Users).where(Users.username == token_data.username)).first()
+    user = db.exec(select(Users).where(Users.username == token_data.username)).first()
     if user is None:
         raise credentials_exception
     return user
 
 
-async def get_current_active_user(
-        current_user: Users = Depends(get_current_user)):
+async def get_current_active_user(current_user: Users = Depends(get_current_user)):
     if current_user.disabled:
         raise HTTPException(status_code=400, detail="Inactive user")
     return current_user

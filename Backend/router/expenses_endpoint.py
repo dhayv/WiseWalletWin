@@ -33,9 +33,7 @@ def read_expenses(
 
 @router.put("/expenses/{expense_id}")
 def update_expense(
-    expense_id: int,
-    expense_data: ExpenseUpdate,
-    db: Session = Depends(get_db)
+    expense_id: int, expense_data: ExpenseUpdate, db: Session = Depends(get_db)
 ):
     service = ExpenseService(db)
     updated_expense = service.update_expense(expense_id, expense_data)
@@ -45,10 +43,7 @@ def update_expense(
 
 
 @router.delete("/expenses/{expense_id}", status_code=204)
-def delete_expense(
-    expense_id: int,
-    db: Session = Depends(get_db)
-):
+def delete_expense(expense_id: int, db: Session = Depends(get_db)):
     service = ExpenseService(db)
     service.delete_expense(expense_id)
     return Response(status_code=status.HTTP_204_NO_CONTENT)

@@ -8,7 +8,7 @@ from main import app  # Import your FastAPI instance
 from sqlmodel import Session, SQLModel, create_engine
 from sqlmodel.pool import StaticPool
 
-sys.path.append('/Users/ecud/Desktop/python/text_my_budget/Backend')
+sys.path.append("/Users/ecud/Desktop/python/text_my_budget/Backend")
 
 
 def test_print_sys_path():
@@ -210,7 +210,7 @@ def income_info(
 def test_add_income(
     client: TestClient, test_access_token: str, create_test_user: Dict[str, Any]
 ) -> None:
-    user_id = create_test_user['id']
+    user_id = create_test_user["id"]
     income_data = {
         "amount": 5000,
         "recent_pay": "03-01-2024",
@@ -219,15 +219,23 @@ def test_add_income(
     response = client.post(
         f"/income/{user_id}",
         json=income_data,
-        headers={"Authorization": f"Bearer {test_access_token}"}
+        headers={"Authorization": f"Bearer {test_access_token}"},
     )
-    assert response.status_code == 201, f"Failed to add income, received status {response.status_code}"
+    assert (
+        response.status_code == 201
+    ), f"Failed to add income, received status {response.status_code}"
     income_response = response.json()
 
     # Check if the returned income matches the submitted data
-    assert income_response["amount"] == income_data["amount"], "The returned amount does not match the expected amount"
-    assert income_response["recent_pay"] == "2024-03-01", "The returned recent pay date is incorrect"
-    assert income_response["last_pay"] == "2024-02-16", "The returned last pay date is incorrect"
+    assert (
+        income_response["amount"] == income_data["amount"]
+    ), "The returned amount does not match the expected amount"
+    assert (
+        income_response["recent_pay"] == "2024-03-01"
+    ), "The returned recent pay date is incorrect"
+    assert (
+        income_response["last_pay"] == "2024-02-16"
+    ), "The returned last pay date is incorrect"
     assert income_response["user_id"] == user_id, "The user ID does not match"
 
     # Optionally verify the income data by fetching it again
@@ -236,7 +244,9 @@ def test_add_income(
     )
     assert get_response.status_code == 200, "Failed to fetch income details"
     income_data_fetched = get_response.json()[0]  # Assuming the GET returns a list
-    assert income_data_fetched["id"] == income_response["id"], "Income ID mismatch on retrieval"
+    assert (
+        income_data_fetched["id"] == income_response["id"]
+    ), "Income ID mismatch on retrieval"
 
 
 def test_get_income(
@@ -257,9 +267,9 @@ def test_get_income(
     assert income_info["amount"] == 5000
     assert income_info["recent_pay"] == "2024-03-01"
     assert income_info["last_pay"] == "2024-02-16"
-    assert income_info["user_id"] == create_test_user['id']
+    assert income_info["user_id"] == create_test_user["id"]
 
-    assert 'id' in income_info, 'Income record does not have an ID'
+    assert "id" in income_info, "Income record does not have an ID"
 
 
 def test_update_income(
