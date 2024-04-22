@@ -21,6 +21,7 @@ def main():
 
     print(f"Remaining balance: {remainder}")
 
+
 # Get user input
 
 
@@ -37,7 +38,9 @@ def get_income():
     recent_pay_date = input("Enter your most recent pay date (MM-DD-YYYY): ")
 
     #  next pay date
-    last_pay_date = input("Enter your last pay date before the most recent one (MM-DD-YYYY): ")
+    last_pay_date = input(
+        "Enter your last pay date before the most recent one (MM-DD-YYYY): "
+    )
 
     return net_income, recent_pay_date, last_pay_date
 
@@ -46,7 +49,9 @@ def get_expenses():
 
     # Collect expenses
     # Categories needed (Name, amount, Due Date)
-    print("Enter your expenses. Include the Name, Amount, and Due Date (1-30) for each expense.")
+    print(
+        "Enter your expenses. Include the Name, Amount, and Due Date (1-30) for each expense."
+    )
     print("Example: Rent, 1000, 1")
 
     expenses_info = []
@@ -55,19 +60,27 @@ def get_expenses():
     total_expenses = 0
 
     while True:
-        expense_input = input("Enter an expense (or type 'done' to finish) ").strip().capitalize()
+        expense_input = (
+            input("Enter an expense (or type 'done' to finish) ").strip().capitalize()
+        )
         if expense_input.lower() == "done":
             break
         else:
             expense_name, amount, due_date = expense_input.split(",")
-            expenses_info.append({"Expense": expense_name, "Amount": float(amount), "Due Date": int(due_date)})
+            expenses_info.append(
+                {
+                    "Expense": expense_name,
+                    "Amount": float(amount),
+                    "Due Date": int(due_date),
+                }
+            )
             total_expenses += float(amount)
 
     # Write expenses to a csv file
 
-    with open('expenses.csv', "a", newline='') as file:
+    with open("expenses.csv", "a", newline="") as file:
         writer = csv.DictWriter(file, fieldnames=["Expense", "Amount", "Due Date"])
-        file_exists = os.path.isfile('expenses.csv')
+        file_exists = os.path.isfile("expenses.csv")
         if not file_exists:
             #  Write header row
             writer.writeheader()
@@ -85,25 +98,25 @@ def calculate(net_income, total_expenses):
 
 
 # def next_pay_date(recent_pay_date):
-    # current_date = date.today("%m-%d-%Y")
-    # In your case, you could use a cron job to run a Python script at regular intervals.
-    # This script could use the next_pay_date function to calculate the next pay date,
-    # and then update a database with this date. Then, you could use FastAPI to create an
-    # API that retrieves the next pay date from the database.
+# current_date = date.today("%m-%d-%Y")
+# In your case, you could use a cron job to run a Python script at regular intervals.
+# This script could use the next_pay_date function to calculate the next pay date,
+# and then update a database with this date. Then, you could use FastAPI to create an
+# API that retrieves the next pay date from the database.
 
 # Output
-    # Categories
-    # Income - Expenses
-    # CSP
-    # -Fixed cost 50%
-    # -Savings 20%
-    # -Wants 30%
+# Categories
+# Income - Expenses
+# CSP
+# -Fixed cost 50%
+# -Savings 20%
+# -Wants 30%
 
 # Bi-weekly checks
-    # -first check amount
-    # —total expenses coming out of that check
-    # -last check amount
-    # —total expenses coming out of that check
+# -first check amount
+# —total expenses coming out of that check
+# -last check amount
+# —total expenses coming out of that check
 
 if __name__ == "__main__":
     main()
