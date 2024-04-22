@@ -17,4 +17,15 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           VALIDATE_PYTHON_MYPY: false
 
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11.8'  # Specify the Python version
+
+      - name: Install Mypy
+        run: pip install mypy
+
+      - name: Run Mypy
+        run: mypy . --config-file mypy.ini
+
 
