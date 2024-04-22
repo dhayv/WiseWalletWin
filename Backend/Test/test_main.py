@@ -1,12 +1,12 @@
-from typing import Dict, Any, List
-import pytest
-from fastapi.testclient import TestClient
-from sqlmodel import SQLModel, create_engine, Session
-from sqlmodel.pool import StaticPool
-from main import app  # Import your FastAPI instance
-from data_base import database
 import sys
+from typing import Any, Dict, List
 
+import pytest
+from data_base import database
+from fastapi.testclient import TestClient
+from main import app  # Import your FastAPI instance
+from sqlmodel import Session, SQLModel, create_engine
+from sqlmodel.pool import StaticPool
 
 sys.path.append('/Users/ecud/Desktop/python/text_my_budget/Backend')
 

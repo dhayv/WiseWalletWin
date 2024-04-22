@@ -1,5 +1,5 @@
 from fastapi import HTTPException, Response, status
-from models import Expense, ExpenseUpdate, ExpenseBase, Income
+from models import Expense, ExpenseBase, ExpenseUpdate, Income
 from sqlmodel import Session, select
 
 

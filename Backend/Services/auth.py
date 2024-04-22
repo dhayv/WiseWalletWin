@@ -1,14 +1,14 @@
+import os
 from datetime import datetime, timedelta, timezone
+
+from data_base.database import Session, get_db
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from jose import JWTError, jwt
+from models import Users
 from passlib.context import CryptContext
 from pydantic import BaseModel
-from data_base.database import Session, get_db
-from models import Users
 from sqlmodel import select
-import os
-
 
 SECRET_KEY = os.getenv("SECRET_KEY", "default_secret_if_not_set")
 ALGORITHM = "HS256"

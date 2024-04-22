@@ -1,13 +1,12 @@
-from fastapi import FastAPI
-from contextlib import asynccontextmanager
-from data_base import database
-from router import (
-    expenses_endpoint as expense_router,
-    income_endpoint as income_router,
-    user_endpoint as user_router,
-)
 import logging
+from contextlib import asynccontextmanager
+
+from data_base import database
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from router import expenses_endpoint as expense_router
+from router import income_endpoint as income_router
+from router import user_endpoint as user_router
 
 logging.basicConfig(
     level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"

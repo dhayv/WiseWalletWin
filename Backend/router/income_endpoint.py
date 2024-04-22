@@ -1,9 +1,9 @@
-from fastapi import APIRouter, Depends, HTTPException, status
-from sqlmodel import Session, select
-from models import Income, IncomeUpdate, IncomeBase
-from data_base.database import get_db, engine
 from datetime import datetime
 
+from data_base.database import engine, get_db
+from fastapi import APIRouter, Depends, HTTPException, status
+from models import Income, IncomeBase, IncomeUpdate
+from sqlmodel import Session, select
 
 router = APIRouter()
 

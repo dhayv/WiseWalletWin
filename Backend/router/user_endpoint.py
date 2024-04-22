@@ -1,19 +1,15 @@
-from fastapi import APIRouter, Depends, HTTPException, Response, status
-from sqlmodel import Session, select
-from models import Users, UserIn, UserOut, UserUpdate
-from data_base.database import get_db
 from datetime import timedelta
-from Services.auth import (
-    get_password_hash,
-    Token,
-    ACCESS_TOKEN_EXPIRES_MINUTES,
-    create_access_token,
-    authenticate_user,
-    get_current_active_user,
-)
-from fastapi.security import OAuth2PasswordRequestForm
-from Services.calculations import sum_of_all_expenses, calc_income_minus_expenses
 
+from data_base.database import get_db
+from fastapi import APIRouter, Depends, HTTPException, Response, status
+from fastapi.security import OAuth2PasswordRequestForm
+from models import UserIn, UserOut, Users, UserUpdate
+from Services.auth import (ACCESS_TOKEN_EXPIRES_MINUTES, Token,
+                           authenticate_user, create_access_token,
+                           get_current_active_user, get_password_hash)
+from Services.calculations import (calc_income_minus_expenses,
+                                   sum_of_all_expenses)
+from sqlmodel import Session, select
 
 router = APIRouter()
 

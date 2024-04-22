@@ -1,11 +1,11 @@
-from sqlmodel import SQLModel, Field, AutoString
-from typing import Optional
-from typing_extensions import Annotated
-from pydantic import field_validator, BaseModel, EmailStr, StringConstraints
-from datetime import date, datetime
-import re
 import logging
+import re
+from datetime import date, datetime
+from typing import Optional
 
+from pydantic import BaseModel, EmailStr, StringConstraints, field_validator
+from sqlmodel import AutoString, Field, SQLModel
+from typing_extensions import Annotated
 
 # Regex for phone number validation
 phone_number_regex = r"^(?:\(\d{3}\)|\d{3}-?)\d{3}-?\d{4}$"

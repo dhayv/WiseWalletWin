@@ -86,9 +86,9 @@ def calculate(net_income, total_expenses):
 
 # def next_pay_date(recent_pay_date):
     # current_date = date.today("%m-%d-%Y")
-    # In your case, you could use a cron job to run a Python script at regular intervals. 
-    # This script could use the next_pay_date function to calculate the next pay date, 
-    # and then update a database with this date. Then, you could use FastAPI to create an 
+    # In your case, you could use a cron job to run a Python script at regular intervals.
+    # This script could use the next_pay_date function to calculate the next pay date,
+    # and then update a database with this date. Then, you could use FastAPI to create an
     # API that retrieves the next pay date from the database.
 
 # Output

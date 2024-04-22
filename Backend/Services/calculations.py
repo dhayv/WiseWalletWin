@@ -1,5 +1,5 @@
-from sqlmodel import Session, select
 from models import Expense, Income
+from sqlmodel import Session, select
 
 
 def sum_of_all_expenses(user_id: int, db: Session):
