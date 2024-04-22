@@ -34,6 +34,7 @@ class UserIn(BaseModel):
     ]
 
     @field_validator("password")
+    @classmethod
     def password_complexity(cls, value):
         if not re.search(r"[a-z]", value):
             raise ValueError("Password must contain at least one lowercase letter")
@@ -128,6 +129,7 @@ class ExpenseBase(BaseModel):
     due_date: Optional[int]
 
     @field_validator("due_date", mode="before")
+    @classmethod
     def check_due_date(cls, v):
         if v is None:
             return v
