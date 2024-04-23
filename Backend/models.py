@@ -118,9 +118,7 @@ class Income(IncomeBase, SQLModel, table=True):
 class IncomeUpdate(IncomeBase):
     amount: Optional[float] = None
     recent_pay: Optional[date] = None
-    last_pay: Optional[date] = (
-        None  # Last pay date two weeks prior to recent_pay MM-DD-YYYY
-    )
+    last_pay: Optional[date] = None
 
 
 class ExpenseBase(BaseModel):
