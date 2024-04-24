@@ -454,13 +454,13 @@ def test_expenses_for_user(
     user_id = create_test_user["id"]
     income_id = income_info["id"]
 
-    expenses = [
+    multi_expenses = [
         {"name": "Rent", "amount": 1000, "due_date": 1},
         {"name": "Light Bill", "amount": 200, "due_date": 15},
         {"name": "Water Bill", "amount": 100, "due_date": 23},
     ]
 
-    for expense in expenses:
+    for expense in multi_expenses:
         response = client.post(
             f"/expenses/{income_id}",
             json=expense,
@@ -476,7 +476,7 @@ def test_expenses_for_user(
 
     data = get_response.json()
     print(data)
-    assert len(data) == len(expenses)
+    assert len(data) == len(multi_expenses)
     for expense in data:
         assert expense["user_id"] == user_id
 
@@ -490,7 +490,7 @@ def create_expenses_for_user(
 
     expenses = [
         {"name": "Rent", "amount": 1000, "due_date": 1},
-        {"name": "Light Bill", "amount": 200, "due_date": 15},
+        {"name": "Insurance Bill", "amount": 200, "due_date": 15},
         {"name": "Water Bill", "amount": 100, "due_date": 23},
     ]
 
