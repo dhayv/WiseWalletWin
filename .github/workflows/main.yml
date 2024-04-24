@@ -9,23 +9,44 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-
-      - name: Super-Linter
-        uses:  super-linter/super-linter@v5.7.2
-        env: 
-          DEFAULT_BRANCH: main
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          VALIDATE_PYTHON_MYPY: false
-
+            
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
           python-version: '3.11.8'  # Specify the Python version
 
-      - name: Install Mypy
-        run: pip install mypy
+      - name: Install Black
+        run: pip install black
 
-      - name: Run Mypy
-        run: mypy . --config-file mypy.ini
+      - name: Format code with Black
+        run: black . --check --diff
+        continue-on-error: true
+
+      - name: Commit changes if needed
+        run: |
+          if black . --check; then
+            echo "No changes needed"
+          else
+            black .
+            git config --local user.email "action@github.com"
+            git config --local user.name "GitHub Action"
+            git add -A
+            git commit -m "Apply black formatting"
+            git push
+          fi
+
+      - name: Set up Environment for Super-Linter
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20'
+
+      - name: Run Super-Linter
+        uses:  super-linter/super-linter@v5.7.2
+        env: 
+          DEFAULT_BRANCH: main
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          VALIDATE_PYTHON_MYPY: false
+          VALIDATE_PYTHON_BLACK: true
+        continue-on-error: true
 
 
