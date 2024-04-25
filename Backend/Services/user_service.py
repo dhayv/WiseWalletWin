@@ -61,7 +61,9 @@ class UserService:
             del update_data["password"]
 
         for key, value in update_data.items():
-            setattr(result, key if key != "hashed_password" else "hashed_password", value)
+            setattr(
+                result, key if key != "hashed_password" else "hashed_password", value
+            )
 
         self.db.add(result)
         self.db.commit()
