@@ -21,8 +21,14 @@ jobs:
       - name: Format code with Black
         run: black . --check --diff
         continue-on-error: true
+        env: 
+          DEFAULT_BRANCH: main
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Commit changes if needed
+        env: 
+          DEFAULT_BRANCH: main
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           if black . --check; then
             echo "No changes needed"
@@ -34,6 +40,8 @@ jobs:
             git commit -m "Apply black formatting"
             git push
           fi
+        continue-on-error: true
+        
 
       - name: Set up Environment for Super-Linter
         uses: actions/setup-node@v3
