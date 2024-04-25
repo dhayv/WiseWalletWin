@@ -12,29 +12,24 @@ jobs:
             
       - name: Set up Python
         uses: actions/setup-python@v5.1.0
-
-      - name: Python Black
-        uses: cytopia/docker-black@0.11
         with:
-          path: .
+          python-version: '3.x'
+
+      - name: Install Black
+        run: pip install black
 
       - name: Format code with Black
-        run: black . 
-        continue-on-error: true
-        env: 
-          DEFAULT_BRANCH: main
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: black . --check --diff
 
       - name: Commit changes if needed
-        run: |
-            git config --local user.email "action@github.com"
-            git config --local user.name "GitHub Action"
-            git add -A
-            git diff --exit-code || git commit -m "Apply black formatting"
-            git push
-        env: 
+        env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        continue-on-error: true
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add -A
+          git diff --exit-code || git commit -m "Apply black formatting"
+          git push
         
 
       - name: Set up Environment for Super-Linter
