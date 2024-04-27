@@ -1,4 +1,4 @@
-name: Super-Linter
+name: Lint-code 
 
 on: push
 
@@ -13,17 +13,22 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5.1.0
         with:
-          python-version: '3.x'
+          python-version: '3.11.8'
+
+      - name: Cache dependicies
+        uses: actions/cache@4.0.2
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('Backend/requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
 
       - name: Install dependcies
-        run: pip install isort black==24.4.0
+        run: |
+          pip install isort black
 
       - name: Isort
-        uses: isort/isort-action@v1
-        with: 
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          check-only: false
-          profile: black
+        run: isort . --profile black
           
       - name: Format code with Black
         run: black .
@@ -35,7 +40,7 @@ jobs:
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
           git add -A
-          git diff --exit-code || git commit -m "Format code with isort and/or black"
+          git diff --exit-code || git commit -m "Apply formatting"
           git push
         
 
@@ -45,10 +50,10 @@ jobs:
       - name: Run Super-Linter
         uses:  super-linter/super-linter@v5.7.2
         env: 
-          BLACK_VERSION: '24.4.0'
           DEFAULT_BRANCH: main
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           VALIDATE_PYTHON_MYPY: false
+          VALIDATE_PYTHON_BLACK: false
         continue-on-error: true
 
 
