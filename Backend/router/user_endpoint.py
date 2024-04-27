@@ -1,7 +1,7 @@
 from datetime import timedelta
 
 from data_base.database import get_db
-from fastapi import APIRouter, Depends, HTTPException, Response, status
+from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
 from models import UserIn, UserOut, Users, UserUpdate
 from Services.auth import (
@@ -10,30 +10,19 @@ from Services.auth import (
     authenticate_user,
     create_access_token,
     get_current_active_user,
-    get_password_hash,
 )
 from Services.calculations import calc_income_minus_expenses, sum_of_all_expenses
-from sqlmodel import Session, select
+from Services.user_service import UserService
+from sqlmodel import Session
 
 router = APIRouter()
-
-
-def get_user_by_username(username: str, db: Session):
-    statement = select(Users).where(Users.username == username)
-    result = db.exec(statement).first()
-    return result
-
-
-def get_user_by_email(email: str, db: Session):
-    statement = select(Users).where(Users.email == email)
-    result = db.exec(statement).first()
-    return result
 
 
 # This endpoint is used for user login. It verifies the user's credentials and returns an access token.
 @router.post("/token", response_model=Token)
 async def login_for_access_token(
-    form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)
+    form_data: OAuth2PasswordRequestForm = Depends(),
+    db: Session = Depends(get_db)
 ):
     user = authenticate_user(db, form_data.username, form_data.password)
     if not user:
@@ -53,91 +42,67 @@ async def login_for_access_token(
 # It adds a new user to the database.
 # Also Check if username or email exists in the database.
 @router.post("/user", response_model=UserOut, status_code=status.HTTP_201_CREATED)
-def add_user(user: UserIn, db: Session = Depends(get_db)):
-
-    username_check = get_user_by_username(user.username, db)
-    email_check = get_user_by_email(user.email, db)
-
-    if username_check:
-        raise HTTPException(status_code=400, detail="Username already exists")
-    if email_check:
-        raise HTTPException(status_code=400, detail="Email already exists")
-    else:
-        hashed_password = get_password_hash(user.password)
-        db_user = Users(
-            username=user.username,
-            email=user.email,
-            hashed_password=hashed_password,
-            first_name=user.first_name,
-            phone_number=user.phone_number,
-        )
-        db.add(db_user)
-        db.commit()
-        db.refresh(db_user)
-        return db_user
+def add_user(
+    user: UserIn,
+    db: Session = Depends(get_db)
+):
+    service = UserService(db)
+    return service.add_user(user)
 
 
 # This endpoint is used to get the profile of the currently logged in user.
 @router.get("/user/me", response_model=UserOut)
-async def read_user_me(current_user: Users = Depends(get_current_active_user)):
-    return current_user
+async def read_user_me(
+    current_user: Users = Depends(get_current_active_user)
+):
+    service = UserService(current_user.db)
+    return service.read_user(current_user.id)
 
 
 # This endpoint is used to get the profile of a specific user based on their user_id.
 @router.get("/user/{user_id}", response_model=UserOut)
-async def read_user(user_id: int, db: Session = Depends(get_db)):
-    statement = select(Users).where(Users.id == user_id)
-    result = db.exec(statement).first()
-    if not result:
-        raise HTTPException(status_code=404, detail="User account not found")
-    return result
+async def read_user(
+    user_id: int,
+    db: Session = Depends(get_db)
+):
+    service = UserService(db)
+    return service.read_user(user_id)
 
 
 # This endpoint is used to get total expense of a specific user based on their user_id.
 @router.get("/user/{user_id}/total_expenses", response_model=dict)
-def read_total_expenses(user_id: int, db: Session = Depends(get_db)):
+def read_total_expenses(
+    user_id: int,
+    db: Session = Depends(get_db)
+):
     total = sum_of_all_expenses(user_id, db)
     return {"total_expenses": total}
 
 
 # This endpoint is used to get the total income minus expenses of a specific user based on their user_id.
 @router.get("/user/{user_id}/income_minus_expenses", response_model=dict)
-def read_total_income_minus_expenses(user_id: int, db: Session = Depends(get_db)):
+def read_total_income_minus_expenses(
+    user_id: int,
+    db: Session = Depends(get_db)
+):
     total = calc_income_minus_expenses(user_id, db)
     return {"income_minus_expenses": total}
 
 
 @router.put("/user/{user_id}", response_model=UserOut)
 async def update_user(
-    user_id: int, user_update: UserUpdate, db: Session = Depends(get_db)
+    user_id: int,
+    user_update: UserUpdate,
+    db: Session = Depends(get_db)
 ):
-    statement = select(Users).where(Users.id == user_id)
-    result = db.exec(statement).first()
-    if not result:
-        raise HTTPException(status_code=404, detail="User not found")
-
-    update_data = user_update.model_dump(exclude_unset=True)
-
-    if "password" in update_data:
-        hashed_password = get_password_hash(update_data["password"])
-        update_data["password"] = hashed_password
-        del update_data["password"]
-
-    for key, value in update_data.items():
-        setattr(result, key if key != "hashed_password" else "hashed_password", value)
-
-    db.add(result)
-    db.commit()
-    db.refresh(result)
-    return result
+    service = UserService(db)
+    return service.update_user(user_id, user_update)
 
 
 @router.delete("/user/{user_id}", status_code=status.HTTP_204_NO_CONTENT)
-async def delete_user(user_id: int, db: Session = Depends(get_db)):
-    statement = select(Users).where(Users.id == user_id)
-    result = db.exec(statement).first()
-    if not result:
-        raise HTTPException(status_code=404, detail="User account not found")
-    db.delete(result)
-    db.commit()
-    return Response(status_code=status.HTTP_204_NO_CONTENT)
+async def delete_user(
+    user_id: int,
+    db: Session = Depends(get_db)
+):
+    service = UserService(db)
+    return service.delete_user(user_id)
