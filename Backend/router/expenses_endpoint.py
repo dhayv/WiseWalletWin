@@ -47,7 +47,7 @@ def update_expense(
 
 @router.delete("/expenses/{expense_id}", status_code=204)
 def delete_expense(
-    expense_id: int, 
+    expense_id: int,
     service: ExpenseService = Depends(get_expense_service),
 ):
     service.delete_expense(expense_id)
