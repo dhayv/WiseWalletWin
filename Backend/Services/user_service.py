@@ -1,8 +1,6 @@
 from fastapi import HTTPException, Response, status
 from models import UserIn, Users, UserUpdate
-from Services.auth import (
-    get_password_hash,
-)
+from Services.auth import get_password_hash
 from sqlmodel import Session, select
 
 

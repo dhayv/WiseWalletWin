@@ -9,11 +9,7 @@ class IncomeService:
     def __init__(self, db_session: Session) -> None:
         self.db = db_session
 
-    def add_income(
-            self,
-            income_data: IncomeBase,
-            user_id: int
-    ):
+    def add_income(self, income_data: IncomeBase, user_id: int):
         db_income = Income(**income_data.model_dump(), user_id=user_id)
         self.db.add(db_income)
         self.db.commit()
@@ -21,8 +17,8 @@ class IncomeService:
         return db_income
 
     def read_all_incomes(
-            self,
-            user_id: int,
+        self,
+        user_id: int,
     ):
         statement = select(Income).where(Income.user_id == user_id)
         results = self.db.exec(statement)
