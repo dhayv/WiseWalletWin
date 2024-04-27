@@ -15,8 +15,8 @@ jobs:
         with:
           python-version: '3.11.8'
 
-      - name: Cache dependicies
-        uses: actions/cache@4.0.2
+      - name: Cache
+        uses: actions/cache@v4.0.2
         with:
           path: ~/.cache/pip
           key: ${{ runner.os }}-pip-${{ hashFiles('Backend/requirements.txt') }}
