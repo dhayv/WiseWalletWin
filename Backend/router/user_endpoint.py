@@ -18,6 +18,10 @@ from sqlmodel import Session
 router = APIRouter()
 
 
+def get_user_service(db: Session = Depends(get_db)):
+    return UserService(db)
+
+
 # This endpoint is used for user login. It verifies the user's credentials and returns an access token.
 @router.post("/token", response_model=Token)
 async def login_for_access_token(
@@ -44,9 +48,8 @@ async def login_for_access_token(
 @router.post("/user", response_model=UserOut, status_code=status.HTTP_201_CREATED)
 def add_user(
     user: UserIn,
-    db: Session = Depends(get_db)
+    service: UserService = Depends(get_user_service)
 ):
-    service = UserService(db)
     return service.add_user(user)
 
 
@@ -63,9 +66,8 @@ async def read_user_me(
 @router.get("/user/{user_id}", response_model=UserOut)
 async def read_user(
     user_id: int,
-    db: Session = Depends(get_db)
+    service: UserService = Depends(get_user_service)
 ):
-    service = UserService(db)
     return service.read_user(user_id)
 
 
@@ -93,16 +95,14 @@ def read_total_income_minus_expenses(
 async def update_user(
     user_id: int,
     user_update: UserUpdate,
-    db: Session = Depends(get_db)
+    service: UserService = Depends(get_user_service)
 ):
-    service = UserService(db)
     return service.update_user(user_id, user_update)
 
 
 @router.delete("/user/{user_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_user(
     user_id: int,
-    db: Session = Depends(get_db)
+    service: UserService = Depends(get_user_service)
 ):
-    service = UserService(db)
     return service.delete_user(user_id)
