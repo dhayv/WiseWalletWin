@@ -2,7 +2,7 @@
 
 ## Project Overview
 
-This is a full-stack web application created to help users manage their personal finances by tracking income and logging expenses. It allows users to keep track of their expenses from check to check. The app is designed to improve decision-making without the need for a spreadsheet. 
+This is a full-stack web applicationcreated to help users manage their personal finances by tracking income and logging expenses. It allows users to keep track of their expenses from check to check. The app is designed to improve decision-making without the need for a spreadsheet.
 
 A sqlite database stores all data for the user, a UI is created using React and, a FAST API server is utilized to ensure proper security using JWT Oauth2, data validation using pydantic models, and communication.
 

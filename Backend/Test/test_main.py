@@ -449,7 +449,10 @@ def test_delete_expense(
 
 
 def test_expenses_for_user(
-    client: TestClient, income_info, test_access_token, create_test_user: Dict[str, Any]
+    client: TestClient,
+    income_info,
+    test_access_token,
+    create_test_user: Dict[str, Any]
 ):
     user_id = create_test_user["id"]
     income_id = income_info["id"]
@@ -483,7 +486,10 @@ def test_expenses_for_user(
 
 @pytest.fixture(scope="function")
 def create_expenses_for_user(
-    client: TestClient, income_info, test_access_token, create_test_user: Dict[str, Any]
+    client: TestClient,
+    income_info,
+    test_access_token,
+    create_test_user: Dict[str, Any]
 ):
 
     income_id = income_info["id"]
