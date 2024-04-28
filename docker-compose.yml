@@ -1,4 +1,5 @@
 services:
+
   backend:
     build: ./backend
     ports:
@@ -6,6 +7,7 @@ services:
     environment:
       - CORS_ORIGIN=https://wisewalletwin.com  # Assuming the frontend runs on localhost:3000
       - SECRET_KEY=${SECRET_KEY}
+      - DATABASE_URL=${DATABASE_URL}
     networks:
       - app-network
 

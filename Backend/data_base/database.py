@@ -1,5 +1,5 @@
 import logging
-
+import os
 from sqlmodel import Session, SQLModel, create_engine
 
 logging.basicConfig(
@@ -8,7 +8,7 @@ logging.basicConfig(
 
 
 # database URL
-sqlite_url = "sqlite:///./db.sqlite3"
+sqlite_url = os.getenv('DATABASE_URL', 'sqlite:///./db.sqlite3')
 
 # Creates database engine
 engine = create_engine(sqlite_url, echo=True)
