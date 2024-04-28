@@ -8,7 +8,7 @@ WORKDIR /code
 COPY package*.json ./
 
 # Install any needed packages specified in package.json
-RUN npm install
+RUN npm install --fetch-timeout=300000
 
 # Copy the current directory contents into the container at /app
 COPY . .

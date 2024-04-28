@@ -12,31 +12,8 @@ services:
     networks:
       - app-network
 
-  frontend:
-    build: ./frontend
-    environment:
-      - API_URL=https://api.wisewalletwin.com # Use the service name for internal Docker networking
-    depends_on:
-      - backend
-    networks:
-      - app-network
-
-  caddy:
-    image: caddy:2
-    restart: unless-stopped
-    ports:
-      - "80:80"
-      - "443:443"
-    volumes:
-      - ./Caddyfile:/etc/caddy/Caddyfile
-      - ./Frontend/build:/srv
-      - caddy_data:/data
-      - caddy_config:/config
-
 volumes:
   backend-data:
-  caddy_data:
-  caddy_config:
 
 networks:
   app-network:
