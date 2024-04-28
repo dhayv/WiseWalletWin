@@ -1,0 +1,18 @@
+wisewalletwin.com {
+    root * /srv/frontend
+    file_server
+    encode gzip
+    @notFound {
+        file {
+            try_files {path} /index.html
+        }
+    }
+    handle @notFound {
+        rewrite * /index.html
+        file_server
+    }
+}
+
+api.wisewalletwin.com {
+    reverse_proxy backend:8000
+}

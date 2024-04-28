@@ -1,5 +1,6 @@
-# Use an official Node runtime as a parent image
-FROM node:20.12.2-alpine3.19
+
+# Stage 1: Build React
+FROM node:20.12.2-alpine3.19 as builder
 
 # Set the working directory in the container
 WORKDIR /code
@@ -12,11 +13,9 @@ RUN npm install
 # Copy the current directory contents into the container at /app
 COPY . .
 
-# Make port 3000 available to the world outside this container
-EXPOSE 3000
+RUN npm run build
 
-# Define environment variable
-ENV NODE_ENV production
-
-# Run npm start when the container launches
-CMD ["npm", "start"]
+# Stage 2: Serve the Build React
+FROM alpine:latest
+WORKDIR /srv
+COPY --from=builder /code/build .
