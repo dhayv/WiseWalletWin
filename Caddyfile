@@ -1,5 +1,5 @@
 wisewalletwin.com {
-    root * /srv/frontend
+    root * /srv/
     file_server
     encode gzip
     @notFound {
