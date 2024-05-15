@@ -25,7 +25,8 @@ async def lifespan(app: FastAPI):
 app = FastAPI(lifespan=lifespan)
 
 # connect to react
-origins = ["http://localhost:3000"]
+origins = ["http://localhost:3000",
+           "http://wisewalletwin.com"]
 
 app.add_middleware(
     CORSMiddleware,
