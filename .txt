@@ -7,3 +7,21 @@
 
 cd ~/.ssh
 ssh -i "New-key-wise.pem" ubuntu@ec2-54-197-53-252.compute-1.amazonaws.com
+
+
+
+sudo rm /etc/nginx/sites-available/default
+sudo vim /etc/nginx/sites-available/wisewalletwin.com
+
+
+# Remove the existing symbolic link or file
+sudo rm /etc/nginx/sites-enabled/default
+
+# Create a new symbolic link
+sudo ln -s /etc/nginx/sites-available/wisewalletwin.com /etc/nginx/sites-enabled/
+
+# Test the NGINX configuration
+sudo nginx -t
+
+# Reload NGINX to apply the changes
+sudo systemctl reload nginx

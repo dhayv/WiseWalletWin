@@ -24,24 +24,32 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(lifespan=lifespan)
 
+origins = [
+    "http://localhost:3000",
+    "http://wisewalletwin.com",
+    "https://wisewalletwin.com",
+    "http://www.wisewalletwin.com",
+    "https://www.wisewalletwin.com"
+]
+
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000", "http://wisewalletwin.com", "https://wisewalletwin.com"],
+    allow_origins=origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
 
-@app.get("/api")
+@app.get("/")
 def hello():
     return {"message": "Hello, World"}
 
 
-app.include_router(expense_router.router)
-app.include_router(income_router.router)
-app.include_router(user_router.router)
+app.include_router(expense_router.router, prefix="/api")
+app.include_router(income_router.router, prefix="/api")
+app.include_router(user_router.router, prefix="/api")
 
 if __name__ == "__main__":
     database.create_db_and_tables()
