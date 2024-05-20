@@ -3,7 +3,9 @@
  rsync -avz --exclude 'node_modules' --exclude '.git' --exclude '.env' \
 --exclude 'venv' --exclude '__pycache__' --exclude 'db.sqlite3' \
 -e "ssh -i ~/.ssh/New-key-wise.pem" \
-/Users/ecud/Desktop/python/text_my_budget/backend/main.py ubuntu@ec2-54-197-53-252.compute-1.amazonaws.com:/home/ubuntu/app/
+/Users/ecud/Desktop/python/text_my_budget/frontend/src/api.js ubuntu@ec2-54-197-53-252.compute-1.amazonaws.com:/home/ubuntu/app/frontend/src
+
+/Users/ecud/Desktop/python/text_my_budget/frontend/src/api.js
 
 cd ~/.ssh
 ssh -i "New-key-wise.pem" ubuntu@ec2-54-197-53-252.compute-1.amazonaws.com

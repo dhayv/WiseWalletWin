@@ -1,46 +1,109 @@
-# SpendSmartly APP
+# Wise Wallet Win APP
 
-## Project Overview
+> Wise Wallet Win is a comprehensive financial management application designed to streamline and simplify the way users track their monthly expenses. Experience it firsthand: [WiseWalletWin](https://wisewalletwin.com)
 
-This is a full-stack web applicationcreated to help users manage their personal finances by tracking income and logging expenses. It allows users to keep track of their expenses from check to check. The app is designed to improve decision-making without the need for a spreadsheet.
+## Application Overview
 
-A sqlite database stores all data for the user, a UI is created using React and, a FAST API server is utilized to ensure proper security using JWT Oauth2, data validation using pydantic models, and communication.
+Wise Wallet Win is a full-stack web application dedicated to helping users manage their personal finances efficiently. Originally built to help my girlfriend and me keep track of our monthly expenses, this application informs us how much we need to allocate from our bi-weekly checks, effectively eliminating the need for cumbersome spreadsheets. By tracking income and logging expenses, users can easily monitor their financial health from paycheck to paycheck, enhancing decision-making and financial planning through a seamless and intuitive interface.
+
+The application employs a robust technology stack, including a SQLite database, a React-powered user interface, and a FastAPI server ensuring secure, efficient data management and communication. The entire system is deployed on AWS ECS, ensuring high availability and scalability.
 
 ## Technologies Used
 
 ### Backend
 
-- **FastAPI:** Used for its rapid development capabilities and ease of use, serving as the backbone for creating scalable APIs.
-- **SQLAlchemy with SQLite:** Managed through SQLModel, this setup handles database operations efficiently, facilitating robust data manipulation and retrieval.
-- **CORS Middleware:** Ensures secure cross-origin requests, critical for integrating the ReactJS frontend with the FastAPI backend.
-- **JWT and OAuth2 Authentication:** Provides a secure login system, maintaining user confidentiality and data integrity.
-- **PyTest:** Implements thorough testing of all API endpoints, ensuring they perform as expected before moving forward to frontend integration.
+- **FastAPI:** Chosen for its rapid development capabilities and ease of use, serving as the backbone for creating scalable APIs.
+- **SQLModel:** A library for interacting with SQL databases using Python objects, designed to be intuitive, easy to use, highly compatible, and robust. Powered by Pydantic and SQLAlchemy.
+- **CORS Middleware:** Ensures secure cross-origin requests, essential for integrating the ReactJS frontend with the FastAPI backend.
+- **JWT and OAuth2 Authentication:** Provides a secure and reliable login system, maintaining user confidentiality and data integrity.
+- **PyTest:** Implements comprehensive testing of all API endpoints to ensure reliability before integration with the frontend.
 
 ### Database
 
-- **SQLite:** Used to create a lightweight database.
+- **SQLite:** A lightweight and efficient database solution for handling user data.
 
 ### Frontend
 
-- **ReactJS:** Built a responsive and user-friendly interface, allowing users to create an account, login, and add their income and expense data.
-- **Node API using Axios:** Uses Axios to handle HTTP requests, connecting the frontend to the backend efficiently.
+- **ReactJS:** Powers a responsive and user-friendly interface, enabling users to create accounts, log in, and manage their income and expenses.
+- **Axios:** Handles HTTP requests, ensuring smooth communication between the frontend and backend.
 
 ### Containerization and Deployment
 
-- **GitHub Actions:** Used to create a CI/CD pipeline.
-- **Docker and Docker-Compose:** Utilizes Docker for containerizing the application, ensuring consistency across various development and production environments. Docker-Compose is used to orchestrate the containers, simplifying the build and deployment process.
-- **DigitalOcean:** Plans for deployment on DigitalOcean to host the application, offering reliable and scalable cloud hosting.
+- **GitHub Actions:** Automates the CI/CD pipeline, ensuring seamless code integration and deployment.
+- **Docker:** Containerizes the backend application for consistency across development and production environments.
+- **AWS:** Deployed on Amazon AWS for reliable and scalable cloud hosting.
+- **Nginx:** A high-performance web server and reverse proxy, serving the frontend and proxying requests to the backend API.
+- **Certbot:** Automates the use of Let's Encrypt for enabling HTTPS, ensuring secure communication.
+- **Systemd:** Manages the lifecycle of backend and frontend services, ensuring they start on boot and restart on failure.
 
 ## Features
 
-- **Secure User Authentication:** Utilizes JWT for robust security during user registration and login processes.
-- **CRUD Operations:** Allows users to add, update, retrieve, and delete financial entries, supporting comprehensive financial management.
+- **Secure User Authentication:** Employs JWT for robust security during user registration and login processes.
+- **Comprehensive Financial Management:** Supports CRUD operations, allowing users to add, update, retrieve, or delete financial entries.
+- **Responsive Design:** Ensures a seamless user experience across various devices.
+- **Efficient Data Handling:** Provides real-time updates and synchronization of financial data.
 
-### `mypy.ini`
+## Getting Started
 
-This project uses `mypy` for static type checking to maintain high code quality and consistency. The `mypy.ini` file contains configurations that define the rules and behaviors of `mypy` checks.
+### Prerequisites
 
-#### What's Configured?
+- Docker
+- Node.js and npm
+- Python 3.8+
 
-- **Ignore missing imports** to avoid errors on third-party libraries not having type hints.
-- **Specific error suppressions** for known issues that do not impact functionality.
+### Installation
+
+1. Clone the repository:
+
+    ```bash
+    git clone (https://github.com/hellomottoworld/SpendSmart.git)
+    cd SpendSmart
+    ```
+
+2. Set up backend:
+
+    ```bash
+    cd backend
+    python -m venv venv
+    source venv/bin/activate
+    pip install -r requirements.txt
+    docker build -t wisewalletwin-backend .
+    docker run -d -p 8000:8000 wisewalletwin-backend
+    ```
+
+3. Set up frontend:
+
+    ```bash
+    cd ../frontend
+    npm install
+    npm start
+    ```
+
+## Usage
+
+1. Open your browser and navigate to `http://localhost:3000`.
+2. Register a new account or log in with existing credentials.
+3. Start managing your income and expenses effortlessly.
+
+## Contribution Guidelines
+
+We welcome contributions from the community. To contribute:
+
+1. Fork the repository.
+2. Create a new branch: `git checkout -b feature/YourFeature`.
+3. Make your changes and commit them: `git commit -m 'Add some feature'`.
+4. Push to the branch: `git push origin feature/YourFeature`.
+5. Submit a pull request detailing your changes.
+
+## License
+
+This project is licensed under the MIT License.
+
+## Acknowledgements
+
+- Thanks to the open-source community for providing invaluable resources and tools.
+- Special thanks to my girlfriend for the inspiration behind this project.
+
+---
+
+Wise Wallet Win is not just an application; it is a step towards financial clarity and empowerment. Check it out and take control of your finances today!

@@ -90,108 +90,119 @@ const SignUp = ({ setShowSignUp }) => {
   }
 
   return (
-    <div className='column'>
-      <form className='box' onSubmit={handleSubmit}>
-        <h1 className='title has-tex-centered'>SignUp</h1>
-        {/* First Name */}
-        <div className='field'>
-          <label className='label'>First Name</label>
-          <div className='control'>
-            <input
-              type='text'
-              placeholder='Enter First Name'
-              value={firstName}
-              onChange={(e) => setFirstName(e.target.value)}
-              className='input'
-            />
+    <div>
+      <div>
+        <div>
+          <div className= 'has-text-centered'>
+            <h1 className='title is-5 mb-3'>Welcome to Wise Wallet Win!</h1>
+            <h2 className='subtitle is-6 mb-5'>
+              We're excited to help you take control of your finances. Start by adding your income and expenses, and let us guide you towards smarter financial decisions.
+            </h2>
+          </div>
+          <div className='box'>
+            <form onSubmit={handleSubmit}>
+              <h1 className='title has-text-centered'>SignUp</h1>
+              {/* First Name */}
+              <div className='field'>
+                <label className='label'>First Name</label>
+                <div className='control'>
+                  <input
+                    type='text'
+                    placeholder='Enter First Name'
+                    value={firstName}
+                    onChange={(e) => setFirstName(e.target.value)}
+                    className='input'
+                  />
+                </div>
+              </div>
+              {/* UserName */}
+              <div className='field'>
+                <label className='label'>Username</label>
+                <div className='control'>
+                  <input
+                    type='text'
+                    placeholder='Enter Username'
+                    value={userName}
+                    onChange={(e) => setUserName(e.target.value)}
+                    className='input'
+                    required
+                  />
+                </div>
+              </div>
+              {/* Email */}
+              <div className='field'>
+                <label className='label'>Email Address</label>
+                <div className='control'>
+                  <input
+                    type='email'
+                    placeholder='Enter Email'
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    className='input'
+                    required
+                  />
+                </div>
+              </div>
+              {/* Password */}
+              <div className='field'>
+                <label className='label'>Password</label>
+                <div className='control'>
+                  <input
+                    type='password'
+                    placeholder='Enter Password'
+                    value={passWord}
+                    onChange={handlePasswordChange}
+                    className='input'
+                    minLength='8'
+                    required
+                  />
+                </div>
+              </div>
+              {/* Password confirmation */}
+              <div className='field'>
+                <label className='label'>Confirm Password</label>
+                <div className='control'>
+                  <input
+                    type='password'
+                    placeholder='Re-enter Password to Confirm'
+                    value={confirmationPassword}
+                    onChange={(e) => setConfirmationPassword(e.target.value)}
+                    className={`input ${passwordError ? 'is-danger' : ''}`}
+                    minLength='8'
+                    required
+                  />
+                  {passwordError && <p className='help is-danger'>{passwordError}</p>}
+                </div>
+              </div>
+              {/* Phone Number */}
+              <div className='field'>
+                <label className='label'>Phone Number</label>
+                <div className='control'>
+                  <input
+                    type='text'
+                    placeholder='Enter Phone Number'
+                    value={phoneNumber}
+                    onChange={(e) => setPhoneNumber(e.target.value)}
+                    pattern='^(\\d{3}[-\\s]?){2}\\d{4}$'
+                    className='input'
+                  />
+                </div>
+              </div>
+              <ErrorMessage message={errorMessage} />
+              <br />
+              {/* Button */}
+              <button className='button is-primary is-fullwidth' type='submit'>
+                SignUp
+              </button>
+            </form>
+            <button className='button is-link is-light is-fullwidth' onClick={() => setShowSignUp(false)} style={{ marginTop: '10px' }}>
+              Already have an account? Login
+            </button>
           </div>
         </div>
-        {/* UserName */}
-        <div className='field'>
-          <label className='label'>Username</label>
-          <div className='control'>
-            <input
-              type='text'
-              placeholder='Enter Username'
-              value={userName}
-              onChange={(e) => setUserName(e.target.value)}
-              className='input'
-              required
-            />
-          </div>
-        </div>
-        {/* Email */}
-        <div className='field'>
-          <label className='label'>Email Address</label>
-          <div className='control'>
-            <input
-              type='email'
-              placeholder='Enter Email'
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className='input'
-              required
-            />
-          </div>
-        </div>
-        {/* Password */}
-        <div className='field'>
-          <label className='label'>Password</label>
-          <div className='control'>
-            <input
-              type='password'
-              placeholder='Enter Password'
-              value={passWord}
-              onChange={handlePasswordChange}
-              className='input'
-              minLength='8'
-              required
-            />
-          </div>
-        </div>
-        {/* Password confirmation */}
-        <div className='field'>
-          <label className='label'>Confirm Password</label>
-          <div className='control'>
-            <input
-              type='password'
-              placeholder='Re-enter Password to Confirm'
-              value={confirmationPassword}
-              onChange={(e) => setConfirmationPassword(e.target.value)}
-              className={`input ${passwordError ? 'is-danger' : ''}`}
-              minLength='8'
-              required
-            />
-            {passwordError && <p className='help is-danger'>{passwordError}</p>}
-          </div>
-        </div>
-        {/* Phone Number */}
-        <div className='field'>
-          <label className='label'>Phone Number</label>
-          <div className='control'>
-            <input
-              type='text'
-              placeholder='Enter Phone Number'
-              value={phoneNumber}
-              onChange={(e) => setPhoneNumber(e.target.value)}
-              pattern='^(\\d{3}[-\\s]?){2}\\d{4}$'
-
-              className='input'
-            />
-          </div>
-
-        </div>
-        <ErrorMessage message={errorMessage} />
-        <br />
-
-        {/* Button */}
-        <button className='button is-primary' type='submit'>
-          SignUp
-        </button>
-      </form>
-      <button onClick={() => setShowSignUp(false)}>Already have an account? Login</button>
+      </div>
     </div>
-  )
-}
+  );
+};
 
 export default SignUp

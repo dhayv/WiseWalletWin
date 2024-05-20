@@ -42,7 +42,7 @@ app.add_middleware(
 )
 
 
-@app.get("/")
+@app.get("/main")
 def hello():
     return {"message": "Hello, World"}
 
@@ -52,6 +52,5 @@ app.include_router(income_router.router, prefix="/api")
 app.include_router(user_router.router, prefix="/api")
 
 if __name__ == "__main__":
-    database.create_db_and_tables()
-    # import uvicorn
-    # uvicorn.run(app, host="0.0.0.0", port=8000)
+    import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=8000)

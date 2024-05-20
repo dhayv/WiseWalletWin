@@ -47,49 +47,62 @@ const Login = ({ setShowSignUp }) => {
   }
 
   return (
-    <div className='column'>
-      <form className='box' onSubmit={handleSubmit}>
-        <h1 className='title has-text-centered'>Login</h1>
-        {/* UserName */}
-        <div className='field'>
-          <label className='label'>Username</label>
-          <div className='control'>
-            <input
-              type='text'
-              placeholder='Enter Username'
-              value={userName}
-              onChange={(e) => setUserName(e.target.value)}
-              className='input'
-              required
-            />
+    <div>
+      <div>
+        <div>
+          <div className='has-text-centered'>
+            <h1 className='title is-5 mb-3'>Welcome Back!</h1>
+            <h2 className='subtitle is-6 mb-5'>
+              Track your expenses, plan your budget, and stay on top of your finances with Wise Wallet.
+            </h2>
+          </div>
+          <div className='box'>
+            <form onSubmit={handleSubmit}>
+              <h1 className='title has-text-centered'>Login</h1>
+              {/* UserName */}
+              <div className='field'>
+                <label className='label'>Username</label>
+                <div className='control'>
+                  <input
+                    type='text'
+                    placeholder='Enter Username'
+                    value={userName}
+                    onChange={(e) => setUserName(e.target.value)}
+                    className='input'
+                    required
+                  />
+                </div>
+              </div>
+              {/* Password */}
+              <div className='field'>
+                <label className='label'>Password</label>
+                <div className='control'>
+                  <input
+                    type='password'
+                    placeholder='Enter Password'
+                    value={passWord}
+                    onChange={handlePasswordChange}
+                    className='input'
+                    minLength='8'
+                    required
+                  />
+                </div>
+              </div>
+              <ErrorMessage message={errorMessage} />
+              <br />
+              {/* Button */}
+              <button className='button is-primary is-fullwidth' type='submit'>
+                Login
+              </button>
+            </form>
+            <button className='button is-link is-light is-fullwidth' onClick={() => setShowSignUp(true)} style={{ marginTop: '10px' }}>
+              Don't have an account? Sign Up
+            </button>
           </div>
         </div>
-        {/* Password */}
-        <div className='field'>
-          <label className='label'>Password</label>
-          <div className='control'>
-            <input
-              type='password'
-              placeholder='Enter Password'
-              value={passWord}
-              onChange={handlePasswordChange}
-              className='input'
-              minLength='8'
-              required
-            />
-          </div>
-        </div>
-        <ErrorMessage message={errorMessage} />
-        <br />
-
-        {/* Button */}
-        <button className='button is-primary' type='submit'>
-          Login
-        </button>
-      </form>
-      <button onClick={() => setShowSignUp(true)}>Don't have an account? Sign Up</button>
+      </div>
     </div>
-  )
-}
+  );
+};
 
 export default Login
