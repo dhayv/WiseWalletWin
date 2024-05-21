@@ -102,7 +102,7 @@ const Login = ({ setShowSignUp }) => {
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
 export default Login

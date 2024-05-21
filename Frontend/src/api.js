@@ -2,7 +2,7 @@ import axios from 'axios'
 
 const api = axios.create({
   baseURL: process.env.REACT_APP_API_URL || 'https://wisewalletwin.com/api'
-});
+})
 
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem('token')
@@ -13,6 +13,5 @@ api.interceptors.request.use((config) => {
 }, (error) => {
   return Promise.reject(error)
 })
-
 
 export default api

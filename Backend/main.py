@@ -29,7 +29,7 @@ origins = [
     "http://wisewalletwin.com",
     "https://wisewalletwin.com",
     "http://www.wisewalletwin.com",
-    "https://www.wisewalletwin.com"
+    "https://www.wisewalletwin.com",
 ]
 
 
@@ -53,4 +53,5 @@ app.include_router(user_router.router, prefix="/api")
 
 if __name__ == "__main__":
     import uvicorn
+
     uvicorn.run(app, host="0.0.0.0", port=8000)

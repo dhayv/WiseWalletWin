@@ -48,7 +48,10 @@ def add_user(user: UserIn, service: UserService = Depends(get_user_service)):
 
 # This endpoint is used to get the profile of the currently logged in user.
 @router.get("/user/me", response_model=UserOut)
-async def read_user_me(current_user: Users = Depends(get_current_active_user), service: UserService = Depends(get_user_service)):
+async def read_user_me(
+    current_user: Users = Depends(get_current_active_user),
+    service: UserService = Depends(get_user_service),
+):
     return service.read_user(current_user.id)
 
 

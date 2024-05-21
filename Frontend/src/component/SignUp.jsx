@@ -93,7 +93,7 @@ const SignUp = ({ setShowSignUp }) => {
     <div>
       <div>
         <div>
-          <div className= 'has-text-centered'>
+          <div className='has-text-centered'>
             <h1 className='title is-5 mb-3'>Welcome to Wise Wallet Win!</h1>
             <h2 className='subtitle is-6 mb-5'>
               We're excited to help you take control of your finances. Start by adding your income and expenses, and let us guide you towards smarter financial decisions.
@@ -202,7 +202,7 @@ const SignUp = ({ setShowSignUp }) => {
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
 export default SignUp

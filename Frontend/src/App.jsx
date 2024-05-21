@@ -8,7 +8,6 @@ import Remaining from './component/Remaining'
 import NextCheck from './component/NextCheck'
 import Expenses from './component/Expenses'
 
-
 const App = () => {
   const [message, setMessage] = useState('')
   const [showSignUp, setShowSignUp] = useState(false) // State to toggle between sign up and login

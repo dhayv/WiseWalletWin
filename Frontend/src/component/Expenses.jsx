@@ -50,12 +50,11 @@ const Expense = () => { // Assuming incomeId is passed as a prop
 
       if (response.status === 201) {
         const data = response.data
-        
+
         setExpenseData(prevExpenses => [...prevExpenses, ...[response.data]])
         refresher()
       } else {
         throw new Error('Could not add expense information.', response.data)
-        
       };
     } catch (error) {
       setErrorMessage(error.message)
@@ -75,11 +74,10 @@ const Expense = () => { // Assuming incomeId is passed as a prop
         refresher()
       } else {
         throw new Error('Could not update expense information.')
-        
       }
     } catch (error) {
       setErrorMessage(error.message)
-      console.error('Error adding expense:', error);
+      console.error('Error adding expense:', error)
     }
   }
 
