@@ -90,9 +90,9 @@ const SignUp = ({ setShowSignUp }) => {
   }
 
   return (
-    <div>
-      <div>
-        <div>
+    <div className='container'>
+      <div className='columns is-centered'>
+        <div className>
           <div className='has-text-centered'>
             <h1 className='title is-5 mb-3'>Welcome to Wise Wallet Win!</h1>
             <h2 className='subtitle is-6 mb-5'>
@@ -105,20 +105,24 @@ const SignUp = ({ setShowSignUp }) => {
               {/* First Name */}
               <div className='field'>
                 <label className='label'>First Name</label>
-                <div className='control'>
+                <div className='control has-icons-left'>
                   <input
                     type='text'
                     placeholder='Enter First Name'
                     value={firstName}
                     onChange={(e) => setFirstName(e.target.value)}
                     className='input'
+                    required
                   />
+                  <span className='icon is-small is-left'>
+                    <i className='fas fa-user'></i>
+                  </span>
                 </div>
               </div>
               {/* UserName */}
               <div className='field'>
                 <label className='label'>Username</label>
-                <div className='control'>
+                <div className='control has-icons-left'>
                   <input
                     type='text'
                     placeholder='Enter Username'
@@ -127,12 +131,15 @@ const SignUp = ({ setShowSignUp }) => {
                     className='input'
                     required
                   />
+                  <span className='icon is-small is-left'>
+                    <i className='fas fa-user'></i>
+                  </span>
                 </div>
               </div>
               {/* Email */}
               <div className='field'>
                 <label className='label'>Email Address</label>
-                <div className='control'>
+                <div className='control has-icons-left'>
                   <input
                     type='email'
                     placeholder='Enter Email'
@@ -141,12 +148,15 @@ const SignUp = ({ setShowSignUp }) => {
                     className='input'
                     required
                   />
+                  <span className='icon is-small is-left'>
+                    <i className='fas fa-envelope'></i>
+                  </span>
                 </div>
               </div>
               {/* Password */}
               <div className='field'>
                 <label className='label'>Password</label>
-                <div className='control'>
+                <div className='control has-icons-left'>
                   <input
                     type='password'
                     placeholder='Enter Password'
@@ -156,12 +166,15 @@ const SignUp = ({ setShowSignUp }) => {
                     minLength='8'
                     required
                   />
+                  <span className='icon is-small is-left'>
+                    <i className='fas fa-lock'></i>
+                  </span>
                 </div>
               </div>
               {/* Password confirmation */}
               <div className='field'>
                 <label className='label'>Confirm Password</label>
-                <div className='control'>
+                <div className='control has-icons-left'>
                   <input
                     type='password'
                     placeholder='Re-enter Password to Confirm'
@@ -171,13 +184,16 @@ const SignUp = ({ setShowSignUp }) => {
                     minLength='8'
                     required
                   />
+                  <span className='icon is-small is-left'>
+                    <i className='fas fa-lock'></i>
+                  </span>
                   {passwordError && <p className='help is-danger'>{passwordError}</p>}
                 </div>
               </div>
               {/* Phone Number */}
               <div className='field'>
                 <label className='label'>Phone Number</label>
-                <div className='control'>
+                <div className='control has-icons-left'>
                   <input
                     type='text'
                     placeholder='Enter Phone Number'
@@ -186,6 +202,9 @@ const SignUp = ({ setShowSignUp }) => {
                     pattern='^(\\d{3}[-\\s]?){2}\\d{4}$'
                     className='input'
                   />
+                  <span className='icon is-small is-left'>
+                    <i className='fas fa-phone'></i>
+                  </span>
                 </div>
               </div>
               <ErrorMessage message={errorMessage} />
@@ -196,13 +215,13 @@ const SignUp = ({ setShowSignUp }) => {
               </button>
             </form>
             <button className='button is-link is-light is-fullwidth' onClick={() => setShowSignUp(false)} style={{ marginTop: '10px' }}>
-              Already have an account? Login
+              Have an account? Login
             </button>
           </div>
         </div>
       </div>
     </div>
-  )
-}
+  );
+}  
 
 export default SignUp
