@@ -47,8 +47,8 @@ const Login = ({ setShowSignUp }) => {
   }
 
   return (
-    <div>
-      <div>
+    <div class='container'>
+      <div class='columns is-centered'>
         <div>
           <div className='has-text-centered'>
             <h1 className='title is-5 mb-3'>Welcome Back!</h1>
@@ -62,7 +62,7 @@ const Login = ({ setShowSignUp }) => {
               {/* UserName */}
               <div className='field'>
                 <label className='label'>Username</label>
-                <div className='control'>
+                <div className='control has-icons-left'>
                   <input
                     type='text'
                     placeholder='Enter Username'
@@ -71,12 +71,16 @@ const Login = ({ setShowSignUp }) => {
                     className='input'
                     required
                   />
+                  <span class='icon is-small is-left'>
+                  <i class='fas fa-user'></i>
+                </span>
                 </div>
+                
               </div>
               {/* Password */}
               <div className='field'>
                 <label className='label'>Password</label>
-                <div className='control'>
+                <div className='control has-icons-left'>
                   <input
                     type='password'
                     placeholder='Enter Password'
@@ -86,7 +90,11 @@ const Login = ({ setShowSignUp }) => {
                     minLength='8'
                     required
                   />
+                  <span class='icon is-small is-left'>
+                  <i class='fas fa-lock'></i>
+                </span>
                 </div>
+                
               </div>
               <ErrorMessage message={errorMessage} />
               <br />

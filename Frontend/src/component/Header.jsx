@@ -19,7 +19,7 @@ const Header = ({ title }) => {
   return (
     <>
       {token && (
-      <nav className="navbar is-transparent" role="navigation" aria-label="main navigation">
+      <nav className="navbar is-transparent has-shadow" role="navigation" aria-label="main navigation">
         <div className="navbar-brand">
           <a
             role="button"
@@ -36,7 +36,7 @@ const Header = ({ title }) => {
         </div>
 
         <div id="navbarMenu" className={`navbar-menu ${isActive ? 'isactive' : ''}`}>
-          <div className="navbar-start">
+          <div className="navbar-start pl-20">
             <a className="navbar-item" href="/account-info">
               Account Information
             </a>
@@ -45,7 +45,7 @@ const Header = ({ title }) => {
             </a>
           </div>
 
-          <div className="navbar-end">
+          <div className="navbar-end pr-4">
             {token && (
               <div className="navbar-item">
                 <button className="button is-light" onClick={handleLogout}>
