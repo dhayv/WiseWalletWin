@@ -79,4 +79,4 @@ jobs:
           rsync -avz --exclude 'node_modules' --exclude '.git' --exclude '.env' \
             --exclude 'venv' --exclude '__pycache__' --exclude 'db.sqlite3' \
             -e "ssh -i ~/.ssh/id_rsa" \
-            backend/ user@your-ec2-instance:/home/ubuntu/app/
+            . user@your-ec2-instance:/home/ubuntu/app/
