@@ -1,6 +1,7 @@
 import React, { useState, useContext } from 'react'
-
+import PasswordChecklist from "react-password-checklist"
 import { UserContext } from '../context/UserContext'
+import PhoneInput from 'react-phone-number-input';
 import ErrorMessage from './ErrorMessage'
 import api from '../api'
 
@@ -14,6 +15,7 @@ const SignUp = ({ setShowSignUp }) => {
   const [phoneNumber, setPhoneNumber] = useState('')
   const [errorMessage, setErrorMessage] = useState('')
   const [passwordError, setPasswordError] = useState('')
+  const [showChecklist, SetShowChecklist] = useState('false');
 
   // Manages token globally
   const { setToken, setUserId } = useContext(UserContext)
@@ -72,21 +74,6 @@ const SignUp = ({ setShowSignUp }) => {
     e.preventDefault()
 
     submitRegistration()
-  }
-
-  const validatePassword = (password) => {
-    if (!/[a-z]/.test(password)) return 'Password must contain at least one lowercase letter'
-    if (!/[A-Z]/.test(password)) return 'Password must contain at least one uppercase letter'
-    if (!/\d/.test(password)) return 'Password must contain at least one digit'
-    if (!/[!@#$%^&*(),.?\\":{}|<>]/.test(password)) return 'Password must contain at least one special character'
-    return ''
-  }
-
-  const handlePasswordChange = (e) => {
-    const newPass = e.target.value
-    setPassword(newPass)
-    const errorMessage = validatePassword(newPass)
-    setPasswordError(errorMessage)
   }
 
   return (
@@ -171,7 +158,10 @@ const SignUp = ({ setShowSignUp }) => {
                     type='password'
                     placeholder='Enter Password'
                     value={passWord}
-                    onChange={handlePasswordChange}
+                    onChange={(e) => {
+                      setPassword(e.target.value);
+                      SetShowChecklist(true);
+                    }}
                     className='input'
                     minLength='8'
                     required
@@ -192,7 +182,10 @@ const SignUp = ({ setShowSignUp }) => {
                     type='password'
                     placeholder='Re-enter Password to Confirm'
                     value={confirmationPassword}
-                    onChange={(e) => setConfirmationPassword(e.target.value)}
+                    onChange={(e) => {
+                      setConfirmationPassword(e.target.value);
+                      SetShowChecklist(true);  
+                    }}
                     className={`input ${passwordError ? 'is-danger' : ''}`}
                     minLength='8'
                     required
@@ -203,19 +196,30 @@ const SignUp = ({ setShowSignUp }) => {
                   </span>
                   {passwordError && <p className='help is-danger'>{passwordError}</p>}
                 </div>
+                {/* Password Checklist */}
+              {showChecklist && (<div className="field mt-3 pl-5">
+                <PasswordChecklist
+                  rules={["minLength", "specialChar", "number", "capital", "match"]}
+                  minLength={8}
+                  value={passWord}
+                  valueAgain={confirmationPassword}
+                  onChange={(isValid) => {}}
+                />
+              </div>)}
               </div>
               {/* Phone Number */}
               <div className='field'>
                 <label className='label' htmlFor='phoneNumber'>Phone Number</label>
                 <div className='control has-icons-left'>
-                  <input
+                  <PhoneInput
                     id='phoneNumber'
                     name='phoneNumber'
-                    type='text'
+                    
                     placeholder='Enter Phone Number'
                     value={phoneNumber}
                     onChange={(e) => setPhoneNumber(e.target.value)}
-                    pattern='^(\\d{3}[-\\s]?){2}\\d{4}$'
+                    
+                    
                     className='input'
                   />
                   <span className='icon is-small is-left'>
@@ -229,6 +233,7 @@ const SignUp = ({ setShowSignUp }) => {
               <button className='button is-primary is-fullwidth' type='submit'>
                 SignUp
               </button>
+              
             </form>
             <button className='button is-link is-light is-fullwidth mt 4' onClick={() => setShowSignUp(false)} style={{ marginTop: '10px' }}>
               Have an account? Login
