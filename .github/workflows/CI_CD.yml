@@ -71,10 +71,10 @@ jobs:
 
       - name: Deploy using rsync
         env:
-          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_KEY }}
         run: |
           mkdir -p ~/.ssh
-          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          echo "${{ secrets.SSH_KEY }}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
           rsync -avz --exclude 'node_modules' --exclude '.git' --exclude '.env' \
             --exclude 'venv' --exclude '__pycache__' --exclude 'db.sqlite3' \
