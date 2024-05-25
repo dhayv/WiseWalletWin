@@ -3,6 +3,7 @@ import ErrorMessage from './ErrorMessage'
 import { UserContext } from '../context/UserContext'
 import api from '../api'
 
+
 // Define submitLogin inside the Login component if it uses component state or props
 const Login = ({ setShowSignUp }) => {
   const [userName, setUserName] = useState('')
@@ -47,12 +48,12 @@ const Login = ({ setShowSignUp }) => {
   }
 
   return (
-    <div class='container'>
-      <div class='columns is-centered'>
-        <div>
+    <div className='container'>
+      <div className='columns is-centered'>
+        <div className='column is-full-mobile is-half-tablet is-one-third-desktop'>
           <div className='has-text-centered'>
-            <h1 className='title is-5 mb-3'>Welcome Back!</h1>
-            <h2 className='subtitle is-6 mb-5'>
+            <h1 className='title is-4'>Welcome Back!</h1>
+            <h2 className='subtitle is-6'>
               Track your expenses, plan your budget, and stay on top of your finances with Wise Wallet.
             </h2>
           </div>
@@ -61,27 +62,32 @@ const Login = ({ setShowSignUp }) => {
               <h1 className='title has-text-centered'>Login</h1>
               {/* UserName */}
               <div className='field'>
-                <label className='label'>Username</label>
+                <label className='label' htmlFor='username'>Username</label>
                 <div className='control has-icons-left'>
                   <input
+                    id='username'
+                    name='username'
                     type='text'
                     placeholder='Enter Username'
                     value={userName}
                     onChange={(e) => setUserName(e.target.value)}
                     className='input'
                     required
+                    autoComplete='username'
                   />
-                  <span class='icon is-small is-left'>
-                  <i class='fas fa-user'></i>
+                  <span className='icon is-small is-left'>
+                  <i className='fas fa-user'></i>
                 </span>
                 </div>
                 
               </div>
               {/* Password */}
               <div className='field'>
-                <label className='label'>Password</label>
+                <label className='label' htmlFor='password'>Password</label>
                 <div className='control has-icons-left'>
                   <input
+                    id='password'
+                    name='password'
                     type='password'
                     placeholder='Enter Password'
                     value={passWord}
@@ -89,9 +95,11 @@ const Login = ({ setShowSignUp }) => {
                     className='input'
                     minLength='8'
                     required
+                    autoComplete='current-password'
+                    
                   />
-                  <span class='icon is-small is-left'>
-                  <i class='fas fa-lock'></i>
+                  <span className='icon is-small is-left'>
+                  <i className='fas fa-lock'></i>
                 </span>
                 </div>
                 
@@ -103,7 +111,7 @@ const Login = ({ setShowSignUp }) => {
                 Login
               </button>
             </form>
-            <button className='button is-link is-light is-fullwidth' onClick={() => setShowSignUp(true)} style={{ marginTop: '10px' }}>
+            <button className='button is-link is-light is-fullwidth mt-4' onClick={() => setShowSignUp(true)} style={{ marginTop: '10px' }}>
               Don't have an account? Sign Up
             </button>
           </div>
@@ -111,6 +119,6 @@ const Login = ({ setShowSignUp }) => {
       </div>
     </div>
   )
-}
+};
 
 export default Login

@@ -92,10 +92,10 @@ const SignUp = ({ setShowSignUp }) => {
   return (
     <div className='container'>
       <div className='columns is-centered'>
-        <div className>
+        <div className='column is-full-mobile is-half-tablet is-one-third-desktop'>
           <div className='has-text-centered'>
-            <h1 className='title is-5 mb-3'>Welcome to Wise Wallet Win!</h1>
-            <h2 className='subtitle is-6 mb-5'>
+            <h1 className='title is-4'>Welcome to Wise Wallet Win!</h1>
+            <h2 className='subtitle is-6'>
               We're excited to help you take control of your finances. Start by adding your income and expenses, and let us guide you towards smarter financial decisions.
             </h2>
           </div>
@@ -104,9 +104,11 @@ const SignUp = ({ setShowSignUp }) => {
               <h1 className='title has-text-centered'>SignUp</h1>
               {/* First Name */}
               <div className='field'>
-                <label className='label'>First Name</label>
+                <label className='label' htmlFor='firstName'>First Name</label>
                 <div className='control has-icons-left'>
                   <input
+                    id='firstName'
+                    name='firstName'
                     type='text'
                     placeholder='Enter First Name'
                     value={firstName}
@@ -121,15 +123,18 @@ const SignUp = ({ setShowSignUp }) => {
               </div>
               {/* UserName */}
               <div className='field'>
-                <label className='label'>Username</label>
+                <label className='label' htmlFor='username'>Username</label>
                 <div className='control has-icons-left'>
                   <input
+                    id='username'
+                    name='username'
                     type='text'
                     placeholder='Enter Username'
                     value={userName}
                     onChange={(e) => setUserName(e.target.value)}
                     className='input'
                     required
+                    autoComplete='username'
                   />
                   <span className='icon is-small is-left'>
                     <i className='fas fa-user'></i>
@@ -138,15 +143,18 @@ const SignUp = ({ setShowSignUp }) => {
               </div>
               {/* Email */}
               <div className='field'>
-                <label className='label'>Email Address</label>
+                <label className='label' htmlFor='email'>Email Address</label>
                 <div className='control has-icons-left'>
                   <input
+                    id= 'email'
+                    name='email'
                     type='email'
                     placeholder='Enter Email'
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     className='input'
                     required
+                    autoComplete='email'
                   />
                   <span className='icon is-small is-left'>
                     <i className='fas fa-envelope'></i>
@@ -155,9 +163,11 @@ const SignUp = ({ setShowSignUp }) => {
               </div>
               {/* Password */}
               <div className='field'>
-                <label className='label'>Password</label>
+                <label className='label' htmlFor='password'>Password</label>
                 <div className='control has-icons-left'>
                   <input
+                    id='password'
+                    name='password'
                     type='password'
                     placeholder='Enter Password'
                     value={passWord}
@@ -165,6 +175,7 @@ const SignUp = ({ setShowSignUp }) => {
                     className='input'
                     minLength='8'
                     required
+                    autoComplete='new-password'
                   />
                   <span className='icon is-small is-left'>
                     <i className='fas fa-lock'></i>
@@ -173,9 +184,11 @@ const SignUp = ({ setShowSignUp }) => {
               </div>
               {/* Password confirmation */}
               <div className='field'>
-                <label className='label'>Confirm Password</label>
+                <label className='label' htmlFor='confirmationPassword'>Confirm Password</label>
                 <div className='control has-icons-left'>
                   <input
+                    id='confirmationPassword'
+                    name='confirmationPassword'
                     type='password'
                     placeholder='Re-enter Password to Confirm'
                     value={confirmationPassword}
@@ -183,6 +196,7 @@ const SignUp = ({ setShowSignUp }) => {
                     className={`input ${passwordError ? 'is-danger' : ''}`}
                     minLength='8'
                     required
+                    autoComplete='new-password'
                   />
                   <span className='icon is-small is-left'>
                     <i className='fas fa-lock'></i>
@@ -192,9 +206,11 @@ const SignUp = ({ setShowSignUp }) => {
               </div>
               {/* Phone Number */}
               <div className='field'>
-                <label className='label'>Phone Number</label>
+                <label className='label' htmlFor='phoneNumber'>Phone Number</label>
                 <div className='control has-icons-left'>
                   <input
+                    id='phoneNumber'
+                    name='phoneNumber'
                     type='text'
                     placeholder='Enter Phone Number'
                     value={phoneNumber}
@@ -214,7 +230,7 @@ const SignUp = ({ setShowSignUp }) => {
                 SignUp
               </button>
             </form>
-            <button className='button is-link is-light is-fullwidth' onClick={() => setShowSignUp(false)} style={{ marginTop: '10px' }}>
+            <button className='button is-link is-light is-fullwidth mt 4' onClick={() => setShowSignUp(false)} style={{ marginTop: '10px' }}>
               Have an account? Login
             </button>
           </div>
