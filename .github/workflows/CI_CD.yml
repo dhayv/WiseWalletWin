@@ -1,16 +1,19 @@
----
-name: Lint-code 
+name: CI/CD Pipeline
 
-on: push
+on:
+  push:  
+    branches:
+      - '**'  # Match all branches
 
-jobs: 
-  super-lint:
-    name: Lint code base
+jobs:
+  lint:
+    name: Lint Code Base
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-            
+
       - name: Set up Python
         uses: actions/setup-python@v5.1.0
         with:
@@ -30,7 +33,7 @@ jobs:
 
       - name: Isort
         run: isort . --profile black
-          
+
       - name: Format code with Black
         run: black .
 
@@ -44,17 +47,36 @@ jobs:
           git diff --exit-code || git commit -m "Apply formatting"
           git push
         
-
       - name: Set up Environment for Super-Linter
         uses: actions/setup-node@v4.0.2
 
       - name: Run Super-Linter
-        uses:  super-linter/super-linter@v5.7.2
-        env: 
+        uses: super-linter/super-linter@v5.7.2
+        env:
           DEFAULT_BRANCH: main
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           VALIDATE_PYTHON_MYPY: false
           VALIDATE_PYTHON_BLACK: false
         continue-on-error: true
 
+  deploy:
+    name: Deploy Code
+    runs-on: ubuntu-latest
+    needs: lint  # Ensure lint job completes first
+    if: github.ref == 'refs/heads/main'  # Run this job only on the main branch
 
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Deploy using rsync
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          rsync -avz --exclude 'node_modules' --exclude '.git' --exclude '.env' \
+            --exclude 'venv' --exclude '__pycache__' --exclude 'db.sqlite3' \
+            -e "ssh -i ~/.ssh/id_rsa" \
+            backend/ user@your-ec2-instance:/home/ubuntu/app/
