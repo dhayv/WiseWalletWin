@@ -1,7 +1,7 @@
 import React, { useState, useContext } from 'react'
 import PasswordChecklist from "react-password-checklist"
 import { UserContext } from '../context/UserContext'
-import PhoneInput from 'react-phone-number-input';
+import 'react-phone-number-input/style.css'
 import ErrorMessage from './ErrorMessage'
 import api from '../api'
 
@@ -14,7 +14,6 @@ const SignUp = ({ setShowSignUp }) => {
   const [confirmationPassword, setConfirmationPassword] = useState('')
   const [phoneNumber, setPhoneNumber] = useState('')
   const [errorMessage, setErrorMessage] = useState('')
-  const [passwordError, setPasswordError] = useState('')
   const [showChecklist, SetShowChecklist] = useState('false');
 
   // Manages token globally
@@ -79,7 +78,7 @@ const SignUp = ({ setShowSignUp }) => {
   return (
     <div className='container'>
       <div className='columns is-centered'>
-        <div className='column is-full-mobile is-half-tablet is-one-third-desktop'>
+        <div className='column is-full-mobile is-half-tablet is-half-desktop'>
           <div className='has-text-centered'>
             <h1 className='title is-4'>Welcome to Wise Wallet Win!</h1>
             <h2 className='subtitle is-6'>
@@ -186,7 +185,7 @@ const SignUp = ({ setShowSignUp }) => {
                       setConfirmationPassword(e.target.value);
                       SetShowChecklist(true);  
                     }}
-                    className={`input ${passwordError ? 'is-danger' : ''}`}
+                    className='input'
                     minLength='8'
                     required
                     autoComplete='new-password'
@@ -194,7 +193,6 @@ const SignUp = ({ setShowSignUp }) => {
                   <span className='icon is-small is-left'>
                     <i className='fas fa-lock'></i>
                   </span>
-                  {passwordError && <p className='help is-danger'>{passwordError}</p>}
                 </div>
                 {/* Password Checklist */}
               {showChecklist && (<div className="field mt-3 pl-5">
@@ -211,15 +209,14 @@ const SignUp = ({ setShowSignUp }) => {
               <div className='field'>
                 <label className='label' htmlFor='phoneNumber'>Phone Number</label>
                 <div className='control has-icons-left'>
-                  <PhoneInput
+                  <input
                     id='phoneNumber'
                     name='phoneNumber'
-                    
+                    type='text'
                     placeholder='Enter Phone Number'
                     value={phoneNumber}
                     onChange={(e) => setPhoneNumber(e.target.value)}
-                    
-                    
+                    pattern='^(?:\(\d{3}\)|\d{3})[-\s]?\d{3}[-\s]?\d{4}$'
                     className='input'
                   />
                   <span className='icon is-small is-left'>

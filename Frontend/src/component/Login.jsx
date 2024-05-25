@@ -50,7 +50,7 @@ const Login = ({ setShowSignUp }) => {
   return (
     <div className='container'>
       <div className='columns is-centered'>
-        <div className='column is-full-mobile is-half-tablet is-one-third-desktop'>
+        <div className='column is-full-mobile is-half-tablet is-half-desktop'>
           <div className='has-text-centered'>
             <h1 className='title is-4'>Welcome Back!</h1>
             <h2 className='subtitle is-6'>
