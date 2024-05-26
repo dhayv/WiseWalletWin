@@ -25,5 +25,16 @@
   .expense-item:last-child {
     border-bottom: none;
   }
+
+  /* App.css */
+.table-container {
+  display: flex;
+  justify-content: center;
+}
+
+.table {
+  margin: 0 auto; /* Ensures the table itself is centered */
+}
+
   
   

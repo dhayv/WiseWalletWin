@@ -42,10 +42,10 @@ const App = () => {
             <div className="columns is-centered">
               <div className="column is-full-mobile is-three-quarters-tablet is-half-desktop">
                 <div className="columns">
-                  <div className="column">
+                  <div className="column has-text-centered">
                     <Income />
                   </div>
-                  <div className="column">
+                  <div className="column has-text-centered">
                     <Remaining />
                   </div>
                 </div>
@@ -59,7 +59,7 @@ const App = () => {
 
             <div className="columns is-centered">
               <div className="">
-                <h3 className="has-text-weight-bold subtitle ml-3">
+                <h3 className="has-text-weight-bold subtitle ml-3 has-text-centered">
                   Expenses: ${totalExpenses?.total_expenses || 0}
                 </h3>
                 <Expenses />

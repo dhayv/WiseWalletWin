@@ -1,6 +1,7 @@
 import React, { useContext, useState, useEffect } from 'react'
 import { UserContext } from '../context/UserContext'
 import api from '../api'
+import '../styles/App.css'
 
 const Expense = () => { // Assuming incomeId is passed as a prop
   const { token, incomeId, refreshData, refresher, expenseData, setExpenseData } = useContext(UserContext)
@@ -137,8 +138,8 @@ const Expense = () => { // Assuming incomeId is passed as a prop
           </tbody>
         </table>
       </div>
-      <div className='column'>
-      <h3 className='has-text-weight-bold subtitle mt-5'>Add Expense</h3>
+      <div className='column '>
+      <h3 className='has-text-weight-bold subtitle mt-5 has-text-centered'>Add Expense</h3>
       <form onSubmit={handleSubmit} className='expense-form'>
         <div className='row'>
           <div className='field'>

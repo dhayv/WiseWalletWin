@@ -89,14 +89,14 @@ export const NextCheck = () => {
 
 
  return (
-    <div className='card'>
+    <div className='card has-text-centered'>
       <div className='card-content '>
         <div className='content '>
           <p className='has-text-weight-bold'>
             Next Check: {nextPayDate ? moment(nextPayDate, 'YYYY-MM-DD').format('MMM Do') : 'Calculating...'} for ${totalDueExpenses}
           </p>
           <div>
-            <table className='table is-half '>
+            <table className='table is-half is-centered'>
           <thead>
             <tr>
               <th>Name</th>
