@@ -51,7 +51,7 @@ const Income = () => {
     const payload = {
       amount: parseFloat(amount), // Ensure amount is a float
       recent_pay: formatRecent, // Correct date format
-      last_pay: formatLast // Correct date format
+      last_pay: lastPay ? formatLast : null  // Correct date format
     };
 
     console.log('Submitting payload:', payload);
@@ -141,7 +141,7 @@ const Income = () => {
                         className='input mb-5'
                         type='number'
                         placeholder='Amount'
-                        value={amount}
+                        value={amount || ''}
                         onChange={(e) => setAmount(e.target.value)}
                       />
                       <label className='label'>Recent Pay Date</label>
@@ -149,16 +149,8 @@ const Income = () => {
                         className='input mb-5'
                         type='date'
                         placeholder='Recent Pay Date'
-                        value={recentPay}
+                        value={recentPay || ''}
                         onChange={(e) => setRecentPay(e.target.value)}
-                      />
-                      <label className='label'>Last Pay Date</label>
-                      <input
-                        className='input mb-5'
-                        type='date'
-                        placeholder='Last Pay Date'
-                        value={lastPay}
-                        onChange={(e) => setLastPay(e.target.value)}
                       />
                       <button className='button is-success mr-5' type='submit' onClick={submitIncome}>
                         {incomeData.length === 0 ? 'Add Income' : 'Update'}

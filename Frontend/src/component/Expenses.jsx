@@ -104,10 +104,14 @@ const Expense = () => { // Assuming incomeId is passed as a prop
     await deleteExpense(expenseId)
   }
 
+  const sortedExpenses = [...expenseData].sort((a, b) => a.due_date - b.due_date);
   return (
-    <div>
+    <div className='container'>
+    <div className='columns is centered'>
 
-      <div>
+    <div className=''>
+
+      <div cla>
         <table className='table is-fullwidth'>
           <thead>
             <tr>
@@ -118,10 +122,10 @@ const Expense = () => { // Assuming incomeId is passed as a prop
             </tr>
           </thead>
           <tbody>
-            {expenseData.map(exp => (
+            {sortedExpenses.map(exp => (
               <tr key={exp.id}>
                 <td>{exp.name}</td>
-                <td>{exp.amount}</td>
+                <td>${exp.amount}</td>
                 <td>{exp.due_date}</td>
                 <td>
                   <button className='button is-danger is-small' onClick={() => handleDelete(exp.id)}>
@@ -133,7 +137,8 @@ const Expense = () => { // Assuming incomeId is passed as a prop
           </tbody>
         </table>
       </div>
-      <h3 className='has-text-weight-bold subtitle'>Add Expense</h3>
+      <div className='column'>
+      <h3 className='has-text-weight-bold subtitle mt-5'>Add Expense</h3>
       <form onSubmit={handleSubmit} className='expense-form'>
         <div className='row'>
           <div className='field'>
@@ -172,13 +177,16 @@ const Expense = () => { // Assuming incomeId is passed as a prop
             />
           </div>
           <div className='col-sm'>
-            <button type='submit' className='button is-primary'>
-              Save
+            <button type='submit' className='button is-primary is-fullwidth mt-4'>
+              Add
             </button>
           </div>
         </div>
       </form>
+      </div>
     </div>
+    </div>
+  </div>
   )
 }
 

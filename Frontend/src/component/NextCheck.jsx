@@ -5,7 +5,7 @@ import api from '../api';
 import '../styles/NextCheck.css'
 
 export const NextCheck = () => {
-  const { recentPay, incomeId, setIncomeData, incomeData, expenseData } = useContext(UserContext);
+  const { recentPay, incomeId, setIncomeData, incomeData, expenseData, refreshData } = useContext(UserContext);
   const [currentDate, setCurrentDate] = useState(moment().format('MM-DD-YYYY'));
   const [nextPayDate, setNextPayDate] = useState('');
   const [expensesDue, setExpensesDue] = useState([]);
@@ -27,12 +27,11 @@ export const NextCheck = () => {
 
       const dueExpenses = expenseData.filter(expense => {
         // Convert due_date integer to a date for the current month
-        const currentMonth = moment().month();
-        const expenseDueDate = moment().date(expense.due_date).month(currentMonth);
-        
-        // Adjust if the due date is in the next month
-        if (expense.due_date < startOfNextPeriod.date()) {
-          expenseDueDate.add(1, 'months');
+        let expenseDueDate = moment().date(expense.due_date);
+
+        // If due_date is before the start of next period, consider it for the next month
+        if (expenseDueDate.isBefore(startOfNextPeriod)) {
+          expenseDueDate = expenseDueDate.add(1, 'months');
         }
 
         console.log('Expense Due Date:', expenseDueDate.format('YYYY-MM-DD'));
@@ -42,7 +41,7 @@ export const NextCheck = () => {
       console.log('Due Expenses:', dueExpenses);
       setExpensesDue(dueExpenses);
     }
-  }, [expenseData, incomeData, recentPay]);
+  }, [expenseData, incomeData, recentPay, refreshData]);
 
   useEffect(() => {
     const updateDate = () => setCurrentDate(moment().format('MM-DD-YYYY'));
@@ -58,7 +57,7 @@ export const NextCheck = () => {
       clearTimeout(timeoutId);
       clearInterval(intervalId);
     };
-  }, []);
+  }, [refreshData]);
 
   useEffect(() => {
     const updateIncomeData = async () => {
@@ -81,32 +80,47 @@ export const NextCheck = () => {
     };
 
     updateIncomeData();
-  }, [nextPayDate, incomeId, setIncomeData]);
+  }, [nextPayDate, incomeId, setIncomeData, refreshData]);
 
  const totalDueExpenses = expensesDue.reduce((sum, expense) => sum + expense.amount, 0);
  console.log('Total Due Expenses:', totalDueExpenses);
 
+ const sortedExpenseDue = [...expensesDue].sort((a, b) => a.due_date - b.due_date);
 
-    return (
-      <div className='card'>
-        <div className='card-content'>
-          <div className='content'>
-            <p className='has-text-weight-bold'>
-              Next Check: {nextPayDate ? moment(nextPayDate, 'YYYY-MM-DD').format('MMM Do') : 'Calculating...'} for ${totalDueExpenses}
-            </p>
-            <div>
-              <ul className='expenses-list'>
-                {expensesDue.map(expense => (
-                  <li key={expense.id} className='expense-item'>
-                    {expense.name}: ${expense.amount} on the {moment(expense.due_date, 'DD').format('Do')}
-                  </li>
-                ))}
-              </ul>
-            </div>
+
+ return (
+    <div className='card'>
+      <div className='card-content '>
+        <div className='content '>
+          <p className='has-text-weight-bold'>
+            Next Check: {nextPayDate ? moment(nextPayDate, 'YYYY-MM-DD').format('MMM Do') : 'Calculating...'} for ${totalDueExpenses}
+          </p>
+          <div>
+            <table className='table is-half '>
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Amount</th>
+              <th>Due Date</th>
+            </tr>
+          </thead>
+          <tbody>
+            {sortedExpenseDue.map(exp => (
+              <tr key={exp.id}>
+                <td>{exp.name}</td>
+                <td>${exp.amount}</td>
+                <td>{exp.due_date}</td>
+                <td>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
           </div>
         </div>
       </div>
-    );
+    </div>
+  );
 };
 
 export default NextCheck;

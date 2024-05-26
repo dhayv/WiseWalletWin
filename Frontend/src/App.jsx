@@ -26,7 +26,7 @@ const App = () => {
   return (
     <>
       <Header title={message} />
-      <div className="column mt-5">
+      <div className="container mt-5">
         {!token ? (
           <div className="columns is-centered">
             <div className="column is-full-mobile is-three-quarters-tablet is-half-desktop">
@@ -39,20 +39,26 @@ const App = () => {
           </div>
         ) : (
           <>
-            <div className="columns is-variable is-4">
-              <div className="column">
-                <Income />
-              </div>
-              <div className="column">
-                <Remaining />
-              </div>
-              <div className="column">
-                <NextCheck />
+            <div className="columns is-centered">
+              <div className="column is-full-mobile is-three-quarters-tablet is-half-desktop">
+                <div className="columns">
+                  <div className="column">
+                    <Income />
+                  </div>
+                  <div className="column">
+                    <Remaining />
+                  </div>
+                </div>
+                <div className="columns is-centered">
+                  <div className="column is-full">
+                    <NextCheck />
+                  </div>
+                </div>
               </div>
             </div>
 
             <div className="columns is-centered">
-              <div className="column is-three-quarters">
+              <div className="">
                 <h3 className="has-text-weight-bold subtitle ml-3">
                   Expenses: ${totalExpenses?.total_expenses || 0}
                 </h3>
