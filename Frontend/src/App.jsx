@@ -26,10 +26,10 @@ const App = () => {
   return (
     <>
       <Header title={message} />
-      <div className="container mt-5">
+      <div className="column mt-5">
         {!token ? (
           <div className="columns is-centered">
-            <div className="column is-half">
+            <div className="column is-full-mobile is-three-quarters-tablet is-half-desktop">
               {showSignUp ? (
                 <SignUp setShowSignUp={setShowSignUp} />
               ) : (
