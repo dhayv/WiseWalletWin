@@ -23,7 +23,8 @@ export const UserProvider = ({ children }) => {
     refresher();
     // This effect doesn't depend on any props or state,
     // so it only runs once after the initial render.
-  }, [refresher]);
+  }, [refresher]); 
+
 
   useEffect(() => {
     const storedUserId = localStorage.getItem('userId')

@@ -1,8 +1,13 @@
-import React from 'react'
+import React from 'react';
 
-const errorMessage = ({ message }) => (
-  <p className='has-text-weight-bold has-text-danger'>{message}</p>
+const ErrorMessage = ({ messages = [] }) => (
+  <div>
+    {messages.map((message, index) => (
+      <p key={index} className='has-text-weight-bold has-text-danger'>
+        {message}
+      </p>
+    ))}
+  </div>
+);
 
-)
-
-export default errorMessage
+export default ErrorMessage;

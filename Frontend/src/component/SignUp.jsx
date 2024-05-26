@@ -1,29 +1,26 @@
-import React, { useState, useContext } from 'react'
-import PasswordChecklist from "react-password-checklist"
-import { UserContext } from '../context/UserContext'
-import 'react-phone-number-input/style.css'
-import ErrorMessage from './ErrorMessage'
-import api from '../api'
+import React, { useState, useContext } from 'react';
+import PasswordChecklist from "react-password-checklist";
+import { UserContext } from '../context/UserContext';
+import 'react-phone-number-input/style.css';
+import ErrorMessage from './ErrorMessage';
+import api from '../api';
 
 const SignUp = ({ setShowSignUp }) => {
-  const [firstName, setFirstName] = useState('')
-  const [userName, setUserName] = useState('')
-  const [email, setEmail] = useState('')
-  const [passWord, setPassword] = useState('')
+  const [firstName, setFirstName] = useState('');
+  const [userName, setUserName] = useState('');
+  const [email, setEmail] = useState('');
+  const [passWord, setPassword] = useState('');
+  const [confirmationPassword, setConfirmationPassword] = useState('');
+  const [phoneNumber, setPhoneNumber] = useState('');
+  const [errorMessages, setErrorMessages] = useState([]);
+  const [showChecklist, SetShowChecklist] = useState(false);
 
-  const [confirmationPassword, setConfirmationPassword] = useState('')
-  const [phoneNumber, setPhoneNumber] = useState('')
-  const [errorMessage, setErrorMessage] = useState('')
-  const [showChecklist, SetShowChecklist] = useState('false');
+  const { setToken, setUserId } = useContext(UserContext);
 
-  // Manages token globally
-  const { setToken, setUserId } = useContext(UserContext)
-
-  // Function to submit user info(Post)
   const submitRegistration = async () => {
     if (passWord !== confirmationPassword) {
-      setErrorMessage('Passwords do not match.')
-      return
+      setErrorMessages(['Passwords do not match.']);
+      return;
     }
 
     try {
@@ -33,47 +30,50 @@ const SignUp = ({ setShowSignUp }) => {
         email,
         password: passWord,
         phone_number: phoneNumber
-      })
+      });
 
       if (userResponse.status === 201) {
-        const params = new URLSearchParams()
-        params.append('username', userName)
-        params.append('password', passWord)
+        const params = new URLSearchParams();
+        params.append('username', userName);
+        params.append('password', passWord);
 
         const tokenResponse = await api.post('/token', params, {
           headers: { 'Content-type': 'application/x-www-form-urlencoded' }
-        })
+        });
 
         if (tokenResponse.status === 200) {
-          const data = tokenResponse.data
-          localStorage.setItem('token', data.access_token)
-          setToken(data.access_token)
+          const data = tokenResponse.data;
+          localStorage.setItem('token', data.access_token);
+          setToken(data.access_token);
 
           const userInfoResponse = await api.get('/user/me', {
             headers: { Authorization: `Bearer ${data.access_token}` }
-          })
+          });
 
           if (userInfoResponse.status === 200) {
-            const userData = userInfoResponse.data
-            localStorage.setItem('userId', userData.id) // Save userId to local storage
-            setUserId(userData.id) // Update userId in the context
+            const userData = userInfoResponse.data;
+            localStorage.setItem('userId', userData.id);
+            setUserId(userData.id);
           }
         } else {
-          setErrorMessage('Failed to register or log in')
+          setErrorMessages(['Failed to register or log in']);
         }
       } else {
-        setErrorMessage('Failed to register')
+        setErrorMessages(['Failed to register']);
       }
     } catch (error) {
-      setErrorMessage(error.response?.data?.detail || 'Registration failed')
+      if (error.response && error.response.data && error.response.data.errors) {
+        setErrorMessages(error.response.data.errors.map(err => err.msg));
+      } else {
+        setErrorMessages(['Registration failed']);
+      }
     }
-  }
+  };
 
   const handleSubmit = (e) => {
-    e.preventDefault()
-
-    submitRegistration()
-  }
+    e.preventDefault();
+    submitRegistration();
+  };
 
   return (
     <div className=''>
@@ -207,16 +207,16 @@ const SignUp = ({ setShowSignUp }) => {
               </div>
               {/* Phone Number */}
               <div className='field'>
-                <label className='label' htmlFor='phoneNumber'>Phone Number</label>
+                <label className='label' htmlFor='phoneNumber'>Phone Number (Optional)</label>
                 <div className='control has-icons-left'>
                   <input
                     id='phoneNumber'
                     name='phoneNumber'
                     type='text'
-                    placeholder='Enter Phone Number'
+                    placeholder='Enter Phone Number (e.g., 123-456-7890)'
                     value={phoneNumber}
                     onChange={(e) => setPhoneNumber(e.target.value)}
-                    pattern='^(?:\(\d{3}\)|\d{3})[-\s]?\d{3}[-\s]?\d{4}$'
+                    pattern="^(?:\(\d{3}\)|\d{3})[- ]?\d{3}[- ]?\d{4}$"
                     className='input'
                   />
                   <span className='icon is-small is-left'>
@@ -224,7 +224,7 @@ const SignUp = ({ setShowSignUp }) => {
                   </span>
                 </div>
               </div>
-              <ErrorMessage message={errorMessage} />
+              <ErrorMessage messages={errorMessages} />
               <br />
               {/* Button */}
               <button className='button is-primary is-fullwidth' type='submit'>
@@ -242,4 +242,4 @@ const SignUp = ({ setShowSignUp }) => {
   );
 }  
 
-export default SignUp
+export default SignUp;
