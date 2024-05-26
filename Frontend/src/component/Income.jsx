@@ -1,68 +1,80 @@
-import React, { useCallback, useContext, useEffect, useState } from 'react'
-import { UserContext } from '../context/UserContext'
-import moment from 'moment'
-import api from '../api' // Importing your API instance
+import React, { useContext, useEffect, useState } from 'react';
+import moment from 'moment';
+import { UserContext } from '../context/UserContext';
+import api from '../api'; // Importing your API instance
 
 const Income = () => {
-  const { setUserId, userId, incomeId, setIncomeId, refreshData, refresher, recentPay, setRecentPay, incomeData, setIncomeData } = useContext(UserContext)
-  const [showAddIncome, setShowAddIncome] = useState(false)
-  const [errorMessage, setErrorMessage] = useState('')
-  const [amount, setAmount] = useState('')
-  const [lastPay, setLastPay] = useState('')
-  const [isActive, setIsActive] = useState(false)
+  const { userId, incomeId, setIncomeId, refreshData, refresher, recentPay, setRecentPay, incomeData, setIncomeData } = useContext(UserContext);
+  const [showAddIncome, setShowAddIncome] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
+  const [amount, setAmount] = useState('');
+  const [lastPay, setLastPay] = useState('');
+  const [isActive, setIsActive] = useState(false);
+  const [loading, setLoading] = useState(true); // Add a loading state
 
-  const formatRecent = recentPay && moment(recentPay).format('MM-DD-YYYY')
-  const formatLast = lastPay && moment(lastPay).format('MM-DD-YYYY')
+  // Correct date format for the server
+  const formatRecent = recentPay && moment(recentPay).format('MM-DD-YYYY');
+  const formatLast = lastPay && moment(lastPay).format('MM-DD-YYYY');
 
-  const toggleDropdown = () =>
-    setIsActive(!isActive)
+  const toggleDropdown = () => setIsActive(!isActive);
 
   useEffect(() => {
     const getIncome = async () => {
       if (!userId) {
-        setShowAddIncome(true)
-        return
+        setShowAddIncome(true);
+        return;
       }
       try {
-        const response = await api.get(`/income/${userId}`)
-        const data = response.data || []
+        const response = await api.get(`/income/${userId}`);
+        const data = response.data || [];
 
-        setIncomeData(data)
-        setShowAddIncome(data.length === 0) // Show form if no data
+        setIncomeData(data);
+        setShowAddIncome(data.length === 0); // Show form if no data
         if (data.length > 0) {
-          setIncomeId(data[0].id)
+          setIncomeId(data[0].id);
         }
       } catch (error) {
-        setErrorMessage(error.message)
+        setErrorMessage(error.message);
+      } finally {
+        setLoading(false); // Set loading to false after data is fetched
       }
-    }
-    getIncome()
-  }, [userId, setShowAddIncome, setIncomeId, incomeId, refreshData, setIncomeData])
+    };
+    getIncome();
+  }, [userId, setShowAddIncome, setIncomeId, incomeId, refreshData, setIncomeData]);
 
   const submitIncome = async (e) => {
-    e.preventDefault()
+    e.preventDefault();
 
-    const endpointUrl = incomeData.length === 0 ? `/income/${userId}` : `/income/${incomeId}`
-    const method = incomeData.length === 0 ? 'post' : 'put'
+    const endpointUrl = incomeData.length === 0 ? `/income/${userId}` : `/income/${incomeId}`;
+    const method = incomeData.length === 0 ? 'post' : 'put';
+
+    const payload = {
+      amount: parseFloat(amount), // Ensure amount is a float
+      recent_pay: formatRecent, // Correct date format
+      last_pay: formatLast // Correct date format
+    };
+
+    console.log('Submitting payload:', payload);
 
     try {
       const response = await api({
         method,
         url: endpointUrl,
-        data: {
-          amount,
-          recent_pay: formatRecent,
-          last_pay: formatLast
-        }
-      })
-      const data = response.data
-      setIncomeData(prevData => method === 'POST' ? [...prevData, data] : [data])
+        data: payload
+      });
+      const data = response.data;
+      setIncomeData(prevData => method === 'post' ? [...prevData, data] : [data]);
 
-      refresher()
+      refresher();
     } catch (error) {
-      setErrorMessage(error.response?.data?.message || error.message)
+      console.error('Error response:', error.response);
+      setErrorMessage(error.response?.data?.message || error.message);
+      // Log the detailed validation error messages
+      console.log('Validation Errors:', error.response?.data?.detail);
+      // Optional: Display validation errors to the user
+      setErrorMessage(error.response?.data?.detail.join(', '));
     }
-  }
+  };
 
   const deleteIncome = async () => {
     try {
@@ -72,30 +84,34 @@ const Income = () => {
           recent_pay: formatRecent,
           last_pay: formatLast
         }
-      })
+      });
       if (response.status === 200) {
-        setIncomeData(response.data)
+        setIncomeData(response.data);
       }
     } catch (error) {
-      setErrorMessage(error.message)
+      setErrorMessage(error.message);
     }
-  }
+  };
 
   useEffect(() => {
     if (incomeData && incomeData.length > 0) {
-      const { amount, recent_pay, last_pay } = incomeData[0]
-      setAmount(amount)
-      setRecentPay(recent_pay)
-      setLastPay(last_pay)
+      const { amount, recent_pay, last_pay } = incomeData[0];
+      setAmount(amount.toString()); // Ensure amount is a string for the input field
+      setRecentPay(recent_pay);
+      setLastPay(last_pay);
     } else {
-      setAmount('')
-      setRecentPay('')
-      setLastPay('')
+      setAmount('');
+      setRecentPay('');
+      setLastPay('');
     }
-  }, [incomeData, setRecentPay])
+  }, [incomeData, setRecentPay]);
 
   const handleIncomeClick = () => {
-    toggleDropdown()
+    toggleDropdown();
+  };
+
+  if (loading) {
+    return <div>Loading...</div>; // Render loading indicator while data is being fetched
   }
 
   return (
@@ -105,7 +121,6 @@ const Income = () => {
           <div className={`dropdown ${isActive ? 'is-active' : ''}`}>
             <div className='dropdown-trigger'>
               <button
-
                 aria-haspopup='true'
                 aria-controls='dropdown-menu'
                 onClick={handleIncomeClick}
@@ -157,7 +172,7 @@ const Income = () => {
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default Income
+export default Income;

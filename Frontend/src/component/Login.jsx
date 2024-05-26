@@ -9,7 +9,7 @@ const Login = ({ setShowSignUp }) => {
   const [userName, setUserName] = useState('')
   const [passWord, setPassword] = useState('')
   const [errorMessage, setErrorMessage] = useState('')
-  const { setToken, token, setUserId } = useContext(UserContext)
+  const { setToken, setUserId } = useContext(UserContext)
 
   const submitLogin = async () => {
     try {

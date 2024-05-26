@@ -1,0 +1,29 @@
+/* App.css */
+.card {
+    box-shadow: 0
+  }
+  
+  .columns {
+    margin-bottom: 0rem;
+  }
+  
+  .column {
+    display: 0;
+    justify-content: center;
+  }
+  
+  .subtitle {
+    margin-bottom: rem;
+  }
+  
+  .expense-item {
+    margin: 0.5rem 0;
+    padding: 0.5rem;
+    border-bottom: 1px solid #ddd;
+  }
+  
+  .expense-item:last-child {
+    border-bottom: none;
+  }
+  
+  

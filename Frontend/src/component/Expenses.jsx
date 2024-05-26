@@ -3,12 +3,11 @@ import { UserContext } from '../context/UserContext'
 import api from '../api'
 
 const Expense = () => { // Assuming incomeId is passed as a prop
-  const { token, incomeId, refreshData, refresher } = useContext(UserContext)
+  const { token, incomeId, refreshData, refresher, expenseData, setExpenseData } = useContext(UserContext)
   const [name, setName] = useState('')
   const [amount, setAmount] = useState('')
   const [dueDate, setDueDate] = useState('')
   const [errorMessage, setErrorMessage] = useState('')
-  const [expenseData, setExpenseData] = useState([])
   const [expenseId, setExpenseId] = useState(null)
 
   useEffect(() => {
@@ -134,7 +133,7 @@ const Expense = () => { // Assuming incomeId is passed as a prop
           </tbody>
         </table>
       </div>
-      <h3 className='title mt-5'>Add Expense</h3>
+      <h3 className='has-text-weight-bold subtitle'>Add Expense</h3>
       <form onSubmit={handleSubmit} className='expense-form'>
         <div className='row'>
           <div className='field'>
