@@ -1,9 +1,11 @@
+---
 name: CI/CD Pipeline
 
 on:
   push:  
     branches:
       - '**'  # Match all branches
+  workflow_dispatch:  # Allows manual triggering of the workflow
 
 jobs:
   lint:
@@ -27,7 +29,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-pip-
 
-      - name: Install dependcies
+      - name: Install dependencies
         run: |
           pip install isort black
 
@@ -69,14 +71,21 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Deploy using rsync
+      - name: Set up SSH
         env:
           SSH_PRIVATE_KEY: ${{ secrets.SSH_KEY }}
+          EC2_ADDRESS: ${{ secrets.EC2_ADDRESS }}
         run: |
           mkdir -p ~/.ssh
           echo "${{ secrets.SSH_KEY }}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -H ${{ secrets.EC2_ADDRESS }} >> ~/.ssh/known_hosts
+
+      - name: Deploy using rsync
+        env:
+          EC2_ADDRESS: ${{ secrets.EC2_ADDRESS }}
+        run: |
           rsync -avz --exclude 'node_modules' --exclude '.git' --exclude '.env' \
             --exclude 'venv' --exclude '__pycache__' --exclude 'db.sqlite3' \
             -e "ssh -i ~/.ssh/id_rsa" \
-            . user@your-ec2-instance:/home/ubuntu/app/
+            . ubuntu@${{ secrets.EC2_ADDRESS }}:~/app
