@@ -1,61 +1,112 @@
 ---
-  name: Lint-code 
-  
-  on: push
-  
-  jobs: 
-    super-lint:
-      name: Lint code base
-      runs-on: ubuntu-latest
-      steps:
-        - name: Checkout code
-          uses: actions/checkout@v4
-              
-        - name: Set up Python
-          uses: actions/setup-python@v5.1.0
-          with:
-            python-version: '3.11.8'
-  
-        - name: Cache
-          uses: actions/cache@v4.0.2
-          with:
-            path: ~/.cache/pip
-            key: ${{ runner.os }}-pip-${{ hashFiles('backend/requirements.txt') }}
-            restore-keys: |
-              ${{ runner.os }}-pip-
-  
-        - name: Install dependcies
-          run: |
-            pip install isort black
-  
-        - name: Isort
-          run: isort . --profile black
-            
-        - name: Format code with Black
-          run: black .
-  
-        - name: Commit changes if needed
-          env:
-            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          run: |
-            git config --local user.email "action@github.com"
-            git config --local user.name "GitHub Action"
-            git add -A
-            git diff --exit-code || git commit -m "Apply formatting"
-            git push
-          
-  
-        - name: Set up Environment for Super-Linter
-          uses: actions/setup-node@v4.0.2
-  
-        - name: Run Super-Linter
-          uses:  super-linter/super-linter@v5.7.2
-          env: 
-            DEFAULT_BRANCH: main
-            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-            VALIDATE_PYTHON_MYPY: false
-            VALIDATE_PYTHON_BLACK: false
-          continue-on-error: true
-  
-  
-  
+name: CI/CD Pipeline
+
+on:
+  push:  
+    branches:
+      - '**'  # Match all branches
+  workflow_dispatch:  # Allows manual triggering of the workflow
+
+jobs:
+  lint:
+    name: Lint Code Base
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5.1.0
+        with:
+          python-version: '3.11.8'
+
+      - name: Cache
+        uses: actions/cache@v4.0.2
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('backend/requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+
+      - name: Install dependencies
+        run: |
+          pip install isort black
+
+      - name: Isort
+        run: isort . --profile black
+
+      - name: Format code with Black
+        run: black .
+
+      - name: Commit changes if needed
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add -A
+          git diff --exit-code || git commit -m "Apply formatting"
+          git push
+        
+      - name: Set up Environment for Super-Linter
+        uses: actions/setup-node@v4.0.2
+
+      - name: Run Super-Linter
+        uses: super-linter/super-linter@v5.7.2
+        env:
+          DEFAULT_BRANCH: main
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          VALIDATE_PYTHON_MYPY: false
+          VALIDATE_PYTHON_BLACK: false
+        continue-on-error: true
+
+  deploy:
+    name: Deploy Code
+    runs-on: ubuntu-latest
+    needs: lint  # Ensure lint job completes first
+    if: github.ref == 'refs/heads/main'  # Run this job only on the main branch
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up SSH
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_KEY }}
+          EC2_ADDRESS: ${{ secrets.EC2_ADDRESS }}
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -H ${{ secrets.EC2_ADDRESS }} >> ~/.ssh/known_hosts
+
+      - name: Rsync and Deployments Action
+        uses: Burnett01/rsync-deployments@7.0.1
+        with:
+          switches: -avz --exclude 'node_modules' --exclude '.git' --exclude '.env' --exclude 'venv' --exclude '__pycache__' --exclude 'db.sqlite3'
+          remote_path: ~/app
+          remote_host: ${{ secrets.EC2_ADDRESS }}
+          remote_user: ubuntu
+          remote_key: ${{ secrets.SSH_KEY }}
+
+      - name: Remote SSH commands
+        uses: fifsky/ssh-action@v0.0.6
+        with:
+          command: |
+            sudo apt update
+            sudo apt upgrade
+            sudo systemctl stop frontend.service
+            sudo systemctl stop backend-container.service
+            cd ~/app/frontend
+            npm install
+            npm run build
+            npm prune --production
+            sudo systemctl restart backend-container.service
+            sudo systemctl restart frontend.service
+            sudo systemctl status backend-container.service
+            sudo systemctl status frontend.service
+          host: ${{ secrets.EC2_ADDRESS }}
+          user: ubuntu
+          key: ${{ secrets.SSH_KEY }
+          port: 22
