@@ -21,7 +21,7 @@ jobs:
         with:
           python-version: '3.11.8'
 
-      - name: Cache
+      - name: Cache pip
         uses: actions/cache@v4.0.2
         with:
           path: ~/.cache/pip
@@ -29,7 +29,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-pip-
 
-      - name: Install dependencies
+      - name: Install dependencies and linters
         run: |
           pip install isort black
 
@@ -108,5 +108,5 @@ jobs:
             sudo systemctl status frontend.service
           host: ${{ secrets.EC2_ADDRESS }}
           user: ubuntu
-          key: ${{ secrets.SSH_KEY }
+          key: ${{ secrets.SSH_KEY }}
           port: 22
