@@ -71,10 +71,13 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Set up SSH
-        env:
+      - name: Rsync and Deployments Action
+        uses: easingthemes/
+        - ssh-deploy@v5.0.3
+        with:
           SSH_PRIVATE_KEY: ${{ secrets.SSH_KEY }}
-          EC2_ADDRESS: ${{ secrets.EC2_ADDRESS }}
+          REMOTE_HOST: ${{ secrets.EC2_ADDRESS }}
+          REMOTE_USER: ubuntu
         run: |
           mkdir -p ~/.ssh
           echo "${{ secrets.SSH_KEY }}" > ~/.ssh/id_rsa
@@ -110,3 +113,6 @@ jobs:
           user: ubuntu
           key: ${{ secrets.SSH_KEY }}
           port: 22
+
+
+          
