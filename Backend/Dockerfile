@@ -12,6 +12,8 @@ RUN pip install --no-cache-dir --upgrade -r /code/requirements.txt
 
 RUN mkdir /data && chmod 777 /data
 
+ENV DATABASE_URL="sqlite://///data/db.sqlite3"
+
 EXPOSE  8000
 # 
 COPY . /code
