@@ -2,15 +2,35 @@
 
 > Wise Wallet Win is a comprehensive financial management application designed to streamline and simplify the way users track their monthly expenses. Experience it firsthand: [WiseWalletWin](https://wisewalletwin.com)
 
-## Screenshot
+## Table of Contents
+
+- [Overview](#overview)
+  - [Screenshot](#screenshot)
+  - [Video](#video)
+  - [Application Overview](#application-overview)
+- [Technologies Used](#technologies-used)
+  - [Backend](#backend)
+  - [Database](#database)
+  - [Frontend](#frontend)
+  - [Containerization and Deployment](#containerization-and-deployment)
+    - [CI/CD with GitHub Actions](ci/cd-with-gitHub-ctions)
+- [Features](#features)
+- [Contribution Guidelines](#contribution-guidelines)
+- [License](#license)
+- [Acknowledgements](#acknowledgements)
+- [Author](#author)
+
+## Overview
+
+### Screenshot
 
 ![Alt](./images/screenshot.png)
 
-## Video
+### Video
 
 [Link to Video](./images/video.mov)
 
-## Application Overview
+### Application Overview
 
 Wise Wallet Win is a full-stack web application dedicated to helping users manage their personal finances efficiently. Originally built to help my girlfriend and me keep track of our monthly expenses, this application informs us how much we need to allocate from our bi-weekly checks, effectively eliminating the need for cumbersome spreadsheets.
 
@@ -46,6 +66,11 @@ The application employs a robust technology stack, including a SQLite database, 
 - **Certbot:** Automates the use of Let's Encrypt for enabling HTTPS, ensuring secure communication.
 - **Systemd:** Manages the lifecycle of backend and frontend services, ensuring they start on boot and restart on failure.
 
+### CI/CD with GitHub Actions
+
+GitHub Actions is used to automate the CI/CD pipeline for the Wise Wallet Win application. The pipeline includes steps to SSH into the server and rsync the necessary files for deployment.
+
+
 ## Features
 
 - **Secure User Authentication:** Employs JWT for robust security during user registration and login processes.
@@ -75,3 +100,7 @@ This project is licensed under the MIT License.
 ---
 
 Wise Wallet Win is not just an application; it is a step towards financial clarity and empowerment. Check it out and take control of your finances today!
+
+## Author
+
+Dhayv
