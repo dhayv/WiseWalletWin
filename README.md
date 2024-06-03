@@ -8,11 +8,7 @@
 
 ## Video
 
-```html
-<video width="600" controls>
-  <source src="./images/" type="video/mov">
-  A quick video of the apps functionality
-</video>
+[Link to Video](./images/video.mov)
 
 ## Application Overview
 
