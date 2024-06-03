@@ -10,7 +10,7 @@
 
 ```html
 <video width="600" controls>
-  <source src="videos/video.mp4" type="video/mov">
+  <source src="./images/" type="video/mov">
   A quick video of the apps functionality
 </video>
 
@@ -56,7 +56,6 @@ The application employs a robust technology stack, including a SQLite database, 
 - **Comprehensive Financial Management:** Supports CRUD operations, allowing users to add, update, retrieve, or delete financial entries.
 - **Responsive Design:** Ensures a seamless user experience across various devices.
 - **Efficient Data Handling:** Provides real-time updates and synchronization of financial data.
-
 
 ## Contribution Guidelines
 
