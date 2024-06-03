@@ -2,6 +2,18 @@
 
 > Wise Wallet Win is a comprehensive financial management application designed to streamline and simplify the way users track their monthly expenses. Experience it firsthand: [WiseWalletWin](https://wisewalletwin.com)
 
+## Screenshot
+
+![Alt](./images/screenshot.png)
+
+## Video
+
+```html
+<video width="600" controls>
+  <source src="videos/video.mp4" type="video/mov">
+  A quick video of the apps functionality
+</video>
+
 ## Application Overview
 
 Wise Wallet Win is a full-stack web application dedicated to helping users manage their personal finances efficiently. Originally built to help my girlfriend and me keep track of our monthly expenses, this application informs us how much we need to allocate from our bi-weekly checks, effectively eliminating the need for cumbersome spreadsheets.
@@ -45,47 +57,6 @@ The application employs a robust technology stack, including a SQLite database, 
 - **Responsive Design:** Ensures a seamless user experience across various devices.
 - **Efficient Data Handling:** Provides real-time updates and synchronization of financial data.
 
-## Getting Started
-
-### Prerequisites
-
-- Docker
-- Node.js and npm
-- Python 3.8+
-
-### Installation
-
-1. Clone the repository:
-
-    ```bash
-    git clone (https://github.com/hellomottoworld/SpendSmart.git)
-    cd SpendSmart
-    ```
-
-2. Set up backend:
-
-    ```bash
-    cd backend
-    python -m venv venv
-    source venv/bin/activate
-    pip install -r requirements.txt
-    docker build -t wisewalletwin-backend .
-    docker run -d -p 8000:8000 wisewalletwin-backend
-    ```
-
-3. Set up frontend:
-
-    ```bash
-    cd ../frontend
-    npm install
-    npm start
-    ```
-
-## Usage
-
-1. Open your browser and navigate to `http://localhost:3000`.
-2. Register a new account or log in with existing credentials.
-3. Start managing your income and expenses effortlessly.
 
 ## Contribution Guidelines
 
