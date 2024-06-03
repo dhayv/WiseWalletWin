@@ -5,9 +5,9 @@
 ## Table of Contents
 
 - [Overview](#overview)
+  - [Application Overview](#application-overview) 
   - [Screenshot](#screenshot)
   - [Video](#video)
-  - [Application Overview](#application-overview)
 - [Technologies Used](#technologies-used)
   - [Backend](#backend)
   - [Database](#database)
@@ -22,14 +22,6 @@
 
 ## Overview
 
-### Screenshot
-
-![Alt](./images/screenshot.png)
-
-### Video
-
-[Link to Video](./images/video.mov)
-
 ### Application Overview
 
 Wise Wallet Win is a full-stack web application dedicated to helping users manage their personal finances efficiently. Originally built to help my girlfriend and me keep track of our monthly expenses, this application informs us how much we need to allocate from our bi-weekly checks, effectively eliminating the need for cumbersome spreadsheets.
@@ -37,6 +29,14 @@ Wise Wallet Win is a full-stack web application dedicated to helping users manag
 By tracking income and logging expenses, users can easily monitor their financial health from paycheck to paycheck, enhancing decision-making and financial planning through a seamless and intuitive interface.
 
 The application employs a robust technology stack, including a SQLite database, a React-powered user interface, and a FastAPI server ensuring secure, efficient data management and communication. The entire system is deployed on AWS ECS, ensuring high availability and scalability.
+
+### Screenshot
+
+![Alt](./images/screenshot.png)
+
+### Video
+
+[Link to Video](./images/video.mov)
 
 ## Technologies Used
 
