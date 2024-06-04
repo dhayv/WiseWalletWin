@@ -81,8 +81,6 @@ jobs:
           ARGS: "-avz"
           EXCLUDE: "/node_modules/,/.git/,/.env/,/venv/,/__pycache__/,/db.sqlite3/,/Basic_Script/,/README.md/,/api.js/,/main.py/,/database.py/"
           SCRIPT_BEFORE: |
-            sudo apt update
-            sudo apt upgrade
             sudo systemctl stop frontend.service
             sudo systemctl stop backend-container.service
           SCRIPT_AFTER: |
