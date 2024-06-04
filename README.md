@@ -5,7 +5,7 @@
 ## Table of Contents
 
 - [Overview](#overview)
-  - [Application Overview](#application-overview) 
+  - [Application Overview](#application-overview)
   - [Screenshot](#screenshot)
   - [Video](#video)
 - [Technologies Used](#technologies-used)
@@ -69,7 +69,6 @@ The application employs a robust technology stack, including a SQLite database, 
 ### CI/CD with GitHub Actions
 
 GitHub Actions is used to automate the CI/CD pipeline for the Wise Wallet Win application. The pipeline includes steps to SSH into the server and rsync the necessary files for deployment.
-
 
 ## Features
 
