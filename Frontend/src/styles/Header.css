@@ -1,6 +1,6 @@
 /* Header.css */
 .navbar {
-    padding: 0rem
+    padding: 0
   }
   
   .navbar-menu {
@@ -8,10 +8,10 @@
   }
   
   .section {
-    padding: 5rem 5rem;
+    padding: 5rem;
   }
   
   .title {
-    margin-top: 0rem;
+    margin-top: 0;
   }
   

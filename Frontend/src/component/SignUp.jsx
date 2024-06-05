@@ -13,9 +13,32 @@ const SignUp = ({ setShowSignUp }) => {
   const [confirmationPassword, setConfirmationPassword] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
   const [errorMessages, setErrorMessages] = useState([]);
-  const [showChecklist, SetShowChecklist] = useState(false);
+  const [showChecklist, setShowChecklist] = useState(false);
 
   const { setToken, setUserId } = useContext(UserContext);
+
+  const PasswordInput = ({ id, name, label, placeholder, value, onChange, minLength = 8 }) => (
+    <div className='field'>
+      <label className='label' htmlFor={id}>{label}</label>
+      <div className='control has-icons-left'>
+        <input
+          id={id}
+          name={name}
+          type='password'
+          placeholder={placeholder}
+          value={value}
+          onChange={onChange}
+          className='input'
+          minLength={minLength}
+          required
+          autoComplete='new-password'
+        />
+        <span className='icon is-small is-left'>
+          <i className='fas fa-lock'></i>
+        </span>
+      </div>
+    </div>
+  );
 
   const submitRegistration = async () => {
     if (passWord !== confirmationPassword) {
@@ -87,7 +110,7 @@ const SignUp = ({ setShowSignUp }) => {
           </div>
           <div className='box'>
             <form onSubmit={handleSubmit}>
-              <h1 className='title has-text-centered'>SignUp</h1>
+              <h1 className='title has-text-centered'>Sign Up</h1>
               {/* First Name */}
               <div className='field'>
                 <label className='label' htmlFor='firstName'>First Name</label>
@@ -107,7 +130,7 @@ const SignUp = ({ setShowSignUp }) => {
                   </span>
                 </div>
               </div>
-              {/* UserName */}
+              {/* Username */}
               <div className='field'>
                 <label className='label' htmlFor='username'>Username</label>
                 <div className='control has-icons-left'>
@@ -132,7 +155,7 @@ const SignUp = ({ setShowSignUp }) => {
                 <label className='label' htmlFor='email'>Email Address</label>
                 <div className='control has-icons-left'>
                   <input
-                    id= 'email'
+                    id='email'
                     name='email'
                     type='email'
                     placeholder='Enter Email'
@@ -148,63 +171,41 @@ const SignUp = ({ setShowSignUp }) => {
                 </div>
               </div>
               {/* Password */}
-              <div className='field'>
-                <label className='label' htmlFor='password'>Password</label>
-                <div className='control has-icons-left'>
-                  <input
-                    id='password'
-                    name='password'
-                    type='password'
-                    placeholder='Enter Password'
-                    value={passWord}
-                    onChange={(e) => {
-                      setPassword(e.target.value);
-                      SetShowChecklist(true);
-                    }}
-                    className='input'
-                    minLength='8'
-                    required
-                    autoComplete='new-password'
-                  />
-                  <span className='icon is-small is-left'>
-                    <i className='fas fa-lock'></i>
-                  </span>
-                </div>
-              </div>
+              <PasswordInput
+                id='password'
+                name='password'
+                label='Password'
+                placeholder='Enter Password'
+                value={passWord}
+                onChange={(e) => {
+                  setPassword(e.target.value);
+                  setShowChecklist(true);
+                }}
+              />
               {/* Password confirmation */}
-              <div className='field'>
-                <label className='label' htmlFor='confirmationPassword'>Confirm Password</label>
-                <div className='control has-icons-left'>
-                  <input
-                    id='confirmationPassword'
-                    name='confirmationPassword'
-                    type='password'
-                    placeholder='Re-enter Password to Confirm'
-                    value={confirmationPassword}
-                    onChange={(e) => {
-                      setConfirmationPassword(e.target.value);
-                      SetShowChecklist(true);  
-                    }}
-                    className='input'
-                    minLength='8'
-                    required
-                    autoComplete='new-password'
+              <PasswordInput
+                id='confirmationPassword'
+                name='confirmationPassword'
+                label='Confirm Password'
+                placeholder='Re-enter Password to Confirm'
+                value={confirmationPassword}
+                onChange={(e) => {
+                  setConfirmationPassword(e.target.value);
+                  setShowChecklist(true);
+                }}
+              />
+              {/* Password Checklist */}
+              {showChecklist && (
+                <div className="field mt-3 pl-5">
+                  <PasswordChecklist
+                    rules={["minLength", "specialChar", "number", "capital", "match"]}
+                    minLength={8}
+                    value={passWord}
+                    valueAgain={confirmationPassword}
+                    onChange={(isValid) => {}}
                   />
-                  <span className='icon is-small is-left'>
-                    <i className='fas fa-lock'></i>
-                  </span>
                 </div>
-                {/* Password Checklist */}
-              {showChecklist && (<div className="field mt-3 pl-5">
-                <PasswordChecklist
-                  rules={["minLength", "specialChar", "number", "capital", "match"]}
-                  minLength={8}
-                  value={passWord}
-                  valueAgain={confirmationPassword}
-                  onChange={(isValid) => {}}
-                />
-              </div>)}
-              </div>
+              )}
               {/* Phone Number */}
               <div className='field'>
                 <label className='label' htmlFor='phoneNumber'>Phone Number (Optional)</label>
@@ -228,11 +229,10 @@ const SignUp = ({ setShowSignUp }) => {
               <br />
               {/* Button */}
               <button className='button is-primary is-fullwidth' type='submit'>
-                SignUp
+                Sign Up
               </button>
-              
             </form>
-            <button className='button is-link is-light is-fullwidth mt 4' onClick={() => setShowSignUp(false)} style={{ marginTop: '10px' }}>
+            <button className='button is-link is-light is-fullwidth mt-4' onClick={() => setShowSignUp(false)} style={{ marginTop: '10px' }}>
               Have an account? Login
             </button>
           </div>
@@ -240,6 +240,6 @@ const SignUp = ({ setShowSignUp }) => {
       </div>
     </div>
   );
-}  
+}
 
 export default SignUp;
