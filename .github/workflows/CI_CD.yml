@@ -78,9 +78,11 @@ jobs:
           REMOTE_USER: ubuntu
           SOURCE: "."
           TARGET: "~/app"
-          ARGS: "-avz"
+          ARGS: "-avz --verbose"
+          SSH_CMD_ARGS: "-vvv"
           EXCLUDE: "/node_modules/,/.git/,/.env/,/venv/,/__pycache__/,/db.sqlite3/,/Basic_Script/,/README.md/,/api.js/,/main.py/,/database.py/"
           SCRIPT_BEFORE: |
+            ssh-keyscan -H ${{ secrets.REMOTE_HOST }} >> ~/.ssh/known_hosts
             ls
           SCRIPT_AFTER: |
             sudo systemctl stop frontend.service
