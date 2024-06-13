@@ -1,7 +1,7 @@
 import logging
 import re
 from datetime import date, datetime
-from typing import Optional
+from typing import Optional, List
 
 from pydantic import BaseModel, EmailStr, StringConstraints, field_validator
 from sqlmodel import AutoString, Field, SQLModel
@@ -65,6 +65,10 @@ class UserUpdate(BaseModel):
     email: Optional[EmailStr] = None
     first_name: Optional[str] = None
     password: Optional[str] = None
+
+
+class EmailSchema(BaseModel):
+    email: List[EmailStr]
 
 
 class IncomeBase(BaseModel):
