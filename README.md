@@ -1,6 +1,6 @@
 # Wise Wallet Win APP
 
-> Wise Wallet Win is a comprehensive financial management application designed to streamline and simplify the way users track their monthly expenses. Experience it firsthand: [WiseWalletWin](https://wisewalletwin.com)
+> Wise Wallet Win is a comprehensive financial application designed to streamline and simplify the way users track their bi-weekly checks. Experience it firsthand: [WiseWalletWin](https://wisewalletwin.com)
 
 ## Table of Contents
 
