@@ -1,7 +1,8 @@
-from fastapi import HTTPException, Response, status
+from fastapi import HTTPException, Response, status, BackgroundTasks
 from models import UserIn, Users, UserUpdate
 from Services.auth import get_password_hash
 from sqlmodel import Session, select
+from Services.email_client import EmailService
 
 
 class UserService:
@@ -18,24 +19,28 @@ class UserService:
         result = self.db.exec(statement).first()
         return result
 
-    def add_user(self, user_data: UserIn):
+    def add_user(self, user_data: UserIn, background_task: BackgroundTasks):
         if self.get_user_by_username(user_data.username):
             raise HTTPException(status_code=400, detail="Username already exists")
         if self.get_user_by_email(user_data.email):
             raise HTTPException(status_code=400, detail="Email already exists")
-        else:
-            hashed_password = get_password_hash(user_data.password)
-            db_user = Users(
-                username=user_data.username,
-                email=user_data.email,
-                hashed_password=hashed_password,
-                first_name=user_data.first_name,
-                phone_number=user_data.phone_number,
-            )
-            self.db.add(db_user)
-            self.db.commit()
-            self.db.refresh(db_user)
-            return db_user
+
+        hashed_password = get_password_hash(user_data.password)
+        db_user = Users(
+            username=user_data.username,
+            email=user_data.email,
+            hashed_password=hashed_password,
+            first_name=user_data.first_name,
+            phone_number=user_data.phone_number,
+        )
+        self.db.add(db_user)
+        self.db.commit()
+        self.db.refresh(db_user)
+
+        email_service = EmailService(self.db)
+        background_task.add_task(email_service.email_confirmation, user_data.email)
+
+        return db_user
 
     # user/me
     def read_user(self, user_id: int):
