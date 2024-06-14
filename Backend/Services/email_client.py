@@ -29,16 +29,16 @@ class EmailService:
         self.db = db_session
 
     async def email_confirmation(self, email: str) -> JSONResponse:
-            statement = select(Users).where(Users.email == email)
-            user = self.db.exec(statement).first()
+        statement = select(Users).where(Users.email == email)
+        user = self.db.exec(statement).first()
 
-            message = MessageSchema(
-                subject="Welcome to WiseWalletWins",
-                recipients=[email]
-                body=html,
-                subtype=MessageType.html)
+        message = MessageSchema(
+            subject="Welcome to WiseWalletWins",
+            recipients=[email]
+            body=html,
+            subtype=MessageType.html)
 
-            fm = FastMail(conf)
-            await fm.send_message(message)
+        fm = FastMail(conf)
+        await fm.send_message(message)
 
-            return JSONResponse(status_code=200, content={"message": "Confirmation email sent successfully"}) 
+        return JSONResponse(status_code=200, content={"message": "Confirmation email sent successfully"}) 
