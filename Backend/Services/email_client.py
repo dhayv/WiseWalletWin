@@ -2,9 +2,9 @@ from typing import List
 
 from fastapi import BackgroundTasks
 from fastapi_mail import ConnectionConfig, FastMail, MessageSchema, MessageType
-from pydantic import BaseModel, EmailStr
 from starlette.responses import JSONResponse
-from models import EmailSchema
+from models import UserIn, Users
+from sqlmodel import Session, select
 
 
 conf = ConnectionConfig(
@@ -20,22 +20,25 @@ conf = ConnectionConfig(
 )
 
 
-html = """
-<p>Thanks for using Fastapi-mail</p> 
-"""
+html = """<p>hey</p>"""
+
+ 
 
 class EmailService:
+    def __init__(self, db_session: Session) -> None:
+        self.db = db_session
 
-    @app.post("/email")
-    async def simple_send(email: EmailSchema) -> JSONResponse:
+    async def email_confirmation(self, email: str) -> JSONResponse:
+            statement = select(Users).where(Users.email == email)
+            user = self.db.exec(statement).first()
 
-        message = MessageSchema(
-            subject="Fastapi-Mail module",
-            recipients=email.dict().get("email"),
-            body=html,
-            subtype=MessageType.html)
+            message = MessageSchema(
+                subject="Welcome to WiseWalletWins",
+                recipients=[email]
+                body=html,
+                subtype=MessageType.html)
 
-        fm = FastMail(conf)
-        await fm.send_message(message)
-        return JSONResponse(status_code=200, content={"message": "email has been sent"}) 
+            fm = FastMail(conf)
+            await fm.send_message(message)
 
+            return JSONResponse(status_code=200, content={"message": "Confirmation email sent successfully"}) 
