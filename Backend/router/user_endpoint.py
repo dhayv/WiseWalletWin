@@ -1,7 +1,7 @@
 from datetime import timedelta
 
 from data_base.database import get_db
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, BackgroundTasks
 from fastapi.security import OAuth2PasswordRequestForm
 from models import UserIn, UserOut, Users, UserUpdate
 from Services.auth import (ACCESS_TOKEN_EXPIRES_MINUTES, Token,
@@ -27,10 +27,11 @@ async def login_for_access_token(
     user = authenticate_user(db, form_data.username, form_data.password)
     if not user:
         raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
+            status_code=status.HTTP_403_FORBIDDEN,
             detail="Incorrect username or password",
             headers={"WWW-Authenticate": "Bearer"},
         )
+    
     access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRES_MINUTES)
     access_token = create_access_token(
         data={"sub": user.username}, expires_delta=access_token_expires
@@ -42,8 +43,8 @@ async def login_for_access_token(
 # It adds a new user to the database.
 # Also Check if username or email exists in the database.
 @router.post("/user", response_model=UserOut, status_code=status.HTTP_201_CREATED)
-def add_user(user: UserIn, service: UserService = Depends(get_user_service)):
-    return service.add_user(user)
+def add_user(user: UserIn, background_tasks: BackgroundTasks, service: UserService = Depends(get_user_service)):
+    return service.add_user(user, background_tasks)
 
 
 # This endpoint is used to get the profile of the currently logged in user.
