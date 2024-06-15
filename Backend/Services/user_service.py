@@ -43,6 +43,7 @@ class UserService:
         return db_user
 
     # user/me
+
     def read_user(self, user_id: int):
         statement = select(Users).where(Users.id == user_id)
         result = self.db.exec(statement).first()
