@@ -11,6 +11,7 @@ from Services.calculations import (calc_income_minus_expenses,
                                    sum_of_all_expenses)
 from Services.user_service import UserService
 from sqlmodel import Session
+from fastapi.security import SecurityScopes
 
 router = APIRouter()
 
@@ -22,12 +23,12 @@ def get_user_service(db: Session = Depends(get_db)):
 # This endpoint is used tpp validate token
 # it updates the use is_email_verfied_status
 @router.get("/verify_email")
-async def verify_email_endpoint(token: str, service: UserService = Depends(get_user_service)):
-
-    email = verify_token(token, "email_verfication")
-    if not email:
+async def verify_email_endpoint(security_scopes: SecurityScopes, token: str, service: UserService = Depends(get_user_service)):
+    token_data = verify_token(token, security_scopes)
+    if not token_data:
         raise HTTPException(status_code=403, detail="Invalid or expired token")
 
+    email = token_data.username
     user = service.get_user_by_email(email)
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
@@ -36,7 +37,10 @@ async def verify_email_endpoint(token: str, service: UserService = Depends(get_u
         raise HTTPException(status_code=400, detail="Email already verified")
 
     user.is_email_verified = True
+    service.db.add(user)
     service.db.commit()
+    service.db.refresh(user)
+    print(f"User {user.email} verification status: {user.is_email_verified}")
 
     return {"message": "Email verified successfully!"}
 
