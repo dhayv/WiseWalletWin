@@ -38,7 +38,7 @@ class UserService:
         self.db.refresh(db_user)
 
         email_service = EmailService(self.db)
-        background_task.add_task(email_service.email_confirmation, user_data.email)
+        background_task.add_task(email_service.email_verification, user_data.email)
 
         return db_user
 
