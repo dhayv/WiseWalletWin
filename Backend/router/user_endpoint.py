@@ -27,11 +27,16 @@ async def login_for_access_token(
     user = authenticate_user(db, form_data.username, form_data.password)
     if not user:
         raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
+            status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Incorrect username or password",
             headers={"WWW-Authenticate": "Bearer"},
         )
-    
+
+    if not user.is_email_verified:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Email not verfied",
+        )
     access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRES_MINUTES)
     access_token = create_access_token(
         data={"sub": user.username}, expires_delta=access_token_expires
