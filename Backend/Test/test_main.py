@@ -1,14 +1,14 @@
 import sys
 from typing import Any, Dict, List
-
+from unittest.mock import patch
 import pytest
+from fastapi.security import SecurityScopes
 from data_base import database
 from fastapi.testclient import TestClient
 from main import app  # Import your FastAPI instance
 from sqlmodel import Session, SQLModel, create_engine
 from sqlmodel.pool import StaticPool
-
-sys.path.append("/Users/ecud/Desktop/python/text_my_budget/Backend")
+from Services.auth import create_email_access_token
 
 
 def test_print_sys_path():
@@ -53,11 +53,60 @@ def client_fixture(session: Session):
 # user fixture to create a new user for each test
 @pytest.fixture(scope="function")
 def create_test_user(client: TestClient) -> Dict[str, Any]:
-    response = client.post("/user", json=USER_DATA)
+    response = client.post("/api/user", json=USER_DATA)
     assert response.status_code == 201
     user = response.json()
+    user["password"] = USER_DATA["password"]
     print(f"Created user: {user}")
+
     return user
+
+
+@pytest.fixture
+def mock_send_email():
+    with patch('Services.email_client.FastMail.send_message') as mock_send:
+        yield mock_send
+
+
+# Test to ensure an email is sent upon user registration
+def test_email_sent_on_user_registration(client: TestClient, mock_send_email):
+    response = client.post("/api/user", json=USER_DATA)
+    assert response.status_code == 201
+    mock_send_email.assert_called_once()
+    args, kwargs = mock_send_email.call_args
+    assert "Verify your email" in args[0].subject
+
+
+# Test the email verification process
+def test_email_verification(client: TestClient, create_test_user: Dict[str, Any]):
+    token = create_email_access_token(create_test_user['email'])
+    security_scopes = SecurityScopes(scopes=["email_verification"])
+    response = client.get(f"/api/verify_email?token={token}", headers={"scopes": "email_verification"})
+    assert response.status_code == 200
+    assert response.json()['message'] == "Email verified successfully!"
+
+    # Verify the user's status in the database
+    user_response = client.get(f"/api/user/{create_test_user['id']}")
+    user_data = user_response.json()
+    assert user_data['is_email_verified'] is True
+
+
+def test_email_verification_invalid_token(client: TestClient):
+    invalid_token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ1bnZhbGlkIiwic2NvcGUiOiJlbWFpbF92ZXJpZmljYXRpb24iLCJleHAiOjE2MDc5NTA1Nzl9.invalidsignature"
+    response = client.get(f"/api/verify_email?token={invalid_token}")
+    assert response.status_code == 403
+    assert "Could not validate credentials" in response.json()['detail']
+
+
+def test_email_verification_already_verified(client: TestClient, create_test_user: Dict[str, Any]):
+    token = create_email_access_token(create_test_user['email'])
+    response = client.get(f"/api/verify_email?token={token}")
+    assert response.status_code == 200
+
+    # Try to verify again
+    response = client.get(f"/api/verify_email?token={token}")
+    assert response.status_code == 400
+    assert "Email already verified" in response.json()['detail']
 
 
 def test_add_user_with_existing_username(
@@ -68,10 +117,8 @@ def test_add_user_with_existing_username(
     new_user_data["username"] = existing_user["username"]  # Use existing username
     new_user_data["email"] = "newemail@example.com"  # Use a new email to avoid conflict
 
-    response = client.post("/user", json=new_user_data)
-    assert (
-        response.status_code == 400
-    ), "Should not allow creating a user with an existing username"
+    response = client.post("/api/user", json=new_user_data)
+    assert response.status_code == 400
     assert "Username already exists" in response.json().get("detail", "")
 
 
@@ -83,10 +130,8 @@ def test_add_user_with_existing_email(
     new_user_data["username"] = "newusername"  # Use a new username to avoid conflict
     new_user_data["email"] = existing_user["email"]  # Use existing email
 
-    response = client.post("/user", json=new_user_data)
-    assert (
-        response.status_code == 400
-    ), "Should not allow creating a user with an existing email"
+    response = client.post("/api/user", json=new_user_data)
+    assert response.status_code == 400
     assert "Email already exists" in response.json().get("detail", "")
 
 
@@ -103,7 +148,7 @@ def test_add_user(create_test_user: Dict[str, Any]) -> None:
 def test_add_user_with_invalid_password(client: TestClient) -> None:
     invalid_user_data = USER_DATA.copy()
     invalid_user_data["password"] = "weak"  # This should fail the regex validation
-    response = client.post("/user", json=invalid_user_data)
+    response = client.post("/api/user", json=invalid_user_data)
     assert response.status_code == 422, response.json()
     print(response.json())
 
@@ -112,7 +157,7 @@ def test_add_user_with_invalid_phone(client: TestClient) -> None:
     invalid_user_data = USER_DATA.copy()
     invalid_user_data["phone_number"] = "1234567"
 
-    response = client.post("/user", json=invalid_user_data)
+    response = client.post("/api/user", json=invalid_user_data)
     assert response.status_code == 422, response.json()
     print(response.json())
 
@@ -120,19 +165,31 @@ def test_add_user_with_invalid_phone(client: TestClient) -> None:
 # access token
 @pytest.fixture(scope="function")
 def test_access_token(client: TestClient, create_test_user: Dict[str, Any]) -> str:
+    token = create_email_access_token(create_test_user['email'])
+    security_scopes = SecurityScopes(scopes=["email_verification"])
+    print(f"Generated token: {token}")
+    verify_response = client.get(f"/api/verify_email?token={token}", headers={"scopes": "email_verification"})
+    assert verify_response.status_code == 200, f"Verification failed: {verify_response.json()}"
+
+    user_response = client.get(f"/api/user/{create_test_user['id']}")
+    user_data = user_response.json()
+    print(f"Post-verification user data: {user_data}")
+    assert user_data['is_email_verified'], "Email verification status not updated"
+
     response = client.post(
-        "/token",
-        data={"username": USER_DATA["username"], "password": USER_DATA["password"]},
+        "/api/token",
+        data={"username": create_test_user['username'], "password": create_test_user['password']},
     )
     token = response.json().get("access_token")
-    assert response.status_code == 200
+    print(f"Access token: {token}")
+    assert response.status_code == 200, f"Token generation failed: {response.json()}"
     assert token is not None
     return token
 
 
 def test_read_user_me(client: TestClient, test_access_token: str) -> None:
     response = client.get(
-        "/user/me", headers={"Authorization": f"bearer {test_access_token}"}
+        "/api/user/me", headers={"Authorization": f"bearer {test_access_token}"}
     )
     assert response.status_code == 200
 
@@ -148,7 +205,7 @@ def test_read_user_me(client: TestClient, test_access_token: str) -> None:
 
 def test_read_user(client: TestClient, create_test_user: Dict[str, Any]) -> None:
     user_id = create_test_user["id"]
-    response = client.get(f"/user/{user_id}")
+    response = client.get(f"/api/user/{user_id}")
     assert response.status_code == 200
     user_data = response.json()
 
@@ -161,7 +218,7 @@ def test_read_user(client: TestClient, create_test_user: Dict[str, Any]) -> None
 def test_update_user_info(client: TestClient, create_test_user: Dict[str, Any]) -> None:
     user_id = create_test_user["id"]
     response = client.put(
-        f"/user/{user_id}",
+        f"/api/user/{user_id}",
         json={
             "first_name": "Jane",
             "email": "janedoe@example.com",
@@ -179,10 +236,10 @@ def test_update_user_info(client: TestClient, create_test_user: Dict[str, Any]) 
 
 def test_delete_user(client: TestClient, create_test_user: Dict[str, Any]) -> None:
     user_id = create_test_user["id"]
-    response = client.delete(f"/user/{user_id}")
+    response = client.delete(f"/api/user/{user_id}")
     assert response.status_code == 204, response.text
     # Try to get the user again
-    response = client.get(f"/user/{user_id}")
+    response = client.get(f"/api/user/{user_id}")
     assert response.status_code == 404, response.text
     assert response.json() == {"detail": "User account not found"}
 
@@ -194,7 +251,7 @@ def income_info(
 ) -> None:
     id_user = create_test_user["id"]
     response = client.post(
-        f"/income/{id_user}",
+        f"/api/income/{id_user}",
         json={
             "amount": 5000,
             "recent_pay": "03-01-2024",
@@ -216,7 +273,7 @@ def test_add_income(
         "last_pay": "02-16-2024",
     }
     response = client.post(
-        f"/income/{user_id}",
+        f"/api/income/{user_id}",
         json=income_data,
         headers={"Authorization": f"Bearer {test_access_token}"},
     )
@@ -239,7 +296,7 @@ def test_add_income(
 
     # Optionally verify the income data by fetching it again
     get_response = client.get(
-        f"/income/{user_id}", headers={"Authorization": f"Bearer {test_access_token}"}
+        f"/api/income/{user_id}", headers={"Authorization": f"Bearer {test_access_token}"}
     )
     assert get_response.status_code == 200, "Failed to fetch income details"
     income_data_fetched = get_response.json()[0]  # Assuming the GET returns a list
@@ -256,7 +313,7 @@ def test_get_income(
 ):
     id_user = create_test_user["id"]
     response = client.get(
-        f"/income/{id_user}", headers={"Authorization": f"bearer {test_access_token}"}
+        f"/api/income/{id_user}", headers={"Authorization": f"bearer {test_access_token}"}
     )
 
     data = response.json()
@@ -276,7 +333,7 @@ def test_update_income(
 ) -> None:
     income_id = income_info["id"]
     response = client.put(
-        f"/income/{income_id}",
+        f"/api/income/{income_id}",
         json={"amount": 6000, "recent_pay": "03-12-2024"},
         headers={"Authorization": f"bearer {test_access_token}"},
     )
@@ -295,7 +352,7 @@ def test_post_expense(
 ):
     income_id = income_info["id"]
     response = client.post(
-        f"/expenses/{income_id}",
+        f"/api/expenses/{income_id}",
         json={"name": "Water Bill", "amount": 50, "due_date": 15},
         headers={"Authorization": f"bearer {test_access_token}"},
     )
@@ -308,7 +365,7 @@ def test_post_expense(
     assert response.status_code == 201, response.text
 
     get_response = client.get(
-        f"/expenses/{income_id}",
+        f"/api/expenses/{income_id}",
         headers={"Authorization": f"Bearer {test_access_token}"},
     )
     assert get_response.status_code == 200
@@ -336,7 +393,7 @@ def create_expenses(
             "due_date": 10 + i,  # Different due dates
         }
         response = client.post(
-            f"/expenses/{income_id}",
+            f"/api/expenses/{income_id}",
             json=expense_data,
             headers={"Authorization": f"bearer {test_access_token}"},
         )
@@ -355,7 +412,7 @@ def test_get_expenses(
 ):
     income_id = income_info["id"]
     response = client.get(
-        f"/expenses/{income_id}",
+        f"/api/expenses/{income_id}",
         headers={"Authorization": f"bearer {test_access_token}"},
     )
 
@@ -392,7 +449,7 @@ def test_update_expense(
 
     # Send the PUT request to update the expense
     response = client.put(
-        f"/expenses/{expense_id}",
+        f"/api/expenses/{expense_id}",
         json=update_data,
         headers={"Authorization": f"bearer {test_access_token}"},
     )
@@ -401,7 +458,7 @@ def test_update_expense(
 
     # Fetch the updated expense
     get_response = client.get(
-        f"/expenses/{income_info['id']}",
+        f"/api/expenses/{income_info['id']}",
         headers={"Authorization": f"bearer {test_access_token}"},
     )
     expenses_after_update = get_response.json()
@@ -434,12 +491,12 @@ def test_delete_expense(
     # Targeting the first expense to delete
     expense_id = create_expenses[0]["id"]
     response = client.delete(
-        f"/expense/{expense_id}",
+        f"/api/expense/{expense_id}",
         headers={"Authorization": f"bearer {test_access_token}"},
     )
 
     # Try to get the user income again
-    response = client.get(f"/expense/{expense_id}")
+    response = client.get(f"/api/expense/{expense_id}")
     assert response.status_code == 404, response.text
     assert response.json() == {"detail": "Not Found"}
 
@@ -462,14 +519,14 @@ def test_expenses_for_user(
 
     for expense in multi_expenses:
         response = client.post(
-            f"/expenses/{income_id}",
+            f"/api/expenses/{income_id}",
             json=expense,
             headers={"Authorization": f"bearer {test_access_token}"},
         )
         assert response.status_code == 201
 
     get_response = client.get(
-        f"/expenses/{income_id}",
+        f"/api/expenses/{income_id}",
         headers={"Authorization": f"Bearer {test_access_token}"},
     )
     assert get_response.status_code == 200
@@ -496,7 +553,7 @@ def create_expenses_for_user(
 
     for expense in expenses:
         response = client.post(
-            f"/expenses/{income_id}",
+            f"/api/expenses/{income_id}",
             json=expense,
             headers={"Authorization": f"bearer {test_access_token}"},
         )
@@ -512,7 +569,7 @@ def test_total_expenses(
 ):
     user_id = create_test_user["id"]
     response = client.get(
-        f"/user/{user_id}/total_expenses",
+        f"/api/user/{user_id}/total_expenses",
         headers={"Authorization": f"Bearer {test_access_token}"},
     )
 
@@ -534,7 +591,7 @@ def test_income_minus_expenses(
 ):
     user_id = create_test_user["id"]
     response = client.get(
-        f"/user/{user_id}/income_minus_expenses",
+        f"/api/user/{user_id}/income_minus_expenses",
         headers={"Authorization": f"Bearer {test_access_token}"},
     )
 
