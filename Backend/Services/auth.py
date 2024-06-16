@@ -1,6 +1,5 @@
 import os
 from datetime import datetime, timedelta, timezone
-from typing import Optional
 from data_base.database import Session, get_db
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
@@ -58,11 +57,15 @@ def create_access_token(
     return encoded_jwt
 
 
-def create_email_access_token(email: str, expires_delta: Optional[timedelta] = None):
+def create_email_access_token(email: str, expires_delta: timedelta | None = None):
     claims = {"sub": email, "scope": "email_verification"}
-    expire = datetime.now(timezone.utc) + (expires_delta or timedelta(minutes=60))
+    if expires_delta:
+        expire = datetime.now(timezone.utc) + expires_delta
+    else:
+        expire = datetime.now(timezone.utc) + timedelta(minutes=120)
     claims.update({"exp": expire})
     encoded_jwt = jwt.encode(claims, SECRET_KEY, algorithm=ALGORITHM)
+    print(f"Created token for {email} with expiry {expire} and scope 'email_verification'")
     return encoded_jwt
 
 
