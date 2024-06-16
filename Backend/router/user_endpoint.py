@@ -6,7 +6,7 @@ from fastapi.security import OAuth2PasswordRequestForm
 from models import UserIn, UserOut, Users, UserUpdate
 from Services.auth import (ACCESS_TOKEN_EXPIRES_MINUTES, Token,
                            authenticate_user, create_access_token,
-                           get_current_active_user)
+                           get_current_active_user, verify_token)
 from Services.calculations import (calc_income_minus_expenses,
                                    sum_of_all_expenses)
 from Services.user_service import UserService
@@ -17,6 +17,28 @@ router = APIRouter()
 
 def get_user_service(db: Session = Depends(get_db)):
     return UserService(db)
+
+
+# This endpoint is used tpp validate token
+# it updates the use is_email_verfied_status
+@router.get("/verify_email")
+async def verify_email_endpoint(token: str, service: UserService = Depends(get_user_service)):
+
+    email = verify_token(token, "email_verfication")
+    if not email:
+        raise HTTPException(status_code=403, detail="Invalid or expired token")
+
+    user = service.get_user_by_email(email)
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    if user.is_email_verified:
+        raise HTTPException(status_code=400, detail="Email already verified")
+
+    user.is_email_verified = True
+    service.db.commit()
+
+    return {"message": "Email verified successfully!"}
 
 
 # This endpoint is used for user login. It verifies the user's credentials and returns an access token.
