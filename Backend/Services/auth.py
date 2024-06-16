@@ -2,12 +2,13 @@ import os
 from datetime import datetime, timedelta, timezone
 from data_base.database import Session, get_db
 from fastapi import Depends, HTTPException, status
-from fastapi.security import OAuth2PasswordBearer
+from fastapi.security import OAuth2PasswordBearer, SecurityScopes
 from jose import JWTError, jwt
 from models import Users
 from passlib.context import CryptContext
 from pydantic import BaseModel
 from sqlmodel import select
+from typing import List
 
 SECRET_KEY = os.getenv("SECRET_KEY", "default_secret_if_not_set")
 ALGORITHM = "HS256"
@@ -24,7 +25,9 @@ class Token(BaseModel):
 
 
 class TokenData(BaseModel):
+    # to retireve email
     username: str | None = None
+    scopes: List[str] = []
 
 
 def get_password_hash(password):
@@ -69,35 +72,43 @@ def create_email_access_token(email: str, expires_delta: timedelta | None = None
     return encoded_jwt
 
 
-def verify_token(token: str, scope_required: str):
+def verify_token(token: str, security_scopes: SecurityScopes):
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        token_scopes = payload.get("scopes", [])
+        token_data = TokenData(scopes=token_scopes, username=payload.get("sub"))
+
         print(f"Decoded token: {payload}")
-        if payload.get("scope") == scope_required:
-            return payload.get("sub")
-        print("Token scope mismatch or scope not found")
-        return None
+        for scope in security_scopes.scopes:
+            if scope not in token_data.scopes:
+                raise HTTPException(
+                    status_code=status.HTTP_401_UNAUTHORIZED,
+                    detail="Not enough permissions",
+                    headers={"WWW-Authenticate": "Bearer"},
+                )
+        return token_data
+
     except JWTError as e:
         print(f"Token decoding error: {e}")
-        return None
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Could not validate credentials",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
 
 
 async def get_current_user(
-    db: Session = Depends(get_db), token: str = Depends(oauth2_scheme)
+    security_scopes: SecurityScopes, db: Session = Depends(get_db), token: str = Depends(oauth2_scheme)
 ):
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Invalid authentication credentials",
         headers={"WWW-Authenticate": "Bearer"},
     )
-    try:
-        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        username = payload.get("sub")
-        if username is None:
-            raise credentials_exception
-        token_data = TokenData(username=username)
-    except JWTError:
+    token_data = verify_token(token, security_scopes)
+    if token_data.username is None:
         raise credentials_exception
+
     user = db.exec(select(Users).where(Users.username == token_data.username)).first()
     if user is None:
         raise credentials_exception
