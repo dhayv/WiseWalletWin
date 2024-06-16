@@ -1,8 +1,8 @@
-from fastapi import HTTPException, Response, status, BackgroundTasks
+from fastapi import BackgroundTasks, HTTPException, Response, status
 from models import UserIn, Users, UserUpdate
-from Services.auth import get_password_hash, create_email_access_token
-from sqlmodel import Session, select
+from Services.auth import create_email_access_token, get_password_hash
 from Services.email_client import EmailService
+from sqlmodel import Session, select
 
 
 class UserService:
@@ -39,7 +39,9 @@ class UserService:
 
         email_service = EmailService(self.db)
         token = create_email_access_token(db_user.email)
-        background_task.add_task(email_service.email_verification, user_data.email, token)
+        background_task.add_task(
+            email_service.email_verification, user_data.email, token
+        )
 
         return db_user
 

@@ -1,5 +1,7 @@
 import os
 from datetime import datetime, timedelta, timezone
+from typing import List
+
 from data_base.database import Session, get_db
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer, SecurityScopes
@@ -8,7 +10,6 @@ from models import Users
 from passlib.context import CryptContext
 from pydantic import BaseModel
 from sqlmodel import select
-from typing import List
 
 SECRET_KEY = os.getenv("SECRET_KEY", "default_secret_if_not_set")
 ALGORITHM = "HS256"
@@ -47,9 +48,7 @@ def authenticate_user(db: Session, username: str, password: str):
     return user
 
 
-def create_access_token(
-    data: dict, expires_delta: timedelta | None = None
-):
+def create_access_token(data: dict, expires_delta: timedelta | None = None):
     to_encode = data.copy()
     if expires_delta:
         expire = datetime.now(timezone.utc) + expires_delta
@@ -68,7 +67,9 @@ def create_email_access_token(email: str, expires_delta: timedelta | None = None
         expire = datetime.now(timezone.utc) + timedelta(minutes=120)
     claims.update({"exp": expire})
     encoded_jwt = jwt.encode(claims, SECRET_KEY, algorithm=ALGORITHM)
-    print(f"Created token for {email} with expiry {expire} and scope 'email_verification'")
+    print(
+        f"Created token for {email} with expiry {expire} and scope 'email_verification'"
+    )
     return encoded_jwt
 
 
@@ -98,7 +99,9 @@ def verify_token(token: str, security_scopes: SecurityScopes):
 
 
 async def get_current_user(
-    security_scopes: SecurityScopes, db: Session = Depends(get_db), token: str = Depends(oauth2_scheme)
+    security_scopes: SecurityScopes,
+    db: Session = Depends(get_db),
+    token: str = Depends(oauth2_scheme),
 ):
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,

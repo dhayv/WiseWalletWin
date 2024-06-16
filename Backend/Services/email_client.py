@@ -1,9 +1,10 @@
 import os
+
 from dotenv import load_dotenv
 from fastapi_mail import ConnectionConfig, FastMail, MessageSchema, MessageType
-from starlette.responses import JSONResponse
 from models import Users
 from sqlmodel import Session, select
+from starlette.responses import JSONResponse
 
 load_dotenv()
 
@@ -51,6 +52,11 @@ class EmailService:
         fm = FastMail(conf)
         try:
             await fm.send_message(message)
-            return JSONResponse(status_code=200, content={"message": "Confirmation email sent successfully"})
+            return JSONResponse(
+                status_code=200,
+                content={"message": "Confirmation email sent successfully"},
+            )
         except Exception as e:
-            return JSONResponse(status_code=500, content={"message": f"Failed to send email: {str(e)}"})
+            return JSONResponse(
+                status_code=500, content={"message": f"Failed to send email: {str(e)}"}
+            )

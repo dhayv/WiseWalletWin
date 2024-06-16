@@ -1,14 +1,15 @@
 import sys
 from typing import Any, Dict, List
 from unittest.mock import patch
+
 import pytest
-from fastapi.security import SecurityScopes
 from data_base import database
+from fastapi.security import SecurityScopes
 from fastapi.testclient import TestClient
 from main import app  # Import your FastAPI instance
+from Services.auth import create_email_access_token
 from sqlmodel import Session, SQLModel, create_engine
 from sqlmodel.pool import StaticPool
-from Services.auth import create_email_access_token
 
 
 def test_print_sys_path():
@@ -64,7 +65,7 @@ def create_test_user(client: TestClient) -> Dict[str, Any]:
 
 @pytest.fixture
 def mock_send_email():
-    with patch('Services.email_client.FastMail.send_message') as mock_send:
+    with patch("Services.email_client.FastMail.send_message") as mock_send:
         yield mock_send
 
 
@@ -79,34 +80,38 @@ def test_email_sent_on_user_registration(client: TestClient, mock_send_email):
 
 # Test the email verification process
 def test_email_verification(client: TestClient, create_test_user: Dict[str, Any]):
-    token = create_email_access_token(create_test_user['email'])
+    token = create_email_access_token(create_test_user["email"])
     security_scopes = SecurityScopes(scopes=["email_verification"])
-    response = client.get(f"/api/verify_email?token={token}", headers={"scopes": "email_verification"})
+    response = client.get(
+        f"/api/verify_email?token={token}", headers={"scopes": "email_verification"}
+    )
     assert response.status_code == 200
-    assert response.json()['message'] == "Email verified successfully!"
+    assert response.json()["message"] == "Email verified successfully!"
 
     # Verify the user's status in the database
     user_response = client.get(f"/api/user/{create_test_user['id']}")
     user_data = user_response.json()
-    assert user_data['is_email_verified'] is True
+    assert user_data["is_email_verified"] is True
 
 
 def test_email_verification_invalid_token(client: TestClient):
     invalid_token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ1bnZhbGlkIiwic2NvcGUiOiJlbWFpbF92ZXJpZmljYXRpb24iLCJleHAiOjE2MDc5NTA1Nzl9.invalidsignature"
     response = client.get(f"/api/verify_email?token={invalid_token}")
     assert response.status_code == 403
-    assert "Could not validate credentials" in response.json()['detail']
+    assert "Could not validate credentials" in response.json()["detail"]
 
 
-def test_email_verification_already_verified(client: TestClient, create_test_user: Dict[str, Any]):
-    token = create_email_access_token(create_test_user['email'])
+def test_email_verification_already_verified(
+    client: TestClient, create_test_user: Dict[str, Any]
+):
+    token = create_email_access_token(create_test_user["email"])
     response = client.get(f"/api/verify_email?token={token}")
     assert response.status_code == 200
 
     # Try to verify again
     response = client.get(f"/api/verify_email?token={token}")
     assert response.status_code == 400
-    assert "Email already verified" in response.json()['detail']
+    assert "Email already verified" in response.json()["detail"]
 
 
 def test_add_user_with_existing_username(
@@ -165,20 +170,27 @@ def test_add_user_with_invalid_phone(client: TestClient) -> None:
 # access token
 @pytest.fixture(scope="function")
 def test_access_token(client: TestClient, create_test_user: Dict[str, Any]) -> str:
-    token = create_email_access_token(create_test_user['email'])
+    token = create_email_access_token(create_test_user["email"])
     security_scopes = SecurityScopes(scopes=["email_verification"])
     print(f"Generated token: {token}")
-    verify_response = client.get(f"/api/verify_email?token={token}", headers={"scopes": "email_verification"})
-    assert verify_response.status_code == 200, f"Verification failed: {verify_response.json()}"
+    verify_response = client.get(
+        f"/api/verify_email?token={token}", headers={"scopes": "email_verification"}
+    )
+    assert (
+        verify_response.status_code == 200
+    ), f"Verification failed: {verify_response.json()}"
 
     user_response = client.get(f"/api/user/{create_test_user['id']}")
     user_data = user_response.json()
     print(f"Post-verification user data: {user_data}")
-    assert user_data['is_email_verified'], "Email verification status not updated"
+    assert user_data["is_email_verified"], "Email verification status not updated"
 
     response = client.post(
         "/api/token",
-        data={"username": create_test_user['username'], "password": create_test_user['password']},
+        data={
+            "username": create_test_user["username"],
+            "password": create_test_user["password"],
+        },
     )
     token = response.json().get("access_token")
     print(f"Access token: {token}")
@@ -296,7 +308,8 @@ def test_add_income(
 
     # Optionally verify the income data by fetching it again
     get_response = client.get(
-        f"/api/income/{user_id}", headers={"Authorization": f"Bearer {test_access_token}"}
+        f"/api/income/{user_id}",
+        headers={"Authorization": f"Bearer {test_access_token}"},
     )
     assert get_response.status_code == 200, "Failed to fetch income details"
     income_data_fetched = get_response.json()[0]  # Assuming the GET returns a list
@@ -313,7 +326,8 @@ def test_get_income(
 ):
     id_user = create_test_user["id"]
     response = client.get(
-        f"/api/income/{id_user}", headers={"Authorization": f"bearer {test_access_token}"}
+        f"/api/income/{id_user}",
+        headers={"Authorization": f"bearer {test_access_token}"},
     )
 
     data = response.json()

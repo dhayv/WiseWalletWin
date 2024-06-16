@@ -1,8 +1,8 @@
 from datetime import timedelta
 
 from data_base.database import get_db
-from fastapi import APIRouter, Depends, HTTPException, status, BackgroundTasks
-from fastapi.security import OAuth2PasswordRequestForm
+from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, status
+from fastapi.security import OAuth2PasswordRequestForm, SecurityScopes
 from models import UserIn, UserOut, Users, UserUpdate
 from Services.auth import (ACCESS_TOKEN_EXPIRES_MINUTES, Token,
                            authenticate_user, create_access_token,
@@ -11,7 +11,6 @@ from Services.calculations import (calc_income_minus_expenses,
                                    sum_of_all_expenses)
 from Services.user_service import UserService
 from sqlmodel import Session
-from fastapi.security import SecurityScopes
 
 router = APIRouter()
 
@@ -23,7 +22,11 @@ def get_user_service(db: Session = Depends(get_db)):
 # This endpoint is used tpp validate token
 # it updates the use is_email_verfied_status
 @router.get("/verify_email")
-async def verify_email_endpoint(security_scopes: SecurityScopes, token: str, service: UserService = Depends(get_user_service)):
+async def verify_email_endpoint(
+    security_scopes: SecurityScopes,
+    token: str,
+    service: UserService = Depends(get_user_service),
+):
     token_data = verify_token(token, security_scopes)
     if not token_data:
         raise HTTPException(status_code=403, detail="Invalid or expired token")
@@ -74,7 +77,11 @@ async def login_for_access_token(
 # It adds a new user to the database.
 # Also Check if username or email exists in the database.
 @router.post("/user", response_model=UserOut, status_code=status.HTTP_201_CREATED)
-def add_user(user: UserIn, background_tasks: BackgroundTasks, service: UserService = Depends(get_user_service)):
+def add_user(
+    user: UserIn,
+    background_tasks: BackgroundTasks,
+    service: UserService = Depends(get_user_service),
+):
     return service.add_user(user, background_tasks)
 
 
