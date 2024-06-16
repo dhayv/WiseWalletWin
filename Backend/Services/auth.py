@@ -46,7 +46,7 @@ def authenticate_user(db: Session, username: str, password: str):
 
 
 def create_access_token(
-    data: dict, expires_delta: timedelta | None = None, db: Session = Depends(get_db)
+    data: dict, expires_delta: timedelta | None = None
 ):
     to_encode = data.copy()
     if expires_delta:
@@ -54,6 +54,19 @@ def create_access_token(
     else:
         expire = datetime.now(timezone.utc) + timedelta(minutes=15)
     to_encode.update({"exp": expire})
+    encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+    return encoded_jwt
+
+
+def create_email_access_token(
+    email: str, data: dict, expires_delta: timedelta | None = None
+):
+    to_encode = data.copy()
+    if expires_delta:
+        expire = datetime.now(timezone.utc) + expires_delta
+    else:
+        expire = datetime.now(timezone.utc) + timedelta(minutes=60)
+    to_encode.update({"exp": expire, "sub": email, "scope": "email_verification"})
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt
 
