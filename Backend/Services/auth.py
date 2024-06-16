@@ -59,15 +59,12 @@ def create_access_token(
 
 
 def create_email_access_token(
-    email: str, data: dict, expires_delta: timedelta | None = None
+    email: str, expires_delta: timedelta = timedelta(minutes=60)
 ):
-    to_encode = data.copy()
-    if expires_delta:
-        expire = datetime.now(timezone.utc) + expires_delta
-    else:
-        expire = datetime.now(timezone.utc) + timedelta(minutes=60)
-    to_encode.update({"exp": expire, "sub": email, "scope": "email_verification"})
-    encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+    claims = {"sub": email, "scope": "email_verification"}
+    expire = datetime.now(timezone.utc) + expires_delta
+    claims.update({"exp": expire})
+    encoded_jwt = jwt.encode(claims, SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt
 
 
