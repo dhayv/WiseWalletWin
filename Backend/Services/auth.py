@@ -72,10 +72,13 @@ def create_email_access_token(email: str, expires_delta: timedelta | None = None
 def verify_token(token: str, scope_required: str):
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        print(f"Decoded token: {payload}")
         if payload.get("scope") == scope_required:
             return payload.get("sub")
+        print("Token scope mismatch or scope not found")
         return None
-    except JWTError:
+    except JWTError as e:
+        print(f"Token decoding error: {e}")
         return None
 
 
