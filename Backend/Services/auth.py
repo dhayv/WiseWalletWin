@@ -60,7 +60,7 @@ def create_access_token(
 
 def create_email_access_token(email: str, expires_delta: Optional[timedelta] = None):
     claims = {"sub": email, "scope": "email_verification"}
-    expire = datetime.now(timezone.utc) + expires_delta
+    expire = datetime.now(timezone.utc) + (expires_delta or timedelta(minutes=60))
     claims.update({"exp": expire})
     encoded_jwt = jwt.encode(claims, SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt
