@@ -68,6 +68,16 @@ def create_email_access_token(
     return encoded_jwt
 
 
+def verify_token(token: str, scope_required: str):
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        if payload.get("scope") == scope_required:
+            return payload.get("sub")
+        return None
+    except JWTError:
+        return None
+
+
 async def get_current_user(
     db: Session = Depends(get_db), token: str = Depends(oauth2_scheme)
 ):
