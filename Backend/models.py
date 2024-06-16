@@ -17,6 +17,7 @@ class BaseUser(SQLModel):
     email: EmailStr = Field(unique=True, index=True, sa_type=AutoString)
     first_name: Optional[str] = None
     phone_number: Optional[str]
+    is_email_verified: bool = Field(default=False, index=True)
 
 
 # Input model including password validation
