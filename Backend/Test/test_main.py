@@ -1,26 +1,22 @@
 import sys
-from typing import Any, Dict, List
-from unittest.mock import patch, MagicMock
-
-from email import message_from_string
 import time
+from typing import Any, Dict, List
+from unittest.mock import MagicMock, patch
+
 import pytest
 from data_base import database
 from fastapi.security import SecurityScopes
 from fastapi.testclient import TestClient
 from main import app  # Import your FastAPI instance
+from Services import email_client
 from Services.auth import create_email_access_token
 from sqlmodel import Session, SQLModel, create_engine
 from sqlmodel.pool import StaticPool
-from Services import email_client
-
-sys.path.append("/Users/ecud/Desktop/python/text_my_budget/backend")
-
-sys.path.append('/Users/ecud/Desktop/python/text_my_budget/backend/Services')
 
 
 def test_print_sys_path():
     print(sys.path)
+
 
 # User data to be used in the tests
 USER_DATA = {
@@ -28,8 +24,9 @@ USER_DATA = {
     "email": "johndoe@example.com",
     "first_name": "John",
     "phone_number": "123-456-7890",
-    "password": "Password123!"
+    "password": "Password123!",
 }
+
 
 # Session fixture to create a new database for each test
 @pytest.fixture(name="session")
@@ -43,6 +40,7 @@ def session_fixture():
     with Session(engine) as session:
         yield session
 
+
 # Client fixture to override the get_db dependency
 @pytest.fixture(name="client")
 def client_fixture(session: Session):
@@ -53,6 +51,7 @@ def client_fixture(session: Session):
     with TestClient(app) as client:
         yield client
     app.dependency_overrides.clear()
+
 
 # User fixture to create a new user for each test
 @pytest.fixture(scope="function")
@@ -66,11 +65,15 @@ def create_test_user(client: TestClient) -> Dict[str, Any]:
     print(f"Created user: {user}")
     return user
 
+
 # Mock email sending
 @pytest.fixture(scope="session", autouse=True)
 def mock_send_email():
-    with patch.object(email_client.EmailService, 'email_verification', new_callable=MagicMock) as mock_email_verification:
+    with patch.object(
+        email_client.EmailService, "email_verification", new_callable=MagicMock
+    ) as mock_email_verification:
         yield mock_email_verification
+
 
 # Test email sent on user registration
 def test_email_sent_on_user_registration(client: TestClient, mock_send_email):
@@ -93,8 +96,11 @@ def test_email_sent_on_user_registration(client: TestClient, mock_send_email):
     print(f"Email token: {token}")
     assert email == USER_DATA["email"]
 
+
 # Test email verification
-def test_email_verification(client: TestClient, create_test_user: Dict[str, Any], mock_send_email):
+def test_email_verification(
+    client: TestClient, create_test_user: Dict[str, Any], mock_send_email
+):
     token = create_email_access_token(create_test_user["email"])
     security_scopes = SecurityScopes(scopes=["email_verification"])
     response = client.get(

@@ -1,9 +1,10 @@
 import os
 import smtplib
-from fastapi import HTTPException
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
+
 from dotenv import load_dotenv
+from fastapi import HTTPException
 from models import Users
 from sqlmodel import Session, select
 from starlette.responses import JSONResponse
