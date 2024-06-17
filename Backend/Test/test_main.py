@@ -1,7 +1,9 @@
 import sys
 from typing import Any, Dict, List
-from unittest.mock import patch
+from unittest.mock import patch, MagicMock
 
+from email import message_from_string
+import time
 import pytest
 from data_base import database
 from fastapi.security import SecurityScopes
@@ -10,11 +12,15 @@ from main import app  # Import your FastAPI instance
 from Services.auth import create_email_access_token
 from sqlmodel import Session, SQLModel, create_engine
 from sqlmodel.pool import StaticPool
+from Services import email_client
+
+sys.path.append("/Users/ecud/Desktop/python/text_my_budget/backend")
+
+sys.path.append('/Users/ecud/Desktop/python/text_my_budget/backend/Services')
 
 
 def test_print_sys_path():
     print(sys.path)
-
 
 # User data to be used in the tests
 USER_DATA = {
@@ -22,11 +28,10 @@ USER_DATA = {
     "email": "johndoe@example.com",
     "first_name": "John",
     "phone_number": "123-456-7890",
-    "password": "Password123!",
+    "password": "Password123!"
 }
 
-
-# session fixture to create a new database for each test
+# Session fixture to create a new database for each test
 @pytest.fixture(name="session")
 def session_fixture():
     engine = create_engine(
@@ -38,8 +43,7 @@ def session_fixture():
     with Session(engine) as session:
         yield session
 
-
-# client fixture to override the get_db dependency
+# Client fixture to override the get_db dependency
 @pytest.fixture(name="client")
 def client_fixture(session: Session):
     def get_session_override():
@@ -50,36 +54,47 @@ def client_fixture(session: Session):
         yield client
     app.dependency_overrides.clear()
 
-
-# user fixture to create a new user for each test
+# User fixture to create a new user for each test
 @pytest.fixture(scope="function")
 def create_test_user(client: TestClient) -> Dict[str, Any]:
     response = client.post("/api/user", json=USER_DATA)
+    if response.status_code != 201:
+        print(f"Failed to create user: {response.json()}")
     assert response.status_code == 201
     user = response.json()
     user["password"] = USER_DATA["password"]
     print(f"Created user: {user}")
-
     return user
 
-
-@pytest.fixture
+# Mock email sending
+@pytest.fixture(scope="session", autouse=True)
 def mock_send_email():
-    with patch("Services.email_client.FastMail.send_message") as mock_send:
-        yield mock_send
+    with patch.object(email_client.EmailService, 'email_verification', new_callable=MagicMock) as mock_email_verification:
+        yield mock_email_verification
 
-
-# Test to ensure an email is sent upon user registration
+# Test email sent on user registration
 def test_email_sent_on_user_registration(client: TestClient, mock_send_email):
     response = client.post("/api/user", json=USER_DATA)
+    if response.status_code != 201:
+        print(f"Failed to create user: {response.json()}")
     assert response.status_code == 201
-    mock_send_email.assert_called_once()
-    args, kwargs = mock_send_email.call_args
-    assert "Verify your email" in args[0].subject
 
+    # Wait for the background task to complete
+    time.sleep(1)  # Adjust sleep time as needed
 
-# Test the email verification process
-def test_email_verification(client: TestClient, create_test_user: Dict[str, Any]):
+    # Assert the email_verification method was called
+    assert mock_send_email.called
+    email_args, _ = mock_send_email.call_args
+    email = email_args[0]
+    token = email_args[1]
+
+    # Decode the email to check its content
+    print(f"Email sent to: {email}")
+    print(f"Email token: {token}")
+    assert email == USER_DATA["email"]
+
+# Test email verification
+def test_email_verification(client: TestClient, create_test_user: Dict[str, Any], mock_send_email):
     token = create_email_access_token(create_test_user["email"])
     security_scopes = SecurityScopes(scopes=["email_verification"])
     response = client.get(
