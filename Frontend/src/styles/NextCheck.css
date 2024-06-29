@@ -1,35 +1,32 @@
-/* NextCheck.css */
 .card {
-    margin-top: 1rem;
-    box-shadow: 0 2px 3px rgba(10, 10, 10, 10%);
-  }
-  
-  .card-content {
-    padding: 1.5rem;
-  }
-  
-  .content {
-    font-size: 1rem;
-    line-height: 1.5;
-  }
-  
-  .expenses-list {
-    list-style-type: none;
-    padding-left: 0;
-  }
-  
-  .expense-item {
-    margin: 0.5rem 0;
-    padding: 0.5rem;
-    border-bottom: 1px solid #ddd;
-  }
-  
-  .expense-item:last-child {
-    border-bottom: none;
-  }
-  
-  .has-text-weight-bold {
-    font-size: 1.2rem;
-    
-  }
-  
+  margin-top: 1rem;
+  box-shadow: 0 2px 3px rgba(10, 10, 10, 0.1);
+}
+
+.card-content {
+  padding: 1.5rem;
+}
+
+.content {
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+.expenses-list {
+  list-style-type: none;
+  padding-left: 0;
+}
+
+.expense-item {
+  margin: 0.5rem 0;
+  padding: 0.5rem;
+  border-bottom: 1px solid #ddd;
+}
+
+.expense-item:last-child {
+  border-bottom: none;
+}
+
+.has-text-weight-bold {
+  font-size: 1.2rem;
+}
