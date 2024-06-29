@@ -4,15 +4,11 @@ from data_base.database import get_db
 from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm, SecurityScopes
 from models import UserIn, UserOut, Users, UserUpdate
-from Services.auth import (
-    ACCESS_TOKEN_EXPIRES_MINUTES,
-    Token,
-    authenticate_user,
-    create_access_token,
-    get_current_active_user,
-    verify_token,
-)
-from Services.calculations import calc_income_minus_expenses, sum_of_all_expenses
+from Services.auth import (ACCESS_TOKEN_EXPIRES_MINUTES, Token,
+                           authenticate_user, create_access_token,
+                           get_current_active_user, verify_token)
+from Services.calculations import (calc_income_minus_expenses,
+                                   sum_of_all_expenses)
 from Services.user_service import UserService
 from sqlmodel import Session
 

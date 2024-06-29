@@ -7,11 +7,12 @@ import pytest
 from data_base import database
 from fastapi.security import SecurityScopes
 from fastapi.testclient import TestClient
-from main import app  # Import your FastAPI instance
 from Services import email_client
 from Services.auth import create_email_access_token
 from sqlmodel import Session, SQLModel, create_engine
 from sqlmodel.pool import StaticPool
+
+from main import app  # Import your FastAPI instance
 
 
 def test_print_sys_path():
