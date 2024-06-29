@@ -25,17 +25,22 @@ export const NextCheck = () => {
       console.log('Start of Next Period:', startOfNextPeriod.format('YYYY-MM-DD'));
       console.log('End of Next Period:', endOfNextPeriod.format('YYYY-MM-DD'));
 
+      const startPostPayPeriod =  moment(startOfNextPeriod, 'YYYY-MM-DD').add(15, 'days');
+      const endPostPayPeriod =  moment(startOfNextPeriod, 'YYYY-MM-DD').add(25, 'days');
+      console.log('Start of Post Period:', startPostPayPeriod.format('YYYY-MM-DD'));
+      console.log('End of Post Period:', endPostPayPeriod.format('YYYY-MM-DD'));
+
       const dueExpenses = expenseData.filter(expense => {
         // Convert due_date integer to a date for the current month
         let expenseDueDate = moment().date(expense.due_date);
 
         // If due_date is before the start of next period, consider it for the next month
-        if (expenseDueDate.isBefore(startOfNextPeriod)) {
+        if (expenseDueDate.isBefore(startPostPayPeriod)) {
           expenseDueDate = expenseDueDate.add(1, 'months');
         }
 
         console.log('Expense Due Date:', expenseDueDate.format('YYYY-MM-DD'));
-        return expenseDueDate.isBetween(startOfNextPeriod, endOfNextPeriod, null, '[]');
+        return expenseDueDate.isBetween(startPostPayPeriod, endPostPayPeriod, null, '[]');
       });
 
       console.log('Due Expenses:', dueExpenses);
