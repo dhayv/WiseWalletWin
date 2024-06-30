@@ -6,41 +6,30 @@ import ErrorMessage from './ErrorMessage';
 import api from '../api';
 
 const SignUp = ({ setShowSignUp }) => {
-  const [firstName, setFirstName] = useState('');
-  const [userName, setUserName] = useState('');
-  const [email, setEmail] = useState('');
-  const [passWord, setPassword] = useState('');
-  const [confirmationPassword, setConfirmationPassword] = useState('');
-  const [phoneNumber, setPhoneNumber] = useState('');
+  const [formData, setFormData] = useState({
+    firstName: '',
+    userName: '',
+    email: '',
+    passWord: '',
+    confirmationPassword: '',
+    phoneNumber: '',
+  });
   const [errorMessages, setErrorMessages] = useState([]);
   const [showChecklist, setShowChecklist] = useState(false);
 
   const { setToken, setUserId } = useContext(UserContext);
 
-  const PasswordInput = ({ id, name, label, placeholder, value, onChange, minLength = 8 }) => (
-    <div className='field'>
-      <label className='label' htmlFor={id}>{label}</label>
-      <div className='control has-icons-left'>
-        <input
-          id={id}
-          name={name}
-          type='password'
-          placeholder={placeholder}
-          value={value}
-          onChange={onChange}
-          className='input'
-          minLength={minLength}
-          required
-          autoComplete='new-password'
-        />
-        <span className='icon is-small is-left'>
-          <i className='fas fa-lock'></i>
-        </span>
-      </div>
-    </div>
-  );
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({
+      ...formData,
+      [name]: value,
+    });
+  };
 
   const submitRegistration = async () => {
+    const { firstName, userName, email, passWord, confirmationPassword, phoneNumber } = formData;
+
     if (passWord !== confirmationPassword) {
       setErrorMessages(['Passwords do not match.']);
       return;
@@ -120,8 +109,8 @@ const SignUp = ({ setShowSignUp }) => {
                     name='firstName'
                     type='text'
                     placeholder='Enter First Name'
-                    value={firstName}
-                    onChange={(e) => setFirstName(e.target.value)}
+                    value={formData.firstName}
+                    onChange={handleChange}
                     className='input'
                     required
                   />
@@ -136,11 +125,11 @@ const SignUp = ({ setShowSignUp }) => {
                 <div className='control has-icons-left'>
                   <input
                     id='username'
-                    name='username'
+                    name='userName'
                     type='text'
                     placeholder='Enter Username'
-                    value={userName}
-                    onChange={(e) => setUserName(e.target.value)}
+                    value={formData.userName}
+                    onChange={handleChange}
                     className='input'
                     required
                     autoComplete='username'
@@ -159,8 +148,8 @@ const SignUp = ({ setShowSignUp }) => {
                     name='email'
                     type='email'
                     placeholder='Enter Email'
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
+                    value={formData.email}
+                    onChange={handleChange}
                     className='input'
                     required
                     autoComplete='email'
@@ -173,12 +162,12 @@ const SignUp = ({ setShowSignUp }) => {
               {/* Password */}
               <PasswordInput
                 id='password'
-                name='password'
+                name='passWord'
                 label='Password'
                 placeholder='Enter Password'
-                value={passWord}
+                value={formData.passWord}
                 onChange={(e) => {
-                  setPassword(e.target.value);
+                  handleChange(e);
                   setShowChecklist(true);
                 }}
               />
@@ -188,9 +177,9 @@ const SignUp = ({ setShowSignUp }) => {
                 name='confirmationPassword'
                 label='Confirm Password'
                 placeholder='Re-enter Password to Confirm'
-                value={confirmationPassword}
+                value={formData.confirmationPassword}
                 onChange={(e) => {
-                  setConfirmationPassword(e.target.value);
+                  handleChange(e);
                   setShowChecklist(true);
                 }}
               />
@@ -200,8 +189,8 @@ const SignUp = ({ setShowSignUp }) => {
                   <PasswordChecklist
                     rules={["minLength", "specialChar", "number", "capital", "match"]}
                     minLength={8}
-                    value={passWord}
-                    valueAgain={confirmationPassword}
+                    value={formData.passWord}
+                    valueAgain={formData.confirmationPassword}
                     onChange={(isValid) => {}}
                   />
                 </div>
@@ -215,8 +204,8 @@ const SignUp = ({ setShowSignUp }) => {
                     name='phoneNumber'
                     type='text'
                     placeholder='Enter Phone Number (e.g., 123-456-7890)'
-                    value={phoneNumber}
-                    onChange={(e) => setPhoneNumber(e.target.value)}
+                    value={formData.phoneNumber}
+                    onChange={handleChange}
                     pattern="^(?:\(\d{3}\)|\d{3})[- ]?\d{3}[- ]?\d{4}$"
                     className='input'
                   />
@@ -240,6 +229,6 @@ const SignUp = ({ setShowSignUp }) => {
       </div>
     </div>
   );
-}
+};
 
 export default SignUp;
