@@ -21,10 +21,13 @@ const SignUp = ({ setShowSignUp }) => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData({
-      ...formData,
+    setFormData((prevFormData) => ({
+      ...prevFormData,
       [name]: value,
-    });
+    }));
+    if (name === 'passWord' || name === 'confirmationPassword') {
+      setShowChecklist(true);
+    }
   };
 
   const submitRegistration = async () => {
@@ -41,7 +44,7 @@ const SignUp = ({ setShowSignUp }) => {
         username: userName,
         email,
         password: passWord,
-        phone_number: phoneNumber
+        phone_number: phoneNumber,
       });
 
       if (userResponse.status === 201) {
@@ -50,7 +53,7 @@ const SignUp = ({ setShowSignUp }) => {
         params.append('password', passWord);
 
         const tokenResponse = await api.post('/token', params, {
-          headers: { 'Content-type': 'application/x-www-form-urlencoded' }
+          headers: { 'Content-type': 'application/x-www-form-urlencoded' },
         });
 
         if (tokenResponse.status === 200) {
@@ -59,7 +62,7 @@ const SignUp = ({ setShowSignUp }) => {
           setToken(data.access_token);
 
           const userInfoResponse = await api.get('/user/me', {
-            headers: { Authorization: `Bearer ${data.access_token}` }
+            headers: { Authorization: `Bearer ${data.access_token}` },
           });
 
           if (userInfoResponse.status === 200) {
@@ -75,7 +78,7 @@ const SignUp = ({ setShowSignUp }) => {
       }
     } catch (error) {
       if (error.response && error.response.data && error.response.data.errors) {
-        setErrorMessages(error.response.data.errors.map(err => err.msg));
+        setErrorMessages(error.response.data.errors.map((err) => err.msg));
       } else {
         setErrorMessages(['Registration failed']);
       }
@@ -160,29 +163,43 @@ const SignUp = ({ setShowSignUp }) => {
                 </div>
               </div>
               {/* Password */}
-              <PasswordInput
-                id='password'
-                name='passWord'
-                label='Password'
-                placeholder='Enter Password'
-                value={formData.passWord}
-                onChange={(e) => {
-                  handleChange(e);
-                  setShowChecklist(true);
-                }}
-              />
-              {/* Password confirmation */}
-              <PasswordInput
-                id='confirmationPassword'
-                name='confirmationPassword'
-                label='Confirm Password'
-                placeholder='Re-enter Password to Confirm'
-                value={formData.confirmationPassword}
-                onChange={(e) => {
-                  handleChange(e);
-                  setShowChecklist(true);
-                }}
-              />
+              <div className='field'>
+                <label className='label' htmlFor='password'>Password</label>
+                <div className='control has-icons-left'>
+                  <input
+                    id='password'
+                    name='passWord'
+                    type='password'
+                    placeholder='Enter Password'
+                    value={formData.passWord}
+                    onChange={handleChange}
+                    className='input'
+                    autoComplete='new-password'
+                  />
+                  <span className='icon is-small is-left'>
+                    <i className='fas fa-lock'></i>
+                  </span>
+                </div>
+              </div>
+              {/* Confirm Password */}
+              <div className='field'>
+                <label className='label' htmlFor='confirmationPassword'>Confirm Password</label>
+                <div className='control has-icons-left'>
+                  <input
+                    id='confirmationPassword'
+                    name='confirmationPassword'
+                    type='password'
+                    placeholder='Re-enter Password to Confirm'
+                    value={formData.confirmationPassword}
+                    onChange={handleChange}
+                    className='input'
+                    autoComplete='new-password'
+                  />
+                  <span className='icon is-small is-left'>
+                    <i className='fas fa-lock'></i>
+                  </span>
+                </div>
+              </div>
               {/* Password Checklist */}
               {showChecklist && (
                 <div className="field mt-3 pl-5">

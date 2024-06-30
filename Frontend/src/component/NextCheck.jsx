@@ -70,7 +70,7 @@ export const NextCheck = () => {
         setCurrentDate(moment().format('MM-DD-YYYY')); // This might be redundant
         try {
           const response = await api.put(`/income/${incomeId}`, {
-            recent_pay: nextPayDate
+            recent_pay: moment(nextPayDate).format('MM-DD-YYYY')
           });
           if (response.status === 200) {
             setIncomeData(response.data);
