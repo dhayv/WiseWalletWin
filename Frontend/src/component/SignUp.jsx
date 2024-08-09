@@ -6,41 +6,33 @@ import ErrorMessage from './ErrorMessage';
 import api from '../api';
 
 const SignUp = ({ setShowSignUp }) => {
-  const [firstName, setFirstName] = useState('');
-  const [userName, setUserName] = useState('');
-  const [email, setEmail] = useState('');
-  const [passWord, setPassword] = useState('');
-  const [confirmationPassword, setConfirmationPassword] = useState('');
-  const [phoneNumber, setPhoneNumber] = useState('');
+  const [formData, setFormData] = useState({
+    firstName: '',
+    userName: '',
+    email: '',
+    passWord: '',
+    confirmationPassword: '',
+    phoneNumber: '',
+  });
   const [errorMessages, setErrorMessages] = useState([]);
   const [showChecklist, setShowChecklist] = useState(false);
 
   const { setToken, setUserId } = useContext(UserContext);
 
-  const PasswordInput = ({ id, name, label, placeholder, value, onChange, minLength = 8 }) => (
-    <div className='field'>
-      <label className='label' htmlFor={id}>{label}</label>
-      <div className='control has-icons-left'>
-        <input
-          id={id}
-          name={name}
-          type='password'
-          placeholder={placeholder}
-          value={value}
-          onChange={onChange}
-          className='input'
-          minLength={minLength}
-          required
-          autoComplete='new-password'
-        />
-        <span className='icon is-small is-left'>
-          <i className='fas fa-lock'></i>
-        </span>
-      </div>
-    </div>
-  );
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prevFormData) => ({
+      ...prevFormData,
+      [name]: value,
+    }));
+    if (name === 'passWord' || name === 'confirmationPassword') {
+      setShowChecklist(true);
+    }
+  };
 
   const submitRegistration = async () => {
+    const { firstName, userName, email, passWord, confirmationPassword, phoneNumber } = formData;
+
     if (passWord !== confirmationPassword) {
       setErrorMessages(['Passwords do not match.']);
       return;
@@ -52,7 +44,7 @@ const SignUp = ({ setShowSignUp }) => {
         username: userName,
         email,
         password: passWord,
-        phone_number: phoneNumber
+        phone_number: phoneNumber,
       });
 
       if (userResponse.status === 201) {
@@ -61,7 +53,7 @@ const SignUp = ({ setShowSignUp }) => {
         params.append('password', passWord);
 
         const tokenResponse = await api.post('/token', params, {
-          headers: { 'Content-type': 'application/x-www-form-urlencoded' }
+          headers: { 'Content-type': 'application/x-www-form-urlencoded' },
         });
 
         if (tokenResponse.status === 200) {
@@ -70,7 +62,7 @@ const SignUp = ({ setShowSignUp }) => {
           setToken(data.access_token);
 
           const userInfoResponse = await api.get('/user/me', {
-            headers: { Authorization: `Bearer ${data.access_token}` }
+            headers: { Authorization: `Bearer ${data.access_token}` },
           });
 
           if (userInfoResponse.status === 200) {
@@ -86,7 +78,7 @@ const SignUp = ({ setShowSignUp }) => {
       }
     } catch (error) {
       if (error.response && error.response.data && error.response.data.errors) {
-        setErrorMessages(error.response.data.errors.map(err => err.msg));
+        setErrorMessages(error.response.data.errors.map((err) => err.msg));
       } else {
         setErrorMessages(['Registration failed']);
       }
@@ -120,8 +112,8 @@ const SignUp = ({ setShowSignUp }) => {
                     name='firstName'
                     type='text'
                     placeholder='Enter First Name'
-                    value={firstName}
-                    onChange={(e) => setFirstName(e.target.value)}
+                    value={formData.firstName}
+                    onChange={handleChange}
                     className='input'
                     required
                   />
@@ -136,11 +128,11 @@ const SignUp = ({ setShowSignUp }) => {
                 <div className='control has-icons-left'>
                   <input
                     id='username'
-                    name='username'
+                    name='userName'
                     type='text'
                     placeholder='Enter Username'
-                    value={userName}
-                    onChange={(e) => setUserName(e.target.value)}
+                    value={formData.userName}
+                    onChange={handleChange}
                     className='input'
                     required
                     autoComplete='username'
@@ -159,8 +151,8 @@ const SignUp = ({ setShowSignUp }) => {
                     name='email'
                     type='email'
                     placeholder='Enter Email'
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
+                    value={formData.email}
+                    onChange={handleChange}
                     className='input'
                     required
                     autoComplete='email'
@@ -171,37 +163,51 @@ const SignUp = ({ setShowSignUp }) => {
                 </div>
               </div>
               {/* Password */}
-              <PasswordInput
-                id='password'
-                name='password'
-                label='Password'
-                placeholder='Enter Password'
-                value={passWord}
-                onChange={(e) => {
-                  setPassword(e.target.value);
-                  setShowChecklist(true);
-                }}
-              />
-              {/* Password confirmation */}
-              <PasswordInput
-                id='confirmationPassword'
-                name='confirmationPassword'
-                label='Confirm Password'
-                placeholder='Re-enter Password to Confirm'
-                value={confirmationPassword}
-                onChange={(e) => {
-                  setConfirmationPassword(e.target.value);
-                  setShowChecklist(true);
-                }}
-              />
+              <div className='field'>
+                <label className='label' htmlFor='password'>Password</label>
+                <div className='control has-icons-left'>
+                  <input
+                    id='password'
+                    name='passWord'
+                    type='password'
+                    placeholder='Enter Password'
+                    value={formData.passWord}
+                    onChange={handleChange}
+                    className='input'
+                    autoComplete='new-password'
+                  />
+                  <span className='icon is-small is-left'>
+                    <i className='fas fa-lock'></i>
+                  </span>
+                </div>
+              </div>
+              {/* Confirm Password */}
+              <div className='field'>
+                <label className='label' htmlFor='confirmationPassword'>Confirm Password</label>
+                <div className='control has-icons-left'>
+                  <input
+                    id='confirmationPassword'
+                    name='confirmationPassword'
+                    type='password'
+                    placeholder='Re-enter Password to Confirm'
+                    value={formData.confirmationPassword}
+                    onChange={handleChange}
+                    className='input'
+                    autoComplete='new-password'
+                  />
+                  <span className='icon is-small is-left'>
+                    <i className='fas fa-lock'></i>
+                  </span>
+                </div>
+              </div>
               {/* Password Checklist */}
               {showChecklist && (
                 <div className="field mt-3 pl-5">
                   <PasswordChecklist
                     rules={["minLength", "specialChar", "number", "capital", "match"]}
                     minLength={8}
-                    value={passWord}
-                    valueAgain={confirmationPassword}
+                    value={formData.passWord}
+                    valueAgain={formData.confirmationPassword}
                     onChange={(isValid) => {}}
                   />
                 </div>
@@ -215,8 +221,8 @@ const SignUp = ({ setShowSignUp }) => {
                     name='phoneNumber'
                     type='text'
                     placeholder='Enter Phone Number (e.g., 123-456-7890)'
-                    value={phoneNumber}
-                    onChange={(e) => setPhoneNumber(e.target.value)}
+                    value={formData.phoneNumber}
+                    onChange={handleChange}
                     pattern="^(?:\(\d{3}\)|\d{3})[- ]?\d{3}[- ]?\d{4}$"
                     className='input'
                   />
@@ -240,6 +246,6 @@ const SignUp = ({ setShowSignUp }) => {
       </div>
     </div>
   );
-}
+};
 
 export default SignUp;
