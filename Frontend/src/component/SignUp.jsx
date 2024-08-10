@@ -91,7 +91,9 @@ const SignUp = ({ setShowSignUp }) => {
   };
 
   return (
-    <div className=''>
+    <div className="container is-flex is-justify-content-center is-align-items-center"
+    style={{ minHeight: '100vh' }}
+    >
       <div className='columns is-centered'>
         <div className='column is-full-mobile is-three-quarters-tablet is-half-desktop'>
           <div className='has-text-centered'>
