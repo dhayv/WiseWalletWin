@@ -1,11 +1,12 @@
-# Wise Wallet Win APP
-
-> Wise Wallet Win is a comprehensive financial application designed to streamline and simplify the way users track their bi-weekly checks. Experience it firsthand: [WiseWalletWin](https://wisewalletwin.com)
+# Currently migrating
 
 ## Table of Contents
 
-- [Overview](#overview)
-  - [Application Overview](#application-overview)
+- [Migration update](migration-update)
+  - [Why Docker](#why-docker)
+  - [Deployment Environment Change](#deployment-environment-change)
+  - [Benefits](#benefits)
+- [Application Overview](#application-overview)
   - [Screenshot](#screenshot)
   - [Video](#video)
 - [Technologies Used](#technologies-used)
@@ -20,9 +21,34 @@
 - [Acknowledgements](#acknowledgements)
 - [Author](#author)
 
-## Overview
 
-### Application Overview
+### Migration Update
+
+We are currently migrating our application from a SQLite relational database to a NoSQL MongoDB Atlas for persistent storage. This migration is part of a broader strategy to enhance scalability, flexibility, and ease of deployment.
+
+### Why Docker?
+
+I ama containerizing the entire application now using Docker to streamline deployment across different environments. Docker allows me to encapsulate the application and its dependencies into a portable container, ensuring consistency and reducing the "it works on my machine" problem. By storing our Docker images on Docker Hub, we can integrate seamlessly with CI/CD pipelines, enabling continuous integration and delivery. Additionally, Docker and MongoDB provide the flexibility to "pick up and go" as needed, making it easier to move or scale our application across different environments.
+
+### Deployment Environment Change
+
+As part of this migration, we are also transitioning from an AWS EC2 instance to AWS Lightsail. Lightsail provides a simpler, more cost-effective platform that aligns better with our current performance while still staying in the AWS ecosystem.
+
+### Benefits
+
+- **Portability:** Docker containers make it easier to deploy our app across different environments without worrying about underlying system differences.
+- **Flexibility:** Docker and MongoDB allow us to easily move or scale our application as needed, providing greater adaptability.
+- **Consistency:** The same container image will run in development, staging, and production, reducing environment-specific bugs.
+- **CI/CD Integration:** Docker Hub facilitates smoother continuous integration and continuous delivery processes, speeding up development cycles.
+- **Cost Efficiency:** Migrating to AWS Lightsail offers a more cost-effective hosting solution without sacrificing necessary performance.
+
+
+# Wise Wallet Win APP
+
+> Wise Wallet Win is a comprehensive financial application designed to streamline and simplify the way users track their bi-weekly checks. Experience it firsthand: [WiseWalletWin](https://wisewalletwin.com)
+
+
+# Application Overview
 
 Wise Wallet Win is a full-stack web application dedicated to helping users manage their personal finances efficiently. Originally built to help my girlfriend and me keep track of our monthly expenses, this application informs us how much we need to allocate from our bi-weekly checks, effectively eliminating the need for cumbersome spreadsheets.
 
