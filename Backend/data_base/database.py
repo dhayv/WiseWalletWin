@@ -1,27 +1,39 @@
 import logging
 import os
+from motor.motor_asyncio import AsyncIOMotorClient
+from beanie import Document, init_beanie
+from pydantic import BaseSettings
 
-from sqlmodel import Session, SQLModel, create_engine
 
 logging.basicConfig(
     level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
 )
 
 
-# database URL
-sqlite_url = os.getenv("DATABASE_URL", "sqlite:///./db.sqlite3")
+class Settings(BaseSettings):
+    database_url: str = os.getenv("DATABASE_URL")
+
+
+client = AsyncIOMotorClient(Settings.database_url)
 
 # Creates database engine
-engine = create_engine(sqlite_url, echo=True)
-
-# Session conveyor belt
+database = client.get_database
 
 
-def get_db():
-    with Session(engine) as db:
-        yield db
+# Function to check the connection to MongoDB
+async def check_connection():
+    try:
+        await client.admin.command('ping')
+        logging.info("Pinged your deployment. Successfully connected to MongoDB!")
+    except Exception as e:
+        logging.error(f"An error occurred while connecting to MongoDB: {e}")
 
 
 # Create database and tables
-def create_db_and_tables():
-    SQLModel.metadata.create_all(engine)
+async def init_db(models: list[Document]):
+    try:
+        await init_beanie(database=database, document_models=models)
+        logging.info("Successfully initialized beanie with MongoDB!")
+        print("Pinged your deployment. You successfully connected to MongoDB!")
+    except Exception as e:
+        logging.error(f"An error occurred while initializing beanie: {e}")
