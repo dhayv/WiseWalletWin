@@ -1,12 +1,13 @@
 import logging
 from contextlib import asynccontextmanager
 
-from data_base import database
+from data_base.database import init_db, check_connection
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from router import expenses_endpoint as expense_router
 from router import income_endpoint as income_router
 from router import user_endpoint as user_router
+from models import Users, Expense, Income
 
 logging.basicConfig(
     level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
@@ -16,8 +17,10 @@ logging.basicConfig(
 # Startup event before server starts
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    database.create_db_and_tables()
+    await init_db(models=[Users, Expense, Income])
     logging.info("Database Created")
+
+    await check_connection()
 
     yield
 

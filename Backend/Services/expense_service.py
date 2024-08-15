@@ -1,28 +1,22 @@
 from fastapi import HTTPException, Response, status
 from models import Expense, ExpenseBase, ExpenseUpdate, Income
-from sqlmodel import Session, select
-
+from beanie import PydanticObjectId
+from typing import Optional
 
 class ExpenseService:
-    def __init__(self, db_session: Session):
-        self.db = db_session
 
-    def add_expense(self, expense_data: ExpenseBase, income_id: int, user_id: int):
-        income = self.db.exec(
-            select(Income).filter(Income.id == income_id, Income.user_id == user_id)
-        ).first()
+
+    async def add_expense(self, expense_data: ExpenseBase, income_id: int, user_id: int) -> Expense:
+
+        income = await Income.find_one(Income.id == income_id, Income.user_id == user_id)
         if not income:
             raise HTTPException(status_code=404, detail="Income not found")
 
-        expense = Expense(
-            **expense_data.model_dump(), income_id=income_id, user_id=user_id
-        )
-        self.db.add(expense)
-        self.db.commit()
-        self.db.refresh(expense)
+        expense = Expense(**expense_data.model_dump(), income_id=income_id, user_id=user_id)
+        await expense.insert()
         return expense
 
-    def read_expense(self, income_id: int, user_id: int):
+    async def read_expense(self, income_id: int, user_id: int):
         statement = select(Expense).where(
             Expense.income_id == income_id, Expense.user_id == user_id
         )
@@ -31,7 +25,7 @@ class ExpenseService:
 
         return expenses
 
-    def update_expense(
+    async def update_expense(
         self,
         expense_id: int,
         expense_data: ExpenseUpdate,
@@ -46,7 +40,7 @@ class ExpenseService:
         self.db.refresh(db_expense)
         return db_expense
 
-    def delete_expense(self, expense_id: int):
+    async def delete_expense(self, expense_id: int):
         db_expense = self.db.get(Expense, expense_id)
         if not db_expense:
             raise HTTPException(status_code=404, detail="Not found")

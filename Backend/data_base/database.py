@@ -2,22 +2,38 @@ import logging
 import os
 from motor.motor_asyncio import AsyncIOMotorClient
 from beanie import Document, init_beanie
-from pydantic import BaseSettings
+from pydantic_settings import BaseSettings
+from dotenv import load_dotenv
 
 
 logging.basicConfig(
     level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
 )
+load_dotenv()
 
 
 class Settings(BaseSettings):
-    database_url: str = os.getenv("DATABASE_URL")
+    database_url: str = os.getenv('DATABASE_URL')
 
 
-client = AsyncIOMotorClient(Settings.database_url)
+settings = Settings()
+
+
+client = AsyncIOMotorClient(settings.database_url)
 
 # Creates database engine
 database = client.get_database
+
+
+async def intialize_counters():
+    try:
+        counters = ['user_id', 'income_id', 'expense_id']
+        for counter in counters:
+            if database.counters.find_one({"_id": counter}) is None:
+                await database.counters.insert_one({"_id": counter, "seq": 0})
+        logging.info("Successfully initialized counters in Mongo")
+    except Exception as e:
+        logging.error(f"An error occurred while initializing counters: {e}")
 
 
 # Function to check the connection to MongoDB
@@ -34,6 +50,9 @@ async def init_db(models: list[Document]):
     try:
         await init_beanie(database=database, document_models=models)
         logging.info("Successfully initialized beanie with MongoDB!")
+        print("Pinged your deployment. You successfully connected to MongoDB!")
+
+        await intialize_counters()
         print("Pinged your deployment. You successfully connected to MongoDB!")
     except Exception as e:
         logging.error(f"An error occurred while initializing beanie: {e}")

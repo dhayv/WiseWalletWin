@@ -1,4 +1,4 @@
-from data_base.database import get_db
+from data_base.database import init_db
 from fastapi import APIRouter, Depends, HTTPException, Response, status
 from models import Expense, ExpenseBase, ExpenseUpdate, Users
 from Services.auth import get_current_active_user
@@ -8,7 +8,7 @@ from sqlmodel import Session
 router = APIRouter()
 
 
-def get_expense_service(db: Session = Depends(get_db)):
+def get_expense_service(db: Session = Depends(init_db)):
     return ExpenseService(db)
 
 

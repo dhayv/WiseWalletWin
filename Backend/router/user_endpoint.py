@@ -1,6 +1,6 @@
 from datetime import timedelta
 
-from data_base.database import get_db
+from data_base.database import init_db
 from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm, SecurityScopes
 from models import UserIn, UserOut, Users, UserUpdate
@@ -15,7 +15,7 @@ from sqlmodel import Session
 router = APIRouter()
 
 
-def get_user_service(db: Session = Depends(get_db)):
+def get_user_service(db: Session = Depends(init_db)):
     return UserService(db)
 
 
