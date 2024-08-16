@@ -6,19 +6,16 @@ from email.mime.text import MIMEText
 from dotenv import load_dotenv
 from fastapi import HTTPException
 from models import Users
-from sqlmodel import Session, select
 from starlette.responses import JSONResponse
 
 load_dotenv()
 
 
 class EmailService:
-    def __init__(self, db_session: Session) -> None:
-        self.db = db_session
 
     async def email_verification(self, email: str, token: str) -> JSONResponse:
-        statement = select(Users).where(Users.email == email)
-        user = self.db.exec(statement).first()
+        user = await Users.find_one(Users.email == email)
+
         if not user:
             return JSONResponse(status_code=404, content={"message": "User not found"})
 
