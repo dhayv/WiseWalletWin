@@ -1,22 +1,25 @@
 from models import Expense, Income
-from sqlmodel import Session, select
 
 
-def sum_of_all_expenses(user_id: int, db: Session):
-    statement = select(Expense).where(Expense.user_id == user_id)
-    result = db.exec(statement)
-    expenses = result.all()
-    total = sum(expense.amount for expense in expenses)
+async def sum_of_all_expenses(user_id: int):
+    expenses = Expense.find(Expense.user_id == user_id)
+    total = 0
+
+    async for expense in expenses:
+        total += expense.amount
+
     return total
 
 
-def calc_income_minus_expenses(user_id: int, db: Session):
+async def calc_income_minus_expenses(user_id: int):
     # Expenses sum together
-    total_expense = sum_of_all_expenses(user_id, db)
+    total_expense = sum_of_all_expenses(user_id)
     # Income information from user
-    income_statement = select(Income).where(Income.user_id == user_id)
-    result = db.exec(income_statement)
-    income_info = result.all()
+    incomes = Income.find(Income.user_id == user_id)
 
-    total_income = sum(income.amount for income in income_info)
+    total_income = 0
+
+    async for income in incomes:
+        total_income += income.amount
+
     return total_income - total_expense
