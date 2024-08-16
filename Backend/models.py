@@ -7,8 +7,7 @@ from beanie import Document
 from pydantic import (BaseModel, EmailStr, Field, StringConstraints,
                       field_validator)
 from typing_extensions import Annotated
-
-from data_base.database import database
+from data_base.db_utils import get_database
 
 # Regex for phone number validation
 phone_number_regex = r"^(?:\(\d{3}\)|\d{3}-?)\d{3}-?\d{4}$"
@@ -19,18 +18,19 @@ class BaseModelWithId(Document):
 
     @classmethod
     async def get_next_id(cls, counter_name: str) -> int:
-        counter = await database.counters.find_one_and_update(
-            {"id": counter_name},
+
+        counter = await get_database.counters.find_one_and_update(
+            {"_id": counter_name},
             {"$inc": {"seq": 1}},
             return_document=True,
             upsert=True,
         )
         return counter["seq"]
 
-    async def insert(self, *args, **kwargs):
+    async def save(self, *args, **kwargs):
         if self.id is None:
             self.id = await self.get_next_id(f"{self.__class__.__name__.lower()}_id")
-        await super().insert(*args, **kwargs)
+        await super().save(*args, **kwargs)
 
 
 # Base user model for common user fields
