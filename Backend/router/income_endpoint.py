@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, status
+
 from models import Income, IncomeBase, IncomeUpdate
 from Services.income_service import IncomeService
-
 
 router = APIRouter()
 

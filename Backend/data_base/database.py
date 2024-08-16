@@ -1,10 +1,12 @@
 import logging
 import os
-from motor.motor_asyncio import AsyncIOMotorClient
+
 from beanie import Document, init_beanie
-from pydantic_settings import BaseSettings
 from dotenv import load_dotenv
-from models import Users, Expense, Income
+from motor.motor_asyncio import AsyncIOMotorClient
+from pydantic_settings import BaseSettings
+
+from models import Expense, Income, Users
 
 models = [Users, Expense, Income]
 
@@ -15,7 +17,7 @@ load_dotenv()
 
 
 class Settings(BaseSettings):
-    database_url: str = os.getenv('DATABASE_URL')
+    database_url: str = os.getenv("DATABASE_URL")
 
 
 settings = Settings()
@@ -29,7 +31,7 @@ database = client.get_database
 
 async def intialize_counters():
     try:
-        counters = ['user_id', 'income_id', 'expense_id']
+        counters = ["user_id", "income_id", "expense_id"]
         for counter in counters:
             if database.counters.find_one({"_id": counter}) is None:
                 await database.counters.insert_one({"_id": counter, "seq": 0})
@@ -41,7 +43,7 @@ async def intialize_counters():
 # Function to check the connection to MongoDB
 async def check_connection():
     try:
-        await client.admin.command('ping')
+        await client.admin.command("ping")
         logging.info("Pinged your deployment. Successfully connected to MongoDB!")
     except Exception as e:
         logging.error(f"An error occurred while connecting to MongoDB: {e}")

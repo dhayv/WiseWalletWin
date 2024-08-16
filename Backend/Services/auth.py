@@ -5,10 +5,10 @@ from typing import List
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer, SecurityScopes
 from jose import JWTError, jwt
-from models import Users
 from passlib.context import CryptContext
 from pydantic import BaseModel
 
+from models import Users
 
 SECRET_KEY = os.getenv("SECRET_KEY", "default_secret_if_not_set")
 ALGORITHM = "HS256"

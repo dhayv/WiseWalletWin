@@ -1,4 +1,5 @@
 from fastapi import BackgroundTasks, HTTPException, Response, status
+
 from models import UserIn, Users, UserUpdate
 from Services.auth import create_email_access_token, get_password_hash
 from Services.email_client import EmailService

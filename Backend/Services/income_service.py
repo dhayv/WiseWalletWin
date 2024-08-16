@@ -1,4 +1,5 @@
 from fastapi import APIRouter, HTTPException
+
 from models import Income, IncomeBase, IncomeUpdate
 
 router = APIRouter()

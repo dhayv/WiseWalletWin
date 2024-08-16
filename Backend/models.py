@@ -2,11 +2,13 @@ import logging
 import re
 from datetime import date, datetime
 from typing import Optional
-from pydantic import EmailStr, StringConstraints, field_validator, BaseModel, Field
-from typing_extensions import Annotated
-from beanie import Document
-from data_base.database import database
 
+from beanie import Document
+from pydantic import (BaseModel, EmailStr, Field, StringConstraints,
+                      field_validator)
+from typing_extensions import Annotated
+
+from data_base.database import database
 
 # Regex for phone number validation
 phone_number_regex = r"^(?:\(\d{3}\)|\d{3}-?)\d{3}-?\d{4}$"
@@ -21,7 +23,7 @@ class BaseModelWithId(Document):
             {"id": counter_name},
             {"$inc": {"seq": 1}},
             return_document=True,
-            upsert=True
+            upsert=True,
         )
         return counter["seq"]
 
@@ -34,7 +36,11 @@ class BaseModelWithId(Document):
 # Base user model for common user fields
 class BaseUser(BaseModelWithId):
     username: str = Field(..., index=True)
-    email: EmailStr = Field(..., unique=True, index=True,)
+    email: EmailStr = Field(
+        ...,
+        unique=True,
+        index=True,
+    )
     first_name: Optional[str] = None
     phone_number: Optional[str] = None
     is_email_verified: bool = Field(default=False, index=True)

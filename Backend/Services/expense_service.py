@@ -1,17 +1,25 @@
-from fastapi import HTTPException
-from models import Expense, ExpenseBase, ExpenseUpdate, Income
 from typing import Optional
+
+from fastapi import HTTPException
+
+from models import Expense, ExpenseBase, ExpenseUpdate, Income
 
 
 class ExpenseService:
 
-    async def add_expense(self, expense_data: ExpenseBase, income_id: int, user_id: int) -> Expense:
+    async def add_expense(
+        self, expense_data: ExpenseBase, income_id: int, user_id: int
+    ) -> Expense:
 
-        income = await Income.find_one(Income.id == income_id, Income.user_id == user_id)
+        income = await Income.find_one(
+            Income.id == income_id, Income.user_id == user_id
+        )
         if not income:
             raise HTTPException(status_code=404, detail="Income not found")
 
-        expense = Expense(**expense_data.model_dump(), income_id=income_id, user_id=user_id)
+        expense = Expense(
+            **expense_data.model_dump(), income_id=income_id, user_id=user_id
+        )
         await expense.insert()
         return expense
 

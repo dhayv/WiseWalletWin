@@ -2,6 +2,7 @@ from datetime import timedelta
 
 from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm, SecurityScopes
+
 from models import UserIn, UserOut, Users, UserUpdate
 from Services.auth import (ACCESS_TOKEN_EXPIRES_MINUTES, Token,
                            authenticate_user, create_access_token,
@@ -9,7 +10,6 @@ from Services.auth import (ACCESS_TOKEN_EXPIRES_MINUTES, Token,
 from Services.calculations import (calc_income_minus_expenses,
                                    sum_of_all_expenses)
 from Services.user_service import UserService
-
 
 router = APIRouter()
 
@@ -46,9 +46,7 @@ async def verify_email_endpoint(
 
 # This endpoint is used for user login. It verifies the user's credentials and returns an access token.
 @router.post("/token", response_model=Token)
-async def login_for_access_token(
-    form_data: OAuth2PasswordRequestForm = Depends()
-):
+async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends()):
 
     user = await authenticate_user(form_data.username, form_data.password)
     if not user:
