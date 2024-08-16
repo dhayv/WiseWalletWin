@@ -1,6 +1,5 @@
 from datetime import timedelta
 
-from data_base.database import init_db
 from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm, SecurityScopes
 from models import UserIn, UserOut, Users, UserUpdate
@@ -15,8 +14,8 @@ from sqlmodel import Session
 router = APIRouter()
 
 
-def get_user_service(db: Session = Depends(init_db)):
-    return UserService(db)
+def get_user_service() -> UserService:
+    return UserService()
 
 
 # This endpoint is used tpp validate token
@@ -77,12 +76,12 @@ async def login_for_access_token(
 # It adds a new user to the database.
 # Also Check if username or email exists in the database.
 @router.post("/user", response_model=UserOut, status_code=status.HTTP_201_CREATED)
-def add_user(
+async def add_user(
     user: UserIn,
     background_tasks: BackgroundTasks,
     service: UserService = Depends(get_user_service),
 ):
-    return service.add_user(user, background_tasks)
+    return await service.add_user(user, background_tasks)
 
 
 # This endpoint is used to get the profile of the currently logged in user.
@@ -91,26 +90,26 @@ async def read_user_me(
     current_user: Users = Depends(get_current_active_user),
     service: UserService = Depends(get_user_service),
 ):
-    return service.read_user(current_user.id)
+    return await service.read_user(current_user.id)
 
 
 # This endpoint is used to get the profile of a specific user based on their user_id.
 @router.get("/user/{user_id}", response_model=UserOut)
 async def read_user(user_id: int, service: UserService = Depends(get_user_service)):
-    return service.read_user(user_id)
+    return await service.read_user(user_id)
 
 
 # This endpoint is used to get total expense of a specific user based on their user_id.
 @router.get("/user/{user_id}/total_expenses", response_model=dict)
-def read_total_expenses(user_id: int, db: Session = Depends(get_db)):
-    total = sum_of_all_expenses(user_id, db)
+async def read_total_expenses(user_id: int, db: Session = Depends(get_db)):
+    total = await sum_of_all_expenses(user_id, db)
     return {"total_expenses": total}
 
 
 # This endpoint is used to get the total income minus expenses of a specific user based on their user_id.
 @router.get("/user/{user_id}/income_minus_expenses", response_model=dict)
-def read_total_income_minus_expenses(user_id: int, db: Session = Depends(get_db)):
-    total = calc_income_minus_expenses(user_id, db)
+async def read_total_income_minus_expenses(user_id: int, db: Session = Depends(get_db)):
+    total = await calc_income_minus_expenses(user_id, db)
     return {"income_minus_expenses": total}
 
 
@@ -120,9 +119,9 @@ async def update_user(
     user_update: UserUpdate,
     service: UserService = Depends(get_user_service),
 ):
-    return service.update_user(user_id, user_update)
+    return await service.update_user(user_id, user_update)
 
 
 @router.delete("/user/{user_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_user(user_id: int, service: UserService = Depends(get_user_service)):
-    return service.delete_user(user_id)
+    return await service.delete_user(user_id)
