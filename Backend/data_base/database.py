@@ -4,7 +4,9 @@ from motor.motor_asyncio import AsyncIOMotorClient
 from beanie import Document, init_beanie
 from pydantic_settings import BaseSettings
 from dotenv import load_dotenv
+from models import Users, Expense, Income
 
+models = [Users, Expense, Income]
 
 logging.basicConfig(
     level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
@@ -50,9 +52,8 @@ async def init_db(models: list[Document]):
     try:
         await init_beanie(database=database, document_models=models)
         logging.info("Successfully initialized beanie with MongoDB!")
-        print("Pinged your deployment. You successfully connected to MongoDB!")
 
         await intialize_counters()
-        print("Pinged your deployment. You successfully connected to MongoDB!")
+
     except Exception as e:
         logging.error(f"An error occurred while initializing beanie: {e}")

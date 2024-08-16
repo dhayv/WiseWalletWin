@@ -2,27 +2,24 @@ from fastapi import BackgroundTasks, HTTPException, Response, status
 from models import UserIn, Users, UserUpdate
 from Services.auth import create_email_access_token, get_password_hash
 from Services.email_client import EmailService
-from sqlmodel import Session, select
 
 
 class UserService:
-    def __init__(self, db_session: Session):
-        self.db = db_session
 
-    def get_user_by_username(self, username: str):
-        statement = select(Users).where(Users.username == username)
-        result = self.db.exec(statement).first()
-        return result
+    async def get_user_by_username(self, username: str):
+        user = await Users.find_one(Users.username == username)
 
-    def get_user_by_email(self, email: str):
-        statement = select(Users).where(Users.email == email)
-        result = self.db.exec(statement).first()
-        return result
+        return user
 
-    def add_user(self, user_data: UserIn, background_task: BackgroundTasks):
-        if self.get_user_by_username(user_data.username):
+    async def get_user_by_email(self, email: str):
+        statement = Users.find_one(Users.email == email)
+
+        return await statement
+
+    async def add_user(self, user_data: UserIn, background_task: BackgroundTasks):
+        if await self.get_user_by_username(user_data.username):
             raise HTTPException(status_code=400, detail="Username already exists")
-        if self.get_user_by_email(user_data.email):
+        if await self.get_user_by_email(user_data.email):
             raise HTTPException(status_code=400, detail="Email already exists")
 
         hashed_password = get_password_hash(user_data.password)
@@ -33,11 +30,9 @@ class UserService:
             first_name=user_data.first_name,
             phone_number=user_data.phone_number,
         )
-        self.db.add(db_user)
-        self.db.commit()
-        self.db.refresh(db_user)
+        await db_user.insert()
 
-        email_service = EmailService(self.db)
+        email_service = EmailService()
         token = create_email_access_token(db_user.email)
         background_task.add_task(
             email_service.email_verification, user_data.email, token
@@ -47,16 +42,16 @@ class UserService:
 
     # user/me
 
-    def read_user(self, user_id: int):
-        statement = select(Users).where(Users.id == user_id)
-        result = self.db.exec(statement).first()
+    async def read_user(self, user_id: int):
+        result = await Users.find_one(Users.id == user_id)
+
         if not result:
             raise HTTPException(status_code=404, detail="User account not found")
         return result
 
-    def update_user(self, user_id: int, user_update: UserUpdate):
-        statement = select(Users).where(Users.id == user_id)
-        result = self.db.exec(statement).first()
+    async def update_user(self, user_id: int, user_update: UserUpdate):
+        result = await Users.get(Users.id == user_id)
+
         if not result:
             raise HTTPException(status_code=404, detail="User not found")
 
@@ -64,24 +59,16 @@ class UserService:
 
         if "password" in update_data:
             hashed_password = get_password_hash(update_data["password"])
-            update_data["password"] = hashed_password
-            del update_data["password"]
+            update_data["hashed_password"] = hashed_password
 
-        for key, value in update_data.items():
-            setattr(
-                result, key if key != "hashed_password" else "hashed_password", value
-            )
+        await result.update({"$set": update_data})
 
-        self.db.add(result)
-        self.db.commit()
-        self.db.refresh(result)
         return result
 
-    def delete_user(self, user_id):
-        statement = select(Users).where(Users.id == user_id)
-        result = self.db.exec(statement).first()
-        if not result:
+    async def delete_user(self, user_id):
+        user = await Users.get(Users.id == user_id)
+
+        if not user:
             raise HTTPException(status_code=404, detail="User account not found")
-        self.db.delete(result)
-        self.db.commit()
+        await user.delete()
         return Response(status_code=status.HTTP_204_NO_CONTENT)
