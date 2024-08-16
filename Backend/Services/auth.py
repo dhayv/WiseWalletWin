@@ -4,7 +4,7 @@ from typing import List
 
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer, SecurityScopes
-from jose import JWTError, jwt
+import jwt
 from passlib.context import CryptContext
 from pydantic import BaseModel
 
@@ -94,7 +94,7 @@ def verify_token(token: str, security_scopes: SecurityScopes):
                 )
         return token_data
 
-    except JWTError as e:
+    except jwt.InvalidTokenError as e:
         print(f"Token decoding error: {e}")
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
