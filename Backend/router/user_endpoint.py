@@ -9,7 +9,7 @@ from Services.auth import (ACCESS_TOKEN_EXPIRES_MINUTES, Token,
 from Services.calculations import (calc_income_minus_expenses,
                                    sum_of_all_expenses)
 from Services.user_service import UserService
-from sqlmodel import Session
+
 
 router = APIRouter()
 
@@ -18,7 +18,7 @@ def get_user_service() -> UserService:
     return UserService()
 
 
-# This endpoint is used tpp validate token
+# This endpoint is used tp validate token
 # it updates the use is_email_verfied_status
 @router.get("/verify_email")
 async def verify_email_endpoint(
@@ -31,7 +31,7 @@ async def verify_email_endpoint(
         raise HTTPException(status_code=403, detail="Invalid or expired token")
 
     email = token_data.username
-    user = service.get_user_by_email(email)
+    user = await service.get_user_by_email(email)
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
 
@@ -39,20 +39,18 @@ async def verify_email_endpoint(
         raise HTTPException(status_code=400, detail="Email already verified")
 
     user.is_email_verified = True
-    service.db.add(user)
-    service.db.commit()
-    service.db.refresh(user)
-    print(f"User {user.email} verification status: {user.is_email_verified}")
 
+    await user.save()
     return {"message": "Email verified successfully!"}
 
 
 # This endpoint is used for user login. It verifies the user's credentials and returns an access token.
 @router.post("/token", response_model=Token)
 async def login_for_access_token(
-    form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)
+    form_data: OAuth2PasswordRequestForm = Depends()
 ):
-    user = authenticate_user(db, form_data.username, form_data.password)
+
+    user = await authenticate_user(form_data.username, form_data.password)
     if not user:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -101,15 +99,15 @@ async def read_user(user_id: int, service: UserService = Depends(get_user_servic
 
 # This endpoint is used to get total expense of a specific user based on their user_id.
 @router.get("/user/{user_id}/total_expenses", response_model=dict)
-async def read_total_expenses(user_id: int, db: Session = Depends(get_db)):
-    total = await sum_of_all_expenses(user_id, db)
+async def read_total_expenses(user_id: int):
+    total = await sum_of_all_expenses(user_id)
     return {"total_expenses": total}
 
 
 # This endpoint is used to get the total income minus expenses of a specific user based on their user_id.
 @router.get("/user/{user_id}/income_minus_expenses", response_model=dict)
-async def read_total_income_minus_expenses(user_id: int, db: Session = Depends(get_db)):
-    total = await calc_income_minus_expenses(user_id, db)
+async def read_total_income_minus_expenses(user_id: int):
+    total = await calc_income_minus_expenses(user_id)
     return {"income_minus_expenses": total}
 
 
