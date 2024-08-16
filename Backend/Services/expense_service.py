@@ -18,7 +18,7 @@ class ExpenseService:
     async def read_expense(self, income_id: int, user_id: int) -> list[Expense]:
         expenses = await Expense.find(
             Expense.income_id == income_id, Expense.user_id == user_id
-        )
+        ).to_list()
 
         return expenses
 
