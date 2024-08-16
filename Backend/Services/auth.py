@@ -2,14 +2,13 @@ import os
 from datetime import datetime, timedelta, timezone
 from typing import List
 
-from data_base.database import Session, get_db
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer, SecurityScopes
 from jose import JWTError, jwt
 from models import Users
 from passlib.context import CryptContext
 from pydantic import BaseModel
-from sqlmodel import select
+
 
 SECRET_KEY = os.getenv("SECRET_KEY", "default_secret_if_not_set")
 ALGORITHM = "HS256"
@@ -39,8 +38,14 @@ def verify_password(plain_password, hashed_password):
     return pwd_context.verify(plain_password, hashed_password)
 
 
-def authenticate_user(db: Session, username: str, password: str):
-    user = get_user(db, username)
+async def get_user(username: str):
+    user = await Users.find_one(Users.username == username)
+
+    return user
+
+
+async def authenticate_user(username: str, password: str):
+    user = await get_user(username)
     if not user:
         return False
     if not verify_password(password, user.hashed_password):
@@ -100,7 +105,6 @@ def verify_token(token: str, security_scopes: SecurityScopes):
 
 async def get_current_user(
     security_scopes: SecurityScopes,
-    db: Session = Depends(get_db),
     token: str = Depends(oauth2_scheme),
 ):
     credentials_exception = HTTPException(
@@ -112,7 +116,7 @@ async def get_current_user(
     if token_data.username is None:
         raise credentials_exception
 
-    user = db.exec(select(Users).where(Users.username == token_data.username)).first()
+    user = await Users.find_one(Users.username == token_data.username)
     if user is None:
         raise credentials_exception
     return user
@@ -122,9 +126,3 @@ async def get_current_active_user(current_user: Users = Depends(get_current_user
     if current_user.disabled:
         raise HTTPException(status_code=400, detail="Inactive user")
     return current_user
-
-
-def get_user(db: Session, username: str):
-    statement = select(Users).where(Users.username == username)
-    result = db.exec(statement).first()
-    return result
