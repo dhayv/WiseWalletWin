@@ -4,7 +4,7 @@ import api from '../api'
 import '../styles/App.css'
 
 const Expense = () => { // Assuming incomeId is passed as a prop
-  const { token, incomeId, refreshData, refresher, expenseData, setExpenseData } = useContext(UserContext)
+  const { token, incomeId, refreshData, refresher, expenseData, setExpenseData, setTotalExpenses } = useContext(UserContext)
   const [name, setName] = useState('')
   const [amount, setAmount] = useState('')
   const [dueDate, setDueDate] = useState('')
@@ -95,6 +95,28 @@ const Expense = () => { // Assuming incomeId is passed as a prop
     }
     ;
   }
+
+  useEffect(() => {
+    const getSum = async () => {
+      if (!userId) return // Prevent running if userId is null or undefined
+
+      try {
+        const response = await api.get(`/user/${userId}/total_expenses`)
+        if (response.status === 200) {
+          setTotalExpenses(response.data) // Ensure this matches the API response structure
+        } else {
+          throw new Error('Error fetching total expenses')
+        }
+      } catch (error) {
+        console.error('Error fetching total expenses:', error)
+        setTotalExpenses({ total_expenses: 0 }) // Set a default value in case of error
+      }
+    }
+
+    if (userId) {
+      getSum() // Only call the function if userId is available
+    }
+  }, [userId, refreshData])
 
   const handleSubmit = (e) => {
     e.preventDefault()

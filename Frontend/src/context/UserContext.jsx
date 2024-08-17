@@ -62,28 +62,6 @@ export const UserProvider = ({ children }) => {
     fetchUser()
   }, [token])
 
-  useEffect(() => {
-    const getSum = async () => {
-      if (!userId) return // Prevent running if userId is null or undefined
-
-      try {
-        const response = await api.get(`/user/${userId}/total_expenses`)
-        if (response.status === 200) {
-          setTotalExpenses(response.data) // Ensure this matches the API response structure
-        } else {
-          throw new Error('Error fetching total expenses')
-        }
-      } catch (error) {
-        console.error('Error fetching total expenses:', error)
-        setTotalExpenses({ total_expenses: 0 }) // Set a default value in case of error
-      }
-    }
-
-    if (userId) {
-      getSum() // Only call the function if userId is available
-    }
-  }, [userId, refreshData])
-
   return (
   // This lets any component get the token and user data
     <UserContext.Provider value={{ token, setToken, userId, setUserId, incomeId, setIncomeId, refresher, refreshData, userData, totalExpenses, setTotalExpenses, recentPay, setRecentPay, incomeData, setIncomeData, expenseData, setExpenseData}}>
