@@ -15,7 +15,9 @@ settings = Settings()
 
 client = AsyncIOMotorClient(settings.database_url)
 
-get_database = client.get_database
+database_name = 'Wallet_Database'
+
+get_database = client.get_database(database_name)
 
 
 # Function to check the connection to MongoDB
