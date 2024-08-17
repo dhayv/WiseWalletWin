@@ -3,12 +3,17 @@ import { createRoot } from 'react-dom/client';
 import { createBrowserRouter, RouterProvider, Outlet } from 'react-router-dom';
 import App from './App.jsx';
 import { UserProvider } from './context/UserContext.jsx';
-import Header from './components/Header.jsx';
-import Footer from './components/Footer.jsx';
-import ErrorMessage from './components/ErrorMessage.jsx';
-import Login from './components/Login';
-import SignUp from './components/SignUp';
-import ProtectedRoute from './components/ProtectedRoute';  // Import ProtectedRoute
+import Header from './component/Header.jsx';
+import Footer from './component/Footer.jsx';
+import ErrorMessage from './component/ErrorMessage.jsx';
+import Login from './component/Login';
+import SignUp from './component/SignUp';
+import ProtectedRoute from './component/ProtectedRoute'; 
+import Income from './component/Income.jsx';
+import Expense from './component/Expenses.jsx';
+import Remaining from './component/Remaining';
+import NextCheck from './component/NextCheck';
+
 
 export const Layout = () => (
   <div id="page-content">
@@ -51,7 +56,7 @@ const router = createBrowserRouter([
         path: '/expense',
         element: (
           <ProtectedRoute>
-            <Expenses />
+            <Expense />
           </ProtectedRoute>
         ),
       },
