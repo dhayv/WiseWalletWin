@@ -13,6 +13,7 @@ import Income from './component/Income.jsx';
 import Expense from './component/Expenses.jsx';
 import Remaining from './component/Remaining';
 import NextCheck from './component/NextCheck';
+import './styles/App.css'
 
 
 export const Layout = () => (
@@ -26,7 +27,7 @@ export const Layout = () => (
 const router = createBrowserRouter([
   {
     errorElement: <ErrorMessage />,
-    element: <Layout />,
+    element: <Layout/>,
     children: [
       {
         path: '/login',
@@ -76,6 +77,7 @@ const router = createBrowserRouter([
           </ProtectedRoute>
         ),
       },
+
     ],
   },
 ]);

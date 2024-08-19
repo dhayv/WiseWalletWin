@@ -1,9 +1,14 @@
-import React from "react";
+import React, { useContext } from "react";
+import { UserContext } from "../context/UserContext";
 
 const Footer = () => {
+
+    const {token} =useContext(UserContext)
     return (
         <footer className="footer">
-            <div className="content has-text-centered">
+            
+            {token && (
+                <div className="content has-text-centered">
                 <p>
                     <strong>Wise Wallet</strong> by <a href="https://jgthms.com">David Hyppolite</a>.
                     The source code is licensed
@@ -12,6 +17,7 @@ const Footer = () => {
                     <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/"> CC BY NC SA 4.0</a>.
                 </p>
             </div>
+            )}
         </footer>
     );
 }

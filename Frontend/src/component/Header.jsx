@@ -17,7 +17,7 @@ const Header = ({ title }) => {
   };
 
   return (
-    <>
+    <header>
       {token && (
         <nav className="navbar" role="navigation" aria-label="main navigation">
           <div className="container">
@@ -57,12 +57,12 @@ const Header = ({ title }) => {
         </nav>
       )}
 
-      <div >
+      <div className="header-title-container">
         <div className="container has-text-centered">
           <h1 className="title">{title}</h1>
         </div>
       </div>
-    </>
+    </header>
   );
 };
 
