@@ -6,8 +6,6 @@ const Footer = () => {
     const {token} =useContext(UserContext)
     return (
         <footer className="footer">
-            
-            {token && (
                 <div className="content has-text-centered">
                 <p>
                     <strong>Wise Wallet</strong> by <a href="https://jgthms.com">David Hyppolite</a>.
@@ -17,7 +15,6 @@ const Footer = () => {
                     <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/"> CC BY NC SA 4.0</a>.
                 </p>
             </div>
-            )}
         </footer>
     );
 }

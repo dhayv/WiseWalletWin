@@ -18,9 +18,13 @@ import './styles/App.css'
 
 export const Layout = () => (
   <div id="page-content">
-    <Header />
+    <ProtectedRoute>
+        <Header />
+    </ProtectedRoute>
     <Outlet />
-    <Footer />
+    <ProtectedRoute>
+        <Footer />
+    </ProtectedRoute>
   </div>
 );
 
