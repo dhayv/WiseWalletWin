@@ -97,13 +97,8 @@ const SignUp = () => {
     style={{ minHeight: '100vh' }}
     >
       <div className='columns is-centered'>
-        <div className='column is-full-mobile is-three-quarters-tablet is-half-desktop'>
-          <div className='has-text-centered'>
-            <h1 className='title is-4'>Welcome to Wise Wallet Win!</h1>
-            <h2 className='subtitle is-6'>
-              We're excited to help you take control of your finances. Start by adding your income and expenses, and let us guide you towards smarter financial decisions.
-            </h2>
-          </div>
+        <div className='column is-full-mobile is-three-quarters-tablet is-full-desktop'>
+          
           <div className='box'>
             <form onSubmit={handleSubmit}>
               <h1 className='title has-text-centered'>Sign Up</h1>
