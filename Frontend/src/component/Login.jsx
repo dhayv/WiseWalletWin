@@ -2,6 +2,7 @@ import React, { useState, useContext } from 'react'
 import ErrorMessage from './ErrorMessage'
 import { UserContext } from '../context/UserContext'
 import api from '../api'
+import { useNavigate } from 'react-router-dom';
 
 
 // Define submitLogin inside the Login component if it uses component state or props
@@ -10,6 +11,7 @@ const Login = ({ setShowSignUp }) => {
   const [passWord, setPassword] = useState('')
   const [errorMessage, setErrorMessage] = useState('')
   const { setToken, setUserId } = useContext(UserContext)
+  const navigate = useNavigate();
 
   const submitLogin = async () => {
     try {
@@ -113,7 +115,7 @@ const Login = ({ setShowSignUp }) => {
                 Login
               </button>
             </form>
-            <button className='button is-link is-light is-fullwidth mt-4' onClick={() => setShowSignUp(true)} style={{ marginTop: '10px' }}>
+            <button className='button is-link is-light is-fullwidth mt-4' onClick={() => navigate("/signup")} style={{ marginTop: '10px' }}>
               Don't have an account? Sign Up
             </button>
           </div>

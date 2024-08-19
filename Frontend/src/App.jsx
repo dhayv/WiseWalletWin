@@ -39,18 +39,18 @@ const App = () => {
           </div>
         ) : (
           <>
-            <div className="columns is-centered">
-              <div className="column is-full-mobile is-three-quarters-tablet is-half-desktop">
-                <div className="columns">
-                  <div className="column has-text-centered">
+            <div >
+              <div >
+                <div >
+                  <div >
                     <Income />
                   </div>
-                  <div className="column has-text-centered">
+                  <div >
                     <Remaining />
                   </div>
                 </div>
-                <div className="columns is-centered">
-                  <div className="column is-full">
+                <div >
+                  <div >
                     <NextCheck />
                   </div>
                 </div>

@@ -4,6 +4,7 @@ import { UserContext } from '../context/UserContext';
 import 'react-phone-number-input/style.css';
 import ErrorMessage from './ErrorMessage';
 import api from '../api';
+import { useNavigate } from 'react-router-dom';
 
 const SignUp = ({ setShowSignUp }) => {
   const [formData, setFormData] = useState({
@@ -18,6 +19,7 @@ const SignUp = ({ setShowSignUp }) => {
   const [showChecklist, setShowChecklist] = useState(false);
 
   const { setToken, setUserId } = useContext(UserContext);
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -240,7 +242,7 @@ const SignUp = ({ setShowSignUp }) => {
                 Sign Up
               </button>
             </form>
-            <button className='button is-link is-light is-fullwidth mt-4' onClick={() => setShowSignUp(false)} style={{ marginTop: '10px' }}>
+            <button className='button is-link is-light is-fullwidth mt-4' onClick={() => navigate("/login")} style={{ marginTop: '10px' }}>
               Have an account? Login
             </button>
           </div>
