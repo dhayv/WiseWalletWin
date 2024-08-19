@@ -6,7 +6,7 @@ import ErrorMessage from './ErrorMessage';
 import api from '../api';
 import { useNavigate } from 'react-router-dom';
 
-const SignUp = ({ setShowSignUp }) => {
+const SignUp = () => {
   const [formData, setFormData] = useState({
     firstName: '',
     userName: '',

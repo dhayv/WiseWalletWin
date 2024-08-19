@@ -6,7 +6,7 @@ import { useNavigate } from 'react-router-dom';
 
 
 // Define submitLogin inside the Login component if it uses component state or props
-const Login = ({ setShowSignUp }) => {
+const Login = () => {
   const [userName, setUserName] = useState('')
   const [passWord, setPassword] = useState('')
   const [errorMessage, setErrorMessage] = useState('')

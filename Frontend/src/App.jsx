@@ -12,12 +12,7 @@ import './styles/App.css';
 
 const App = () => {
   const [message, setMessage] = useState('');
-  const [showSignUp, setShowSignUp] = useState(false);
   const { token, totalExpenses } = useContext(UserContext);
-
-  const getMessage = async () => {
-    // ... existing getMessage logic ...
-  };
 
   useEffect(() => {
     getMessage();
@@ -30,11 +25,7 @@ const App = () => {
         {!token ? (
           <div>
             <div>
-              {showSignUp ? (
-                <SignUp setShowSignUp={setShowSignUp} />
-              ) : (
-                <Login setShowSignUp={setShowSignUp} />
-              )}
+              
             </div>
           </div>
         ) : (
