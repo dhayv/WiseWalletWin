@@ -7,7 +7,7 @@ import NextCheck from './component/NextCheck';
 import Expenses from './component/Expenses';
 import Footer from './component/Footer';
 import 'bulma/css/bulma.min.css';
-import './styles/App.css';
+
 
 const App = () => {
   const [message, setMessage] = useState('');

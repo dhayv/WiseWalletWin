@@ -54,13 +54,7 @@ const Login = () => {
     style={{ minHeight: '100vh' }}
     >
       <div className='columns is-centered'>
-        <div className='column is-full-mobile is-three-quarters-tablet is-half-desktop'>
-          <div className='has-text-centered'>
-            <h1 className='title is-4'>Welcome Back!</h1>
-            <h2 className='subtitle is-6'>
-              Track your expenses, plan your budget, and stay on top of your finances with Wise Wallet.
-            </h2>
-          </div>
+        <div className='column'>
           <div className='box'>
             <form onSubmit={handleSubmit}>
               <h1 className='title has-text-centered'>Login</h1>

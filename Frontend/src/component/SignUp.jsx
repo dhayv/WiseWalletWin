@@ -97,7 +97,7 @@ const SignUp = () => {
     style={{ minHeight: '100vh' }}
     >
       <div className='columns is-centered'>
-        <div className='column is-full-mobile is-three-quarters-tablet is-full-desktop'>
+        <div className='column '>
           
           <div className='box'>
             <form onSubmit={handleSubmit}>
@@ -238,7 +238,7 @@ const SignUp = () => {
               </button>
             </form>
             <button className='button is-link is-light is-fullwidth mt-4' onClick={() => navigate("/login")} style={{ marginTop: '10px' }}>
-              Have an account? Login
+              Have an account already? Login
             </button>
           </div>
         </div>
