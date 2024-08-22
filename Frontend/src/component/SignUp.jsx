@@ -222,7 +222,6 @@ const SignUp = () => {
                     placeholder='Enter Phone Number (e.g., 123-456-7890)'
                     value={formData.phoneNumber}
                     onChange={handleChange}
-                    pattern="^(?:\(\d{3}\)|\d{3})[- ]?\d{3}[- ]?\d{4}$"
                     className='input'
                   />
                   <span className='icon is-small is-left'>

@@ -10,8 +10,15 @@ from Services.auth import (ACCESS_TOKEN_EXPIRES_MINUTES, Token,
 from Services.calculations import (calc_income_minus_expenses,
                                    sum_of_all_expenses)
 from Services.user_service import UserService
+from pydantic import ValidationError
+from fastapi.responses import JSONResponse
+from fastapi import Response
+import logging
 
 router = APIRouter()
+
+
+logging.basicConfig(level=logging.INFO)
 
 
 def get_user_service() -> UserService:
@@ -71,13 +78,20 @@ async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(
 # This endpoint is used for user signup.
 # It adds a new user to the database.
 # Also Check if username or email exists in the database.
-@router.post("/user", response_model=UserOut, status_code=status.HTTP_201_CREATED)
+@router.post("/user", response_model=UserOut, status_code=status.HTTP_201_CREATED, response_model_by_alias=False)
 async def add_user(
     user: UserIn,
     background_tasks: BackgroundTasks,
     service: UserService = Depends(get_user_service),
 ):
-    return await service.add_user(user, background_tasks)
+    logging.info("Received request to add a new user with data: %s", user.dict())
+    try:
+        user_data = await service.add_user(user, background_tasks)
+        logging.info("User created successfully with data: %s", user_data.model_dump())
+        return Response(content=user_data.model_dump_json(), media_type="application/json")
+    except ValidationError as e:
+        logging.error("An unexpected error occurred: %s", str(e))
+        return JSONResponse(status_code=422, content={"errors": e.errors()})
 
 
 # This endpoint is used to get the profile of the currently logged in user.
