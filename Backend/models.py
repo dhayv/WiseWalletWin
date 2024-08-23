@@ -3,12 +3,11 @@ import re
 from datetime import date, datetime
 from typing import Optional
 
-from beanie import Document
+from beanie import Document, PydanticObjectId, Link
 from pydantic import (BaseModel, EmailStr, Field, StringConstraints,
                       field_validator)
 from typing_extensions import Annotated
-from data_base.db_utils import get_database
-from bson import ObjectId
+
 
 logging.basicConfig(level=logging.INFO)
 
@@ -17,47 +16,8 @@ logging.basicConfig(level=logging.INFO)
 phone_number_regex = r"^(?:\(\d{3}\)|\d{3}-?)\d{3}-?\d{4}$"
 
 
-def objectid_to_int(obj_id):
-    if isinstance(obj_id, ObjectId):
-        raise ValueError("ObjectId found where int expected")
-    return obj_id
-
-
-class BaseModelWithId(Document):
-    id: Optional[int] = Field(None, alias='_id')
-
-    @classmethod
-    async def get_next_id(cls, counter_name: str) -> int:
-
-        logging.info("Calling counter")
-        counter = await get_database().counters.find_one_and_update(
-            {"_id": counter_name},
-            {"$inc": {"seq": 1}},
-            return_document=True,
-            upsert=True,
-        )
-        logging.info("sequence counter"),
-        return counter["seq"]
-
-    logging.info("Calling save")
-
-    @field_validator('id', mode="before")
-    def convert_objectid(cls, v):
-        return objectid_to_int(v)
-
-    async def save(self, *args, **kwargs):
-        if self.id is None:
-            self.id = await self.get_next_id(f"{self.__class__.__name__.lower()}_id")
-        logging.info(f"Generated ID: {self.id}")
-        await super().save(*args, **kwargs)
-
-    class Config:
-        orm_mode = True
-        allow_population_by_field_name = True
-
-
 # Base user model for common user fields
-class BaseUser(BaseModelWithId):
+class BaseUser(Document):
     username: str = Field(..., index=True)
     email: EmailStr = Field(
         ...,
@@ -67,6 +27,9 @@ class BaseUser(BaseModelWithId):
     first_name: Optional[str] = None
     phone_number: Optional[str] = None
     is_email_verified: bool = Field(default=False, index=True)
+
+    class Config:
+        arbitrary_types_allowed = True
 
 
 # SQLModel for ORM mapping, including hashed_password and disabled fields
@@ -105,11 +68,7 @@ class UserIn(BaseModel):
 
 # Output model to send user data back to the client
 class UserOut(BaseUser):
-    id: Optional[int] = Field(None)
-
-    @field_validator('id', mode="before")
-    def id_ensure(cls, v):
-        return objectid_to_int(v)
+    id: PydanticObjectId
 
 
 # Model for updating user information
@@ -120,16 +79,16 @@ class UserUpdate(BaseModel):
     password: Optional[str] = None
 
 
-class Income(BaseModelWithId):
-    id: Optional[int] = Field(default=None, primary_key=True)
+class Income(Document):
+    id: PydanticObjectId
     amount: float = Field(index=True)
     recent_pay: date = Field(index=True)  # Ensuring this is a date object
     last_pay: Optional[date] = None  # This can be None or a date object
 
-    user_id: Optional[int] = Field(default=None, index=True)
+    user_id: Link[Users]
 
     class Config:
-        orm_mode = True
+        arbitrary_types_allowed = True
 
 
 class IncomeBase(BaseModel):
@@ -175,19 +134,19 @@ class IncomeUpdate(IncomeBase):
     last_pay: Optional[date] = None
 
 
-class Expense(BaseModelWithId):
-    id: Optional[int] = Field(default=None, primary_key=True)
+class Expense(Document):
+    id: PydanticObjectId
     name: str = Field(index=True)
     amount: float = Field(index=True)
     due_date: Optional[int] = Field(
         default=None, ge=1, le=31, index=True
     )  # Due date of the expense (days of the month(1-30 or 31))
 
-    user_id: Optional[int] = Field(default=None, index=True)
-    income_id: Optional[int] = Field(default=None, index=True)
+    user_id: Link[Users]
+    income_id: Link[Income]
 
     class Config:
-        orm_mode = True
+        arbitrary_types_allowed = True
 
 
 class ExpenseBase(BaseModel):
