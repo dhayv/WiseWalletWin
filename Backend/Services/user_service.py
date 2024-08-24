@@ -66,7 +66,7 @@ class UserService:
         if not result:
             raise HTTPException(status_code=404, detail="User not found")
 
-        update_data = user_update.model_dump(exclude_unset=True)
+        update_data = user_update.model_dump_json(exclude_unset=True)
 
         if "password" in update_data:
             hashed_password = get_password_hash(update_data["password"])
