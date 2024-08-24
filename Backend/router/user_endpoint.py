@@ -10,9 +10,6 @@ from Services.auth import (ACCESS_TOKEN_EXPIRES_MINUTES, Token,
 from Services.calculations import (calc_income_minus_expenses,
                                    sum_of_all_expenses)
 from Services.user_service import UserService
-from pydantic import ValidationError
-from fastapi.responses import JSONResponse
-from fastapi import Response
 import logging
 
 router = APIRouter()
@@ -84,14 +81,7 @@ async def add_user(
     background_tasks: BackgroundTasks,
     service: UserService = Depends(get_user_service),
 ):
-    logging.info("Received request to add a new user with data: %s", user.dict())
-    try:
-        user_data = await service.add_user(user, background_tasks)
-        logging.info("User created successfully with data: %s", user_data.model_dump())
-        return Response(content=user_data.model_dump_json(), media_type="application/json")
-    except ValidationError as e:
-        logging.error("An unexpected error occurred: %s", str(e))
-        return JSONResponse(status_code=422, content={"errors": e.errors()})
+    return await service.add_user(user, background_tasks)
 
 
 # This endpoint is used to get the profile of the currently logged in user.

@@ -49,7 +49,7 @@ class UserService:
             email_service.email_verification, user_data.email, token
         )
 
-        return db_user.model_dump_json()
+        return db_user
 
     # user/me
 
