@@ -19,7 +19,6 @@ const App = () => {
 
   return (
     <>
-      <Header title={message} />
       <div className="container">
         <div>
           <div>
@@ -41,7 +40,6 @@ const App = () => {
           </div>
         </div>
       </div>
-      <Footer />
     </>
   );
 };

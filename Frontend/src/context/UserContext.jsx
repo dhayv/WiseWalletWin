@@ -41,8 +41,8 @@ export const UserProvider = ({ children }) => {
           if (response.status === 200) {
             const data = response.data
             setUserData(data)
-            setUserId(data.id) // Set user ID here
-            console.log('User ID set to:', data.id)
+            setUserId(data._id) // Set user ID here
+            console.log('User ID set to:', data._id)
           } else {
             setToken(null)
             localStorage.removeItem('token')

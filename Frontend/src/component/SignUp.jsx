@@ -69,8 +69,8 @@ const SignUp = () => {
 
           if (userInfoResponse.status === 200) {
             const userData = userInfoResponse.data;
-            localStorage.setItem('userId', userData.id);
-            setUserId(userData.id);
+            localStorage.setItem('userId', userData._id);
+            setUserId(userData._id);
           }
         } else {
           setErrorMessages(['Failed to register or log in']);

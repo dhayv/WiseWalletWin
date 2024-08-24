@@ -43,6 +43,7 @@ const Login = () => {
   const handleSubmit = (e) => {
     e.preventDefault()
     submitLogin()
+    navigate("/")
   }
 
   const handlePasswordChange = (e) => {
