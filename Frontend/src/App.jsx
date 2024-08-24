@@ -13,9 +13,7 @@ const App = () => {
   const [message, setMessage] = useState('');
   const { totalExpenses } = useContext(UserContext);
 
-  useEffect(() => {
-    getMessage();  // Assuming getMessage is defined elsewhere in your app
-  }, []);
+
 
   return (
     <>

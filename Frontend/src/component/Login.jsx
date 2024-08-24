@@ -35,6 +35,8 @@ const Login = () => {
         const userData = userInfoResponse.data
         localStorage.setItem('userId', userData.id) // Save userId to local storage
         setUserId(userData.id) // Update userId in the context
+
+        navigate("/")
       }
     } catch (error) {
       setErrorMessage(error.response?.data?.detail || 'Login failed')
@@ -43,7 +45,6 @@ const Login = () => {
   const handleSubmit = (e) => {
     e.preventDefault()
     submitLogin()
-    navigate("/")
   }
 
   const handlePasswordChange = (e) => {

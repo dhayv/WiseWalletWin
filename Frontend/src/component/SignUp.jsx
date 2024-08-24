@@ -54,24 +54,35 @@ const SignUp = () => {
         params.append('username', userName);
         params.append('password', passWord);
 
+        // retieve token
         const tokenResponse = await api.post('/token', params, {
           headers: { 'Content-type': 'application/x-www-form-urlencoded' },
         });
 
         if (tokenResponse.status === 200) {
           const data = tokenResponse.data;
+
+          // store token to context
           localStorage.setItem('token', data.access_token);
           setToken(data.access_token);
 
+          // get user info
           const userInfoResponse = await api.get('/user/me', {
             headers: { Authorization: `Bearer ${data.access_token}` },
           });
 
           if (userInfoResponse.status === 200) {
             const userData = userInfoResponse.data;
+
+            // store token
             localStorage.setItem('userId', userData._id);
             setUserId(userData._id);
+
+            // to home
+            navigate("/")
           }
+
+         
         } else {
           setErrorMessages(['Failed to register or log in']);
         }

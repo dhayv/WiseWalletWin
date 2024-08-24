@@ -4,7 +4,7 @@ import api from '../api'
 import '../styles/App.css'
 
 const Expense = () => { // Assuming incomeId is passed as a prop
-  const { token, incomeId, refreshData, refresher, expenseData, setExpenseData, setTotalExpenses } = useContext(UserContext)
+  const { userId, token, incomeId, refreshData, refresher, expenseData, setExpenseData, setTotalExpenses } = useContext(UserContext)
   const [name, setName] = useState('')
   const [amount, setAmount] = useState('')
   const [dueDate, setDueDate] = useState('')
@@ -134,7 +134,7 @@ const Expense = () => { // Assuming incomeId is passed as a prop
 
     <div className=''>
 
-      <div cla>
+      <div className=''>
         <table className='table is-fullwidth'>
           <thead>
             <tr>
