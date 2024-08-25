@@ -1,39 +1,39 @@
-import React, { useEffect, useState } from 'react';
-import { useLocation } from 'react-router-dom';
-import api from '../api';
-import ErrorMessage from './ErrorMessage';
+import React, { useEffect, useState } from 'react'
+import { useLocation } from 'react-router-dom'
+import api from '../api'
+import ErrorMessage from './ErrorMessage'
 
 const VerifyEmail = () => {
-  const [message, setMessage] = useState('');
-  const [errorMessage, setErrorMessage] = useState('');
+  const [message, setMessage] = useState('')
+  const [errorMessage, setErrorMessage] = useState('')
 
   const useQuery = () => {
-    return new URLSearchParams(useLocation().search);
-  };
+    return new URLSearchParams(useLocation().search)
+  }
 
-  const query = useQuery();
-  const token = query.get('token');
+  const query = useQuery()
+  const token = query.get('token')
 
   useEffect(() => {
     const verifyEmail = async () => {
       try {
-        const response = await api.get(`/verify_email?token=${token}`);
+        const response = await api.get(`/verify_email?token=${token}`)
         if (response.status === 200) {
-          setMessage(response.data.message);
+          setMessage(response.data.message)
         } else {
-          setErrorMessage('Email verification failed.');
+          setErrorMessage('Email verification failed.')
         }
       } catch (error) {
-        setErrorMessage(error.response?.data?.detail || 'Email verification failed.');
+        setErrorMessage(error.response?.data?.detail || 'Email verification failed.')
       }
-    };
+    }
 
     if (token) {
-      verifyEmail();
+      verifyEmail()
     } else {
-      setErrorMessage('Invalid or missing verification token.');
+      setErrorMessage('Invalid or missing verification token.')
     }
-  }, [token]);
+  }, [token])
 
   return (
     <div className='container'>
@@ -59,7 +59,7 @@ const VerifyEmail = () => {
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default VerifyEmail;
+export default VerifyEmail

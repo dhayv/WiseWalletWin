@@ -29,7 +29,7 @@ const Remaining = () => {
   }, [token, userId, refreshData]) // Run the effect on component mount and when token or userId changes
 
   return (
-          <span className='has-text-weight-bold '>Remaining: ${formattedRemain}</span>
+    <span className='has-text-weight-bold '>Remaining: ${formattedRemain}</span>
   )
 }
 

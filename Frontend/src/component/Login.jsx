@@ -2,8 +2,7 @@ import React, { useState, useContext } from 'react'
 import ErrorMessage from './ErrorMessage'
 import { UserContext } from '../context/UserContext'
 import api from '../api'
-import { useNavigate } from 'react-router-dom';
-
+import { useNavigate } from 'react-router-dom'
 
 // Define submitLogin inside the Login component if it uses component state or props
 const Login = () => {
@@ -11,7 +10,7 @@ const Login = () => {
   const [passWord, setPassword] = useState('')
   const [errorMessage, setErrorMessage] = useState('')
   const { setToken, setUserId } = useContext(UserContext)
-  const navigate = useNavigate();
+  const navigate = useNavigate()
 
   const submitLogin = async () => {
     try {
@@ -36,7 +35,7 @@ const Login = () => {
         localStorage.setItem('userId', userData.id) // Save userId to local storage
         setUserId(userData.id) // Update userId in the context
 
-        navigate("/")
+        navigate('/')
       }
     } catch (error) {
       setErrorMessage(error.response?.data?.detail || 'Login failed')
@@ -52,8 +51,9 @@ const Login = () => {
   }
 
   return (
-    <div className="container is-flex is-justify-content-center is-align-items-center"
-    style={{ minHeight: '100vh' }}
+    <div
+      className='container is-flex is-justify-content-center is-align-items-center'
+      style={{ minHeight: '100vh' }}
     >
       <div className='columns is-centered'>
         <div className='column'>
@@ -76,10 +76,10 @@ const Login = () => {
                     autoComplete='username'
                   />
                   <span className='icon is-small is-left'>
-                  <i className='fas fa-user'></i>
-                </span>
+                    <i className='fas fa-user' />
+                  </span>
                 </div>
-                
+
               </div>
               {/* Password */}
               <div className='field'>
@@ -96,13 +96,13 @@ const Login = () => {
                     minLength='8'
                     required
                     autoComplete='current-password'
-                    
+
                   />
                   <span className='icon is-small is-left'>
-                  <i className='fas fa-lock'></i>
-                </span>
+                    <i className='fas fa-lock' />
+                  </span>
                 </div>
-                
+
               </div>
               <ErrorMessage message={errorMessage} />
               <br />
@@ -111,7 +111,7 @@ const Login = () => {
                 Login
               </button>
             </form>
-            <button className='button is-link is-light is-fullwidth mt-4' onClick={() => navigate("/signup")} style={{ marginTop: '10px' }}>
+            <button className='button is-link is-light is-fullwidth mt-4' onClick={() => navigate('/signup')} style={{ marginTop: '10px' }}>
               Don't have an account? Sign Up
             </button>
           </div>
@@ -119,6 +119,6 @@ const Login = () => {
       </div>
     </div>
   )
-};
+}
 
 export default Login

@@ -11,7 +11,7 @@ const Expense = () => { // Assuming incomeId is passed as a prop
   const [dueDate, setDueDate] = useState('')
   const [errorMessage, setErrorMessage] = useState('')
   const [expenseId, setExpenseId] = useState(null)
-  const [showModal, setShowModal] = useState(false);
+  const [showModal, setShowModal] = useState(false)
 
   const handleOpen = () => {
     setShowModal(true)
@@ -139,116 +139,114 @@ const Expense = () => { // Assuming incomeId is passed as a prop
     await deleteExpense(expenseId)
   }
 
-  const sortedExpenses = [...expenseData].sort((a, b) => a.due_date - b.due_date);
+  const sortedExpenses = [...expenseData].sort((a, b) => a.due_date - b.due_date)
   return (
     <div className='container'>
-    <div className='columns is centered'>
+      <div className='columns is centered'>
 
-    <div className=''>
+        <div className=''>
 
-      <div className='table'>
+          <div className='table'>
 
-        <table className='table is-fullwidth'>
-          <thead>
-            <tr>
-              <th>Name</th>
-              <th>Amount</th>
-              <th>Due Date</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {sortedExpenses.map(exp => (
-              <tr key={exp.id}>
-                <td>{exp.name}</td>
-                <td>${exp.amount}</td>
-                <td>{exp.due_date}</td>
-                <td>
-                  <button className='button is-danger is-small' onClick={() => handleDelete(exp.id)}>
-                    Delete
+            <table className='table is-fullwidth'>
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Amount</th>
+                  <th>Due Date</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {sortedExpenses.map(exp => (
+                  <tr key={exp.id}>
+                    <td>{exp.name}</td>
+                    <td>${exp.amount}</td>
+                    <td>{exp.due_date}</td>
+                    <td>
+                      <button className='button is-danger is-small' onClick={() => handleDelete(exp.id)}>
+                        Delete
                   </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      
-        </div >
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
 
-        <div className='has-text-centered mt-5'>
-        <button className='button is-primary' onClick={handleOpen}>
-          <span className='has-text-weight-bold'>Add Expense</span>
-        </button>
-      </div>
-      
-        <Modal 
-            show={showModal} 
-            onHide={handleClose}
-            size="md"
-            aria-labelledby="contained-modal-title-vcenter"
-            centered
-            >
-              <Modal.Header closeButton>
-                <Modal.Title >Add Expense</Modal.Title>
-              </Modal.Header>
+          </div>
 
-              <Modal.Body>
-                <Form className='expense-form'>
-        <div className='row'>
-          <div className='field'>
-            <label htmlFor='expense-name'>Name</label>
-            <input
-              required
-              type='text'
-              className='input mb-5'
-              id='expense-name'
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-            />
-          </div>
-          <div className='field'>
-            <label htmlFor='expense-amount'>Amount</label>
-            <input
-              required
-              type='number'
-              className='input mb-5'
-              id='expense-amount'
-              value={amount}
-              onChange={(e) => setAmount(e.target.value)}
-            />
-          </div>
-          <div className='field'>
-            <label htmlFor='expense-due-date'>Due Date</label>
-            <input
-              type='number'
-              className='input mb-5'
-              id='expense-due-date'
-              placeholder='Due Day (1-31)'
-              min='1'
-              max='31'
-              value={dueDate}
-              onChange={(e) => setDueDate(e.target.value)}
-            />
-          </div>
-          <div className='col-sm'>
-            <button type='submit' className='button is-primary is-fullwidth mt-4' onClick={handleSubmit}>
-              Add
+          <div className='has-text-centered mt-5'>
+            <button className='button is-primary' onClick={handleOpen}>
+              <span className='has-text-weight-bold'>Add Expense</span>
             </button>
           </div>
-        </div>
-                </Form>
-              </Modal.Body>
 
-              <Modal.Footer>
-                <Button variant="secondary" onClick={handleClose}>Close</Button>
-              </Modal.Footer>
-        </Modal>
+          <Modal
+            show={showModal}
+            onHide={handleClose}
+            size='md'
+            aria-labelledby='contained-modal-title-vcenter'
+            centered
+          >
+            <Modal.Header closeButton>
+              <Modal.Title>Add Expense</Modal.Title>
+            </Modal.Header>
+
+            <Modal.Body>
+              <Form className='expense-form'>
+                <div className='row'>
+                  <div className='field'>
+                    <label htmlFor='expense-name'>Name</label>
+                    <input
+                      required
+                      type='text'
+                      className='input mb-5'
+                      id='expense-name'
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
+                    />
+                  </div>
+                  <div className='field'>
+                    <label htmlFor='expense-amount'>Amount</label>
+                    <input
+                      required
+                      type='number'
+                      className='input mb-5'
+                      id='expense-amount'
+                      value={amount}
+                      onChange={(e) => setAmount(e.target.value)}
+                    />
+                  </div>
+                  <div className='field'>
+                    <label htmlFor='expense-due-date'>Due Date</label>
+                    <input
+                      type='number'
+                      className='input mb-5'
+                      id='expense-due-date'
+                      placeholder='Due Day (1-31)'
+                      min='1'
+                      max='31'
+                      value={dueDate}
+                      onChange={(e) => setDueDate(e.target.value)}
+                    />
+                  </div>
+                  <div className='col-sm'>
+                    <button type='submit' className='button is-primary is-fullwidth mt-4' onClick={handleSubmit}>
+                      Add
+                    </button>
+                  </div>
+                </div>
+              </Form>
+            </Modal.Body>
+
+            <Modal.Footer>
+              <Button variant='secondary' onClick={handleClose}>Close</Button>
+            </Modal.Footer>
+          </Modal>
+        </div>
+      </div>
+
     </div>
-    </div>
-    
-    
-  
-  </div>
   )
 }
 

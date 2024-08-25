@@ -1,10 +1,10 @@
-import React, { useState, useContext } from 'react';
-import PasswordChecklist from "react-password-checklist";
-import { UserContext } from '../context/UserContext';
-import 'react-phone-number-input/style.css';
-import ErrorMessage from './ErrorMessage';
-import api from '../api';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useContext } from 'react'
+import PasswordChecklist from 'react-password-checklist'
+import { UserContext } from '../context/UserContext'
+import 'react-phone-number-input/style.css'
+import ErrorMessage from './ErrorMessage'
+import api from '../api'
+import { useNavigate } from 'react-router-dom'
 
 const SignUp = () => {
   const [formData, setFormData] = useState({
@@ -13,31 +13,31 @@ const SignUp = () => {
     email: '',
     passWord: '',
     confirmationPassword: '',
-    phoneNumber: '',
-  });
-  const [errorMessages, setErrorMessages] = useState([]);
-  const [showChecklist, setShowChecklist] = useState(false);
+    phoneNumber: ''
+  })
+  const [errorMessages, setErrorMessages] = useState([])
+  const [showChecklist, setShowChecklist] = useState(false)
 
-  const { setToken, setUserId } = useContext(UserContext);
-  const navigate = useNavigate();
+  const { setToken, setUserId } = useContext(UserContext)
+  const navigate = useNavigate()
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
+    const { name, value } = e.target
     setFormData((prevFormData) => ({
       ...prevFormData,
-      [name]: value,
-    }));
+      [name]: value
+    }))
     if (name === 'passWord' || name === 'confirmationPassword') {
-      setShowChecklist(true);
+      setShowChecklist(true)
     }
-  };
+  }
 
   const submitRegistration = async () => {
-    const { firstName, userName, email, passWord, confirmationPassword, phoneNumber } = formData;
+    const { firstName, userName, email, passWord, confirmationPassword, phoneNumber } = formData
 
     if (passWord !== confirmationPassword) {
-      setErrorMessages(['Passwords do not match.']);
-      return;
+      setErrorMessages(['Passwords do not match.'])
+      return
     }
 
     try {
@@ -46,70 +46,69 @@ const SignUp = () => {
         username: userName,
         email,
         password: passWord,
-        phone_number: phoneNumber,
-      });
+        phone_number: phoneNumber
+      })
 
       if (userResponse.status === 201) {
-        const params = new URLSearchParams();
-        params.append('username', userName);
-        params.append('password', passWord);
+        const params = new URLSearchParams()
+        params.append('username', userName)
+        params.append('password', passWord)
 
         // retieve token
         const tokenResponse = await api.post('/token', params, {
-          headers: { 'Content-type': 'application/x-www-form-urlencoded' },
-        });
+          headers: { 'Content-type': 'application/x-www-form-urlencoded' }
+        })
 
         if (tokenResponse.status === 200) {
-          const data = tokenResponse.data;
+          const data = tokenResponse.data
 
           // store token to context
-          localStorage.setItem('token', data.access_token);
-          setToken(data.access_token);
+          localStorage.setItem('token', data.access_token)
+          setToken(data.access_token)
 
           // get user info
           const userInfoResponse = await api.get('/user/me', {
-            headers: { Authorization: `Bearer ${data.access_token}` },
-          });
+            headers: { Authorization: `Bearer ${data.access_token}` }
+          })
 
           if (userInfoResponse.status === 200) {
-            const userData = userInfoResponse.data;
+            const userData = userInfoResponse.data
 
             // store token
-            localStorage.setItem('userId', userData._id);
-            setUserId(userData._id);
+            localStorage.setItem('userId', userData._id)
+            setUserId(userData._id)
 
             // to home
-            navigate("/")
+            navigate('/')
           }
-
-         
         } else {
-          setErrorMessages(['Failed to register or log in']);
+          setErrorMessages(['Failed to register or log in'])
         }
       } else {
-        setErrorMessages(['Failed to register']);
+        setErrorMessages(['Failed to register'])
       }
     } catch (error) {
       if (error.response && error.response.data && error.response.data.errors) {
-        setErrorMessages(error.response.data.errors.map((err) => err.msg));
+        setErrorMessages(error.response.data.errors.map((err) => err.msg))
       } else {
-        setErrorMessages(['Registration failed']);
+        setErrorMessages(['Registration failed'])
       }
     }
-  };
+  }
 
   const handleSubmit = (e) => {
-    e.preventDefault();
-    submitRegistration();
-  };
+    e.preventDefault()
+    submitRegistration()
+  }
 
   return (
-    <div className="container is-flex is-justify-content-center is-align-items-center"
-    style={{ minHeight: '100vh' }}
+    <div
+      className='container is-flex is-justify-content-center is-align-items-center'
+      style={{ minHeight: '100vh' }}
     >
       <div className='columns is-centered'>
         <div className='column '>
-          
+
           <div className='box'>
             <form onSubmit={handleSubmit}>
               <h1 className='title has-text-centered'>Sign Up</h1>
@@ -128,7 +127,7 @@ const SignUp = () => {
                     required
                   />
                   <span className='icon is-small is-left'>
-                    <i className='fas fa-user'></i>
+                    <i className='fas fa-user' />
                   </span>
                 </div>
               </div>
@@ -148,7 +147,7 @@ const SignUp = () => {
                     autoComplete='username'
                   />
                   <span className='icon is-small is-left'>
-                    <i className='fas fa-user'></i>
+                    <i className='fas fa-user' />
                   </span>
                 </div>
               </div>
@@ -168,7 +167,7 @@ const SignUp = () => {
                     autoComplete='email'
                   />
                   <span className='icon is-small is-left'>
-                    <i className='fas fa-envelope'></i>
+                    <i className='fas fa-envelope' />
                   </span>
                 </div>
               </div>
@@ -187,7 +186,7 @@ const SignUp = () => {
                     autoComplete='new-password'
                   />
                   <span className='icon is-small is-left'>
-                    <i className='fas fa-lock'></i>
+                    <i className='fas fa-lock' />
                   </span>
                 </div>
               </div>
@@ -206,15 +205,15 @@ const SignUp = () => {
                     autoComplete='new-password'
                   />
                   <span className='icon is-small is-left'>
-                    <i className='fas fa-lock'></i>
+                    <i className='fas fa-lock' />
                   </span>
                 </div>
               </div>
               {/* Password Checklist */}
               {showChecklist && (
-                <div className="field mt-3 pl-5">
+                <div className='field mt-3 pl-5'>
                   <PasswordChecklist
-                    rules={["minLength", "specialChar", "number", "capital", "match"]}
+                    rules={['minLength', 'specialChar', 'number', 'capital', 'match']}
                     minLength={8}
                     value={formData.passWord}
                     valueAgain={formData.confirmationPassword}
@@ -236,7 +235,7 @@ const SignUp = () => {
                     className='input'
                   />
                   <span className='icon is-small is-left'>
-                    <i className='fas fa-phone'></i>
+                    <i className='fas fa-phone' />
                   </span>
                 </div>
               </div>
@@ -247,14 +246,14 @@ const SignUp = () => {
                 Sign Up
               </button>
             </form>
-            <button className='button is-link is-light is-fullwidth mt-4' onClick={() => navigate("/login")} style={{ marginTop: '10px' }}>
+            <button className='button is-link is-light is-fullwidth mt-4' onClick={() => navigate('/login')} style={{ marginTop: '10px' }}>
               Have an account already? Login
             </button>
           </div>
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default SignUp;
+export default SignUp
