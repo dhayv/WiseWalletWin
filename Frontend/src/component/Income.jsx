@@ -28,7 +28,6 @@ const Income = () => {
   useEffect(() => {
     const getIncome = async () => {
       if (!userId) {
-        setShowModal(true);
         return;
       }
       try {

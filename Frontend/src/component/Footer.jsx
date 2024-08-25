@@ -3,7 +3,6 @@ import { UserContext } from "../context/UserContext";
 
 const Footer = () => {
 
-    const {token} =useContext(UserContext)
     return (
         <footer className="footer">
                 <div className="content has-text-centered">
