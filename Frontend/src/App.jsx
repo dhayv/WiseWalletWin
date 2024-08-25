@@ -7,6 +7,9 @@ import NextCheck from './component/NextCheck';
 import Expenses from './component/Expenses';
 import Footer from './component/Footer';
 import 'bulma/css/bulma.min.css';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import { Row, Col } from 'react-bootstrap';
+
 
 
 const App = () => {
@@ -18,17 +21,17 @@ const App = () => {
   return (
     <>
       <div className="container">
-        <div>
-          <div>
+        <Row>
+          <Col>
             <Income />
-          </div>
-          <div>
+          </Col>
+          <Col>
             <Remaining />
-          </div>
+          </Col>
           <div>
             <NextCheck />
           </div>
-        </div>
+        </Row>
         <div className="columns is-centered">
           <div>
             <h3 className="has-text-weight-bold subtitle ml-3 has-text-centered">

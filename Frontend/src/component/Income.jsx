@@ -2,26 +2,33 @@ import React, { useContext, useEffect, useState } from 'react';
 import moment from 'moment';
 import { UserContext } from '../context/UserContext';
 import api from '../api'; // Importing your API instance
+import { Form, Modal, Button } from 'react-bootstrap';
 
 const Income = () => {
   const { userId, incomeId, setIncomeId, refreshData, refresher, recentPay, setRecentPay, incomeData, setIncomeData } = useContext(UserContext);
-  const [showAddIncome, setShowAddIncome] = useState(false);
+  const [showModal, setShowModal] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [amount, setAmount] = useState('');
   const [lastPay, setLastPay] = useState('');
-  const [isActive, setIsActive] = useState(false);
   const [loading, setLoading] = useState(true); // Add a loading state
+ 
+  const handleOpen = () => {
+    setShowModal(true)
+  }
+
+  const handleClose = () => {
+    setShowModal(false)
+  }
 
   // Correct date format for the server
   const formatRecent = recentPay && moment(recentPay).format('MM-DD-YYYY');
   const formatLast = lastPay && moment(lastPay).format('MM-DD-YYYY');
 
-  const toggleDropdown = () => setIsActive(!isActive);
 
   useEffect(() => {
     const getIncome = async () => {
       if (!userId) {
-        setShowAddIncome(true);
+        setShowModal(true);
         return;
       }
       try {
@@ -29,7 +36,7 @@ const Income = () => {
         const data = response.data || [];
 
         setIncomeData(data);
-        setShowAddIncome(data.length === 0); // Show form if no data
+        setShowModal(data.length === 0); // Show form if no data
         if (data.length > 0) {
           setIncomeId(data[0].id);
         }
@@ -40,7 +47,7 @@ const Income = () => {
       }
     };
     getIncome();
-  }, [userId, setShowAddIncome, setIncomeId, incomeId, refreshData, setIncomeData]);
+  }, [userId, setShowModal, setIncomeId, incomeId, refreshData, setIncomeData]);
 
   const submitIncome = async (e) => {
     e.preventDefault();
@@ -66,6 +73,7 @@ const Income = () => {
       setIncomeData(prevData => method === 'post' ? [...prevData, data] : [data]);
 
       refresher();
+      handClose();
     } catch (error) {
       console.error('Error response:', error.response);
       setErrorMessage(error.response?.data?.message || error.message);
@@ -106,60 +114,66 @@ const Income = () => {
     }
   }, [incomeData, setRecentPay]);
 
-  const handleIncomeClick = () => {
-    toggleDropdown();
-  };
+
 
   if (loading) {
     return <div>Loading...</div>; // Render loading indicator while data is being fetched
   }
 
+
+
+
   return (
     <div className='card'>
       <div className='card-content'>
         <div className='content'>
-          <div className={`dropdown ${isActive ? 'is-active' : ''}`}>
-            <div className='dropdown-trigger'>
-              <button
-                aria-haspopup='true'
-                aria-controls='dropdown-menu'
-                onClick={handleIncomeClick}
-              >
-                <span className='has-text-weight-bold '>Income: ${amount || ''} </span>
-                <i className='fas fa-angle-down' aria-hidden='true' style={{ marginLeft: '10px' }} />
-              </button>
-            </div>
-            <div className='dropdown-menu' id='dropdown-menu' role='menu' style={{ width: 'auto' }}>
-              <div className='dropdown-content' style={{ paddingLeft: '15px', paddingRight: '15px' }}>
-                {errorMessage && <p className='help is-danger'>{errorMessage}</p>}
+          <div>
+            <button onClick={handleOpen} className='button'>
+              <span className='has-text-weight-bold'>Income: ${amount || ''} </span>
+            </button>
 
-                {isActive && (
-                  <div style={{ alignItems: 'center' }}>
-                    <div>
-                      <label className='label'>Amount</label>
-                      <input
-                        className='input mb-5'
-                        type='number'
-                        placeholder='Amount'
-                        value={amount || ''}
-                        onChange={(e) => setAmount(e.target.value)}
-                      />
-                      <label className='label'>Recent Pay Date</label>
-                      <input
-                        className='input mb-5'
-                        type='date'
-                        placeholder='Recent Pay Date'
-                        value={recentPay || ''}
-                        onChange={(e) => setRecentPay(e.target.value)}
-                      />
-                      <button className='button is-success mr-5' type='submit' onClick={submitIncome}>
-                        {incomeData.length === 0 ? 'Add Income' : 'Update'}
-                      </button>
-                    </div>
-                  </div>
-                )}
-              </div>
-            </div>
+            <Modal 
+            show={showModal} 
+            onHide={handleClose}
+            size="lg"
+            aria-labelledby="contained-modal-title-vcenter"
+            centered
+            >
+              <Modal.Header closeButton={handleClose}>
+                <Modal.Title id="contained-modal-title-vcenter">Income</Modal.Title>
+              </Modal.Header>
+
+              <Modal.Body>
+                <Form>
+                  <label className='label'>Amount</label>
+                  <input
+                    className='input mb-5'
+                    type='number'
+                    placeholder='Amount'
+                    value={amount || ''}
+                    onChange={(e) => setAmount(e.target.value)}
+                    autoFocus
+                  />
+                  <label className='label'>Recent Pay Date</label>
+                  <input
+                    className='input mb-5'
+                    type='date'
+                    placeholder='Recent Pay Date'
+                    value={recentPay || ''}
+                    onChange={(e) => setRecentPay(e.target.value)}
+                  />
+
+                </Form>
+                
+              </Modal.Body>
+
+              <Modal.Footer>
+                <Button variant="secondary" onClick={handleClose}>Close</Button>
+                <Button className='button is-success' type='submit' onClick={submitIncome}>
+                  {incomeData.length === 0 ? 'Add Income' : 'Save Changes'}
+                </Button>
+              </Modal.Footer>
+            </Modal>
           </div>
         </div>
       </div>

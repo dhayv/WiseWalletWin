@@ -14,6 +14,7 @@ import Expense from './component/Expenses.jsx';
 import Remaining from './component/Remaining';
 import NextCheck from './component/NextCheck';
 import './styles/App.css'
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 
 export const Layout = () => (
