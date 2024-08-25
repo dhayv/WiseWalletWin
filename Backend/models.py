@@ -3,11 +3,10 @@ import re
 from datetime import date, datetime
 from typing import Optional
 
-from beanie import Document, PydanticObjectId
+from beanie import Document, PydanticObjectId, Link
 from pydantic import (BaseModel, EmailStr, Field, StringConstraints,
                       field_validator)
 from typing_extensions import Annotated
-from bson import ObjectId
 
 logging.basicConfig(level=logging.INFO)
 
@@ -30,6 +29,7 @@ class BaseUser(Document):
 
     class Config:
         arbitrary_types_allowed = True
+        populate_by_name = True
 
 
 # SQLModel for ORM mapping, including hashed_password and disabled fields
@@ -68,7 +68,7 @@ class UserIn(BaseModel):
 
 # Output model to send user data back to the client
 class UserOut(BaseUser):
-    id: PydanticObjectId
+    id: Optional[PydanticObjectId] = Field(default_factory=PydanticObjectId, alias="_id")
 
 
 # Model for updating user information
@@ -80,15 +80,16 @@ class UserUpdate(BaseModel):
 
 
 class Income(Document):
-    _id: PydanticObjectId
+    id: Optional[PydanticObjectId] = Field(default_factory=PydanticObjectId, alias="_id")
     amount: float = Field(index=True)
     recent_pay: date = Field(index=True)  # Ensuring this is a date object
     last_pay: Optional[date] = None  # This can be None or a date object
 
-    user_id: ObjectId
+    user_id: Link[Users]
 
     class Config:
         arbitrary_types_allowed = True
+        populate_by_name = True
 
 
 class IncomeBase(BaseModel):
@@ -135,18 +136,19 @@ class IncomeUpdate(IncomeBase):
 
 
 class Expense(Document):
-    _id: PydanticObjectId
+    id: Optional[PydanticObjectId] = Field(default_factory=PydanticObjectId, alias="_id")
     name: str = Field(index=True)
     amount: float = Field(index=True)
     due_date: Optional[int] = Field(
         default=None, ge=1, le=31, index=True
     )  # Due date of the expense (days of the month(1-30 or 31))
 
-    user_id: ObjectId
-    income_id: ObjectId
+    user_id: Link[Users]
+    income_id: Link[Income]
 
     class Config:
         arbitrary_types_allowed = True
+        populate_by_name = True
 
 
 class ExpenseBase(BaseModel):
