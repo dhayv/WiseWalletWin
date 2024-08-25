@@ -63,6 +63,7 @@ const Expense = () => { // Assuming incomeId is passed as a prop
 
         setExpenseData(prevExpenses => [...prevExpenses, ...[response.data]])
         refresher()
+        handleClose()
       } else {
         throw new Error('Could not add expense information.', response.data)
       };
@@ -82,6 +83,7 @@ const Expense = () => { // Assuming incomeId is passed as a prop
         const data = await response.data
         setExpenseData(expenseData.map(exp => exp.id === expenseId ? data : exp))
         refresher()
+        handleClose()
       } else {
         throw new Error('Could not update expense information.')
       }
@@ -171,10 +173,14 @@ const Expense = () => { // Assuming incomeId is passed as a prop
           </tbody>
         </table>
       
-        </div>
+        </div >
+
+        <div className='has-text-centered mt-5'>
         <button className='button is-primary' onClick={handleOpen}>
-          <span className='has-text-weight-bold subtitle mt-5 has-text-centered'>Add Expense</span>
+          <span className='has-text-weight-bold'>Add Expense</span>
         </button>
+      </div>
+      
         <Modal 
             show={showModal} 
             onHide={handleClose}
@@ -182,7 +188,7 @@ const Expense = () => { // Assuming incomeId is passed as a prop
             aria-labelledby="contained-modal-title-vcenter"
             centered
             >
-              <Modal.Header closeButton={handleClose} className="text-center">
+              <Modal.Header closeButton>
                 <Modal.Title >Add Expense</Modal.Title>
               </Modal.Header>
 
