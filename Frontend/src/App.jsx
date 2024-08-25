@@ -26,12 +26,14 @@ const App = () => {
             <Income />
           </Col>
           <Col>
+            <NextCheck />
+          </Col>
+          <Col>
             <Remaining />
           </Col>
-          <div>
-            <NextCheck />
-          </div>
+
         </Row>
+        
         <div className="columns is-centered">
           <div>
             <h3 className="has-text-weight-bold subtitle ml-3 has-text-centered">

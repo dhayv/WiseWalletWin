@@ -2,6 +2,7 @@ import React, { useContext, useState, useEffect } from 'react'
 import { UserContext } from '../context/UserContext'
 import api from '../api'
 import '../styles/App.css'
+import { Button, Modal, Form } from 'react-bootstrap'
 
 const Expense = () => { // Assuming incomeId is passed as a prop
   const { userId, token, incomeId, refreshData, refresher, expenseData, setExpenseData, setTotalExpenses } = useContext(UserContext)
@@ -10,6 +11,15 @@ const Expense = () => { // Assuming incomeId is passed as a prop
   const [dueDate, setDueDate] = useState('')
   const [errorMessage, setErrorMessage] = useState('')
   const [expenseId, setExpenseId] = useState(null)
+  const [showModal, setShowModal] = useState(false);
+
+  const handleOpen = () => {
+    setShowModal(true)
+  }
+
+  const handleClose = () => {
+    setShowModal(false)
+  }
 
   useEffect(() => {
     if (!incomeId) return
@@ -134,7 +144,8 @@ const Expense = () => { // Assuming incomeId is passed as a prop
 
     <div className=''>
 
-      <div className=''>
+      <div className='table'>
+
         <table className='table is-fullwidth'>
           <thead>
             <tr>
@@ -159,10 +170,24 @@ const Expense = () => { // Assuming incomeId is passed as a prop
             ))}
           </tbody>
         </table>
-      </div>
-      <div className='column '>
-      <h3 className='has-text-weight-bold subtitle mt-5 has-text-centered'>Add Expense</h3>
-      <form onSubmit={handleSubmit} className='expense-form'>
+      
+        </div>
+        <button className='button is-primary' onClick={handleOpen}>
+          <span className='has-text-weight-bold subtitle mt-5 has-text-centered'>Add Expense</span>
+        </button>
+        <Modal 
+            show={showModal} 
+            onHide={handleClose}
+            size="md"
+            aria-labelledby="contained-modal-title-vcenter"
+            centered
+            >
+              <Modal.Header closeButton={handleClose} className="text-center">
+                <Modal.Title >Add Expense</Modal.Title>
+              </Modal.Header>
+
+              <Modal.Body>
+                <Form className='expense-form'>
         <div className='row'>
           <div className='field'>
             <label htmlFor='expense-name'>Name</label>
@@ -200,15 +225,23 @@ const Expense = () => { // Assuming incomeId is passed as a prop
             />
           </div>
           <div className='col-sm'>
-            <button type='submit' className='button is-primary is-fullwidth mt-4'>
+            <button type='submit' className='button is-primary is-fullwidth mt-4' onClick={handleSubmit}>
               Add
             </button>
           </div>
         </div>
-      </form>
-      </div>
+                </Form>
+              </Modal.Body>
+
+              <Modal.Footer>
+                <Button variant="secondary" onClick={handleClose}>Close</Button>
+              </Modal.Footer>
+        </Modal>
     </div>
     </div>
+    
+    
+  
   </div>
   )
 }

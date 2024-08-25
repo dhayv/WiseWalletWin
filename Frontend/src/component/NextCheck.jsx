@@ -2,13 +2,22 @@ import React, { useContext, useEffect, useState } from 'react';
 import moment from 'moment';
 import { UserContext } from '../context/UserContext';
 import api from '../api';
-import '../styles/NextCheck.css'
+import { Table, Modal, Button } from 'react-bootstrap';
 
 export const NextCheck = () => {
   const { recentPay, incomeId, setIncomeData, incomeData, expenseData, refreshData } = useContext(UserContext);
   const [currentDate, setCurrentDate] = useState(moment().format('MM-DD-YYYY'));
   const [nextPayDate, setNextPayDate] = useState('');
   const [expensesDue, setExpensesDue] = useState([]);
+  const [showModal, setShowModal] = useState(false);
+
+  const handleOpen = () => {
+    setShowModal(true)
+  }
+
+  const handleClose = () => {
+    setShowModal(false)
+  }
 
   useEffect(() => {
     console.log("Expense Data:", expenseData);
@@ -94,35 +103,56 @@ export const NextCheck = () => {
 
 
  return (
-    <div className='card has-text-centered'>
-      <div className='card-content '>
-        <div className='content '>
-          <p className='has-text-weight-bold'>
-            Next Check: {nextPayDate ? moment(nextPayDate, 'YYYY-MM-DD').format('MMM Do') : 'Calculating...'} for ${totalDueExpenses}
-          </p>
-          <div>
-            <table className='table is-half is-centered'>
-          <thead>
-            <tr>
-              <th>Name</th>
-              <th>Amount</th>
-              <th>Due Date</th>
-            </tr>
-          </thead>
-          <tbody>
-            {sortedExpenseDue.map(exp => (
-              <tr key={exp.id}>
-                <td>{exp.name}</td>
-                <td>${exp.amount}</td>
-                <td>{exp.due_date}</td>
-                <td>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-          </div>
-        </div>
+  <div className='card'>
+  <div className='card-content'>
+    <div className='content'>
+            <button onClick={handleOpen} className='button'>
+              <span>
+              Next Check: {nextPayDate ? moment(nextPayDate, 'YYYY-MM-DD').format('MMM Do') : 'Calculating...'} for ${totalDueExpenses}
+              </span>
+            </button>
+          <Modal 
+            show={showModal} 
+            onHide={handleClose}
+            size="lg"
+            aria-labelledby="contained-modal-title-vcenter"
+            centered
+            >
+              <Modal.Header closeButton={handleClose}>
+                <Modal.Title id="contained-modal-title-vcenter">Expenses Due</Modal.Title>
+              </Modal.Header>
+
+              <Modal.Body>
+              <div>
+                <Table striped bordered hover>
+            <thead>
+                <tr>
+                <th>Name</th>
+                <th>Amount</th>
+                <th>Due Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                {sortedExpenseDue.map(exp => (
+                <tr key={exp.id}>
+                    <td>{exp.name}</td>
+                    <td>${exp.amount}</td>
+                    <td>{exp.due_date}</td>
+                    <td>
+                    </td>
+                </tr>
+                ))}
+            </tbody>
+            </Table>
+            </div>
+                
+              </Modal.Body>
+
+              <Modal.Footer>
+                <Button variant="secondary" onClick={handleClose}>Close</Button>
+              </Modal.Footer>
+            </Modal>
+            </div>
       </div>
     </div>
   );
