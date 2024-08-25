@@ -3,11 +3,11 @@ import re
 from datetime import date, datetime
 from typing import Optional
 
-from beanie import Document, PydanticObjectId, Link
+from beanie import Document, PydanticObjectId
 from pydantic import (BaseModel, EmailStr, Field, StringConstraints,
                       field_validator)
 from typing_extensions import Annotated
-
+from bson import ObjectId
 
 logging.basicConfig(level=logging.INFO)
 
@@ -85,7 +85,7 @@ class Income(Document):
     recent_pay: date = Field(index=True)  # Ensuring this is a date object
     last_pay: Optional[date] = None  # This can be None or a date object
 
-    user_id: Link[Users]
+    user_id: ObjectId
 
     class Config:
         arbitrary_types_allowed = True
@@ -142,8 +142,8 @@ class Expense(Document):
         default=None, ge=1, le=31, index=True
     )  # Due date of the expense (days of the month(1-30 or 31))
 
-    user_id: Link[Users]
-    income_id: Link[Income]
+    user_id: ObjectId
+    income_id: ObjectId
 
     class Config:
         arbitrary_types_allowed = True
