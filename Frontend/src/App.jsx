@@ -22,27 +22,32 @@ const App = () => {
   return (
     <>
       <div className="container">
-        <Row>
-          <Col>
+        <Row className='mb-4 p-2'>
+          <Col className='p-2'>
             <Income />
           </Col>
-          <Col>
+          <Col className='p-2'>
             <NextCheck />
           </Col>
-          <Col>
-            <Remaining />
-          </Col>
-
         </Row>
-        
-        <div className="columns is-centered">
-          <div>
-            <h3 className="has-text-weight-bold subtitle ml-3 has-text-centered">
+       {/* <Row>
+            <Remaining />
+          </Row> */}
+
+        <Row className='mt-5 justify-content-center p-2'>
+          <Col className='text-center'>
+            <span className="has-text-weight-bold subtitle has-text-centered mb-3">
               Expenses: ${totalExpenses?.total_expenses || 0}
-            </h3>
-            <Expenses />
-          </div>
-        </div>
+            </span>
+            
+          </Col>
+        </Row>
+
+          <Row className='justify-content-center mt-3 p-2 mb-5'>         
+            <Col md='auto' className='text-center'>
+              <Expenses/>
+            </Col>
+          </Row>
       </div>
     </>
   );
