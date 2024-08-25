@@ -14,7 +14,8 @@ class IncomeService:
         return db_income
 
     async def read_all_incomes(self, user_id: str) -> list[Income]:
-        incomes = await Income.find(Income.user_id == user_id).to_list()
+        incomes = await Income.find(Income.user_id._id == user_id).to_list()
+        print(f"Incomes found for user {user_id}: {incomes}")
         return incomes
 
     async def update_income(
