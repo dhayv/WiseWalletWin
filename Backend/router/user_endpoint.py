@@ -95,27 +95,27 @@ async def read_user_me(
 
 # This endpoint is used to get the profile of a specific user based on their user_id.
 @router.get("/user/{user_id}", response_model=UserOut)
-async def read_user(user_id: int, service: UserService = Depends(get_user_service)):
+async def read_user(user_id: str, service: UserService = Depends(get_user_service)):
     return await service.read_user(user_id)
 
 
 # This endpoint is used to get total expense of a specific user based on their user_id.
 @router.get("/user/{user_id}/total_expenses", response_model=dict)
-async def read_total_expenses(user_id: int):
+async def read_total_expenses(user_id: str):
     total = await sum_of_all_expenses(user_id)
     return {"total_expenses": total}
 
 
 # This endpoint is used to get the total income minus expenses of a specific user based on their user_id.
 @router.get("/user/{user_id}/income_minus_expenses", response_model=dict)
-async def read_total_income_minus_expenses(user_id: int):
+async def read_total_income_minus_expenses(user_id: str):
     total = await calc_income_minus_expenses(user_id)
     return {"income_minus_expenses": total}
 
 
 @router.put("/user/{user_id}", response_model=UserOut)
 async def update_user(
-    user_id: int,
+    user_id: str,
     user_update: UserUpdate,
     service: UserService = Depends(get_user_service),
 ):
@@ -123,5 +123,5 @@ async def update_user(
 
 
 @router.delete("/user/{user_id}", status_code=status.HTTP_204_NO_CONTENT)
-async def delete_user(user_id: int, service: UserService = Depends(get_user_service)):
+async def delete_user(user_id: str, service: UserService = Depends(get_user_service)):
     return await service.delete_user(user_id)

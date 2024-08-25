@@ -53,14 +53,14 @@ class UserService:
 
     # user/me
 
-    async def read_user(self, user_id: int):
+    async def read_user(self, user_id: str):
         result = await Users.find_one(Users.id == user_id)
 
         if not result:
             raise HTTPException(status_code=404, detail="User account not found")
         return result
 
-    async def update_user(self, user_id: int, user_update: UserUpdate):
+    async def update_user(self, user_id: str, user_update: UserUpdate):
         result = await Users.get(Users.id == user_id)
 
         if not result:

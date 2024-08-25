@@ -80,7 +80,7 @@ class UserUpdate(BaseModel):
 
 
 class Income(Document):
-    id: PydanticObjectId
+    _id: PydanticObjectId
     amount: float = Field(index=True)
     recent_pay: date = Field(index=True)  # Ensuring this is a date object
     last_pay: Optional[date] = None  # This can be None or a date object
@@ -135,7 +135,7 @@ class IncomeUpdate(IncomeBase):
 
 
 class Expense(Document):
-    id: PydanticObjectId
+    _id: PydanticObjectId
     name: str = Field(index=True)
     amount: float = Field(index=True)
     due_date: Optional[int] = Field(

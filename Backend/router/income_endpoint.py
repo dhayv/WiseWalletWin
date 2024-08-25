@@ -15,7 +15,7 @@ def get_income_service() -> IncomeService:
 )
 async def add_income(
     income_data: IncomeBase,
-    user_id: int,
+    user_id: str,
     service: IncomeService = Depends(get_income_service),
 ):
     return await service.add_income(income_data, user_id)
@@ -23,14 +23,14 @@ async def add_income(
 
 @router.get("/income/{user_id}", response_model=list[Income])
 async def read_all_incomes(
-    user_id: int, service: IncomeService = Depends(get_income_service)
+    user_id: str, service: IncomeService = Depends(get_income_service)
 ):
     return await service.read_all_incomes(user_id)
 
 
 @router.put("/income/{income_id}", response_model=Income)
 async def update_income(
-    income_id: int,
+    income_id: str,
     income_data: IncomeUpdate,
     service: IncomeService = Depends(get_income_service),
 ):

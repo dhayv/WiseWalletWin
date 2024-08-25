@@ -7,19 +7,19 @@ router = APIRouter()
 
 class IncomeService:
 
-    async def add_income(self, income_data: IncomeBase, user_id: int) -> Income:
-        db_income = await Income(**income_data.model_dump(), user_id=user_id)
+    async def add_income(self, income_data: IncomeBase, user_id: str) -> Income:
+        db_income = Income(**income_data.model_dump(), user_id=user_id)
 
         await db_income.insert()
         return db_income
 
-    async def read_all_incomes(self, user_id: int) -> list[Income]:
+    async def read_all_incomes(self, user_id: str) -> list[Income]:
         incomes = await Income.find(Income.user_id == user_id).to_list()
         return incomes
 
     async def update_income(
         self,
-        income_id: int,
+        income_id: str,
         income_data: IncomeUpdate,
     ) -> Income:
         db_income = await Income.get(income_id)

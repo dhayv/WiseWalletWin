@@ -16,7 +16,7 @@ def get_expense_service() -> ExpenseService:
 )
 async def add_expense(
     expense_data: ExpenseBase,
-    income_id: int,
+    income_id: str,
     service: ExpenseService = Depends(get_expense_service),
     current_user: Users = Depends(get_current_active_user),
 ):
@@ -25,7 +25,7 @@ async def add_expense(
 
 @router.get("/expenses/{income_id}", response_model=list[Expense])
 async def read_expenses(
-    income_id: int,
+    income_id: str,
     service: ExpenseService = Depends(get_expense_service),
     current_user: Users = Depends(get_current_active_user),
 ):
@@ -34,7 +34,7 @@ async def read_expenses(
 
 @router.put("/expenses/{expense_id}")
 async def update_expense(
-    expense_id: int,
+    expense_id: str,
     expense_data: ExpenseUpdate,
     service: ExpenseService = Depends(get_expense_service),
 ):
@@ -46,7 +46,7 @@ async def update_expense(
 
 @router.delete("/expenses/{expense_id}", status_code=204)
 async def delete_expense(
-    expense_id: int,
+    expense_id: str,
     service: ExpenseService = Depends(get_expense_service),
 ):
     await service.delete_expense(expense_id)
