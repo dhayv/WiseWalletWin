@@ -1,5 +1,7 @@
-from fastapi import BackgroundTasks, HTTPException, Response, status
 import logging
+
+from fastapi import BackgroundTasks, HTTPException, Response, status
+
 from models import UserIn, Users, UserUpdate
 from Services.auth import create_email_access_token, get_password_hash
 from Services.email_client import EmailService
@@ -23,7 +25,9 @@ class UserService:
 
     async def add_user(self, user_data: UserIn, background_task: BackgroundTasks):
 
-        logging.info(f"Attempting to add user: {user_data.username}, Email: {user_data.email}")
+        logging.info(
+            f"Attempting to add user: {user_data.username}, Email: {user_data.email}"
+        )
 
         if await self.get_user_by_username(user_data.username):
             raise HTTPException(status_code=400, detail="Username already exists")
@@ -41,7 +45,9 @@ class UserService:
             phone_number=user_data.phone_number,
         )
         await db_user.insert()
-        logging.info(f"User '{user_data.username}' added successfully with ID: {db_user.id}")
+        logging.info(
+            f"User '{user_data.username}' added successfully with ID: {db_user.id}"
+        )
 
         email_service = EmailService()
         token = create_email_access_token(db_user.email)

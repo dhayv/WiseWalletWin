@@ -3,9 +3,8 @@ import re
 from datetime import date, datetime
 from typing import Optional
 
-from beanie import Document, PydanticObjectId, Link
-from pydantic import (BaseModel, EmailStr, Field, StringConstraints,
-                      field_validator)
+from beanie import Document, Link, PydanticObjectId
+from pydantic import BaseModel, EmailStr, Field, StringConstraints, field_validator
 from typing_extensions import Annotated
 
 logging.basicConfig(level=logging.INFO)
@@ -68,7 +67,9 @@ class UserIn(BaseModel):
 
 # Output model to send user data back to the client
 class UserOut(BaseUser):
-    id: Optional[PydanticObjectId] = Field(default_factory=PydanticObjectId, alias="_id")
+    id: Optional[PydanticObjectId] = Field(
+        default_factory=PydanticObjectId, alias="_id"
+    )
 
 
 # Model for updating user information
@@ -80,7 +81,9 @@ class UserUpdate(BaseModel):
 
 
 class Income(Document):
-    id: Optional[PydanticObjectId] = Field(default_factory=PydanticObjectId, alias="_id")
+    id: Optional[PydanticObjectId] = Field(
+        default_factory=PydanticObjectId, alias="_id"
+    )
     amount: float = Field(index=True)
     recent_pay: date = Field(index=True)  # Ensuring this is a date object
     last_pay: Optional[date] = None  # This can be None or a date object
@@ -136,7 +139,9 @@ class IncomeUpdate(IncomeBase):
 
 
 class Expense(Document):
-    id: Optional[PydanticObjectId] = Field(default_factory=PydanticObjectId, alias="_id")
+    id: Optional[PydanticObjectId] = Field(
+        default_factory=PydanticObjectId, alias="_id"
+    )
     name: str = Field(index=True)
     amount: float = Field(index=True)
     due_date: Optional[int] = Field(

@@ -1,7 +1,8 @@
 import logging
 import os
-from motor.motor_asyncio import AsyncIOMotorClient
+
 from dotenv import load_dotenv
+from motor.motor_asyncio import AsyncIOMotorClient
 from pydantic_settings import BaseSettings
 
 load_dotenv()
@@ -15,7 +16,7 @@ settings = Settings()
 
 client = AsyncIOMotorClient(settings.database_url)
 
-database_name = 'Wallet_Database'
+database_name = "Wallet_Database"
 
 get_database = client.get_database(database_name)
 
