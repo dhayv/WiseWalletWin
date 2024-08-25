@@ -33,11 +33,13 @@ const Income = () => {
       try {
         const response = await api.get(`/income/${userId}`);
         const data = response.data || [];
+        console.log("Income data fetched:", data);
 
         setIncomeData(data);
+        console.log("income data is: ", {incomeData})
         setShowModal(data.length === 0); // Show form if no data
         if (data.length > 0) {
-          setIncomeId(data[0].id);
+          setIncomeId(data[0]._id);
         }
       } catch (error) {
         setErrorMessage(error.message);
@@ -71,8 +73,9 @@ const Income = () => {
       const data = response.data;
       setIncomeData(prevData => method === 'post' ? [...prevData, data] : [data]);
 
+
       refresher();
-      handClose();
+      handleClose();
     } catch (error) {
       console.error('Error response:', error.response);
       setErrorMessage(error.response?.data?.message || error.message);
