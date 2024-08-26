@@ -1,46 +1,49 @@
-import * as React from 'react'
-import { createRoot } from 'react-dom/client'
-import { createBrowserRouter, RouterProvider, Outlet } from 'react-router-dom'
-import App from './App.jsx'
+import * as React from 'react';
+import { createRoot } from 'react-dom/client';
+import { createBrowserRouter, RouterProvider, Outlet } from 'react-router-dom';
+import App from './App.jsx';
 
 import 'bootstrap/dist/css/bootstrap.min.css'
-import './App.css'
-import { UserProvider } from './context/UserContext.jsx'
-import Header from './component/Header.jsx'
-import Footer from './component/Footer.jsx'
-import ErrorMessage from './component/ErrorMessage.jsx'
-import Login from './component/Login'
-import SignUp from './component/SignUp'
-import ProtectedRoute from './component/ProtectedRoute'
-import Income from './component/Income.jsx'
-import Expense from './component/Expenses.jsx'
-import Remaining from './component/Remaining'
-import NextCheck from './component/NextCheck'
+import './App'
+import { UserProvider } from './context/UserContext.jsx';
+import Header from './component/Header.jsx';
+import Footer from './component/Footer.jsx';
+import ErrorMessage from './component/ErrorMessage.jsx';
+import Login from './component/Login';
+import SignUp from './component/SignUp';
+import ProtectedRoute from './component/ProtectedRoute'; 
+import Income from './component/Income.jsx';
+import Expense from './component/Expenses.jsx';
+import Remaining from './component/Remaining';
+import NextCheck from './component/NextCheck';
+import 'bootstrap/dist/css/bootstrap.min.css';
+
+
 
 export const Layout = () => (
-  <div id='page-content'>
+  <div id="page-content">
     <ProtectedRoute>
       <Header />
     </ProtectedRoute>
-    <Outlet />
+      <Outlet />
     <ProtectedRoute>
       <Footer />
     </ProtectedRoute>
   </div>
-)
+);
 
 const router = createBrowserRouter([
   {
     errorElement: <ErrorMessage />,
-    element: <Layout />,
+    element: <Layout/>,
     children: [
       {
         path: '/login',
-        element: <Login />
+        element: <Login />,
       },
       {
         path: '/signup',
-        element: <SignUp />
+        element: <SignUp />,
       },
       {
         path: '/',
@@ -48,7 +51,7 @@ const router = createBrowserRouter([
           <ProtectedRoute>
             <App />
           </ProtectedRoute>
-        )
+        ),
       },
       {
         path: '/income',
@@ -56,7 +59,7 @@ const router = createBrowserRouter([
           <ProtectedRoute>
             <Income />
           </ProtectedRoute>
-        )
+        ),
       },
       {
         path: '/expense',
@@ -64,7 +67,7 @@ const router = createBrowserRouter([
           <ProtectedRoute>
             <Expense />
           </ProtectedRoute>
-        )
+        ),
       },
       {
         path: '/remaining',
@@ -72,7 +75,7 @@ const router = createBrowserRouter([
           <ProtectedRoute>
             <Remaining />
           </ProtectedRoute>
-        )
+        ),
       },
       {
         path: '/next-check',
@@ -80,12 +83,12 @@ const router = createBrowserRouter([
           <ProtectedRoute>
             <NextCheck />
           </ProtectedRoute>
-        )
-      }
+        ),
+      },
 
-    ]
-  }
-])
+    ],
+  },
+]);
 
 createRoot(document.getElementById('root')).render(
   <React.StrictMode>
@@ -93,4 +96,4 @@ createRoot(document.getElementById('root')).render(
       <RouterProvider router={router} />
     </UserProvider>
   </React.StrictMode>
-)
+);
