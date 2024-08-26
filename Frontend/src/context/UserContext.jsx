@@ -1,4 +1,4 @@
-import React, { createContext, useEffect, useState, useCallback } from 'react'
+import React, { createContext, useEffect, useState, useCallback, useLayoutEffect } from 'react'
 import api from '../api'
 
 export const UserContext = createContext()
@@ -43,23 +43,51 @@ export const UserProvider = ({ children }) => {
             setUserId(data._id) // Set user ID here
             console.log('User ID set to:', data._id)
           } else {
-            setToken(null)
-            localStorage.removeItem('token')
+            handleLogout()
           }
         } catch (error) {
           console.error('Failed to fetch user:', error)
-          setToken(null)
-          localStorage.removeItem('token')
+          handleLogout
         }
-      } else {
-        setUserData(null)
-        setUserId(null)
-        localStorage.removeItem('userId')
-        localStorage.removeItem('token')
       }
     }
     fetchUser()
   }, [token])
+
+  useLayoutEffect(() => {
+    if (userId && refreshData) {
+      const fetchData = async () => {
+        try {
+          const [incomeResponse, expenseResponse] = await Promise.all([
+            api.get(`/income/${userId}`),
+            api.get(`/expenses/${userId}`)
+          ]);
+
+          if (incomeResponse.status === 200) {
+            setIncomeData(incomeResponse.data);
+            if (incomeResponse.data.length > 0) {
+              setIncomeId(incomeResponse.data[0]._id);
+            }
+          }
+
+          if (expenseResponse.status === 200) {
+            setExpenseData(expenseResponse.data);
+          }
+        } catch (error) {
+          console.error('Failed to fetch data:', error);
+        }
+      };
+
+      fetchData();
+    }
+  }, [userId, refreshData]);
+
+  const handleLogout = () => {
+    setToken(null);
+    setUserId(null);
+    localStorage.removeItem('token');
+    localStorage.removeItem('userId');
+  };
 
   return (
   // This lets any component get the token and user data

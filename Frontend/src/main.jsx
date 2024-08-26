@@ -1,3 +1,7 @@
+if (import.meta.env.PROD) {
+  console.log = function() {};
+}
+
 import * as React from 'react';
 import { createRoot } from 'react-dom/client';
 import { createBrowserRouter, RouterProvider, Outlet } from 'react-router-dom';

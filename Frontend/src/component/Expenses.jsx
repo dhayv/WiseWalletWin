@@ -28,8 +28,7 @@ const Expense = () => { // Assuming incomeId is passed as a prop
       try {
         const response = await api.get(`/expenses/${incomeId}`)
         if (response.status === 200) {
-          const data = response.data
-          setExpenseData(data)
+          setExpenseData(response.data)
           setExpenseId(expenseData.map(exp => exp._id))
         } else {
           throw new Error('Could not load expense information.')
@@ -40,7 +39,7 @@ const Expense = () => { // Assuming incomeId is passed as a prop
     }
 
     getExpense()
-  }, [incomeId, token, setExpenseId, refreshData, setExpenseData])
+  }, [incomeId, setExpenseId, refreshData, setExpenseData])
 
   const submitExpense = async (e) => {
     e.preventDefault()
