@@ -7,9 +7,8 @@ import bcrypt
 import jwt
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer, SecurityScopes
-from pydantic import BaseModel
-
 from models import Users
+from pydantic import BaseModel
 
 SECRET_KEY = os.getenv("SECRET_KEY", "default_secret_if_not_set")
 ALGORITHM = "HS256"

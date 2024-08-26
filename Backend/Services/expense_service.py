@@ -1,12 +1,11 @@
+import logging
 from typing import Optional
 
-from fastapi import HTTPException
-
-from models import Expense, ExpenseBase, ExpenseUpdate, Income
 from beanie import PydanticObjectId
-import logging
-from bson.dbref import DBRef
 from bson import ObjectId
+from bson.dbref import DBRef
+from fastapi import HTTPException
+from models import Expense, ExpenseBase, ExpenseUpdate, Income
 
 
 class ExpenseService:
@@ -15,7 +14,10 @@ class ExpenseService:
         self, expense_data: ExpenseBase, income_id: str, user_id: str
     ) -> Expense:
         income = await Income.find_one(
-            {"_id": PydanticObjectId(income_id), "user_id.$id": PydanticObjectId(user_id)}
+            {
+                "_id": PydanticObjectId(income_id),
+                "user_id.$id": PydanticObjectId(user_id),
+            }
         )
         if not income:
             raise HTTPException(status_code=404, detail="Income not found")

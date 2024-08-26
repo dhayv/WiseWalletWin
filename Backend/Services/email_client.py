@@ -5,9 +5,8 @@ from email.mime.text import MIMEText
 
 from dotenv import load_dotenv
 from fastapi import HTTPException
-from starlette.responses import JSONResponse
-
 from models import Users
+from starlette.responses import JSONResponse
 
 load_dotenv()
 

@@ -2,7 +2,6 @@ import logging
 
 from beanie import PydanticObjectId
 from fastapi import APIRouter, HTTPException
-
 from models import Income, IncomeBase, IncomeUpdate
 
 router = APIRouter()

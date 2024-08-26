@@ -1,11 +1,10 @@
 import logging
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI
-from fastapi.middleware.cors import CORSMiddleware
-
 from data_base.database import init_db
 from data_base.db_utils import check_connection
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from models import Expense, Income, Users
 from router import expenses_endpoint as expense_router
 from router import income_endpoint as income_router
