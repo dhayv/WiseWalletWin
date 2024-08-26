@@ -30,7 +30,7 @@ const Expense = () => { // Assuming incomeId is passed as a prop
         if (response.status === 200) {
           const data = response.data
           setExpenseData(data)
-          setExpenseId(expenseData.map(exp => exp.id))
+          setExpenseId(expenseData.map(exp => exp._id))
         } else {
           throw new Error('Could not load expense information.')
         }
@@ -81,7 +81,7 @@ const Expense = () => { // Assuming incomeId is passed as a prop
       })
       if (response.status === 200) {
         const data = await response.data
-        setExpenseData(expenseData.map(exp => exp.id === expenseId ? data : exp))
+        setExpenseData(expenseData.map(exp => exp._id === expenseId ? data : exp))
         refresher()
         handleClose()
       } else {
@@ -97,7 +97,7 @@ const Expense = () => { // Assuming incomeId is passed as a prop
     try {
       const response = await api.delete(`/expenses/${expenseId}`)
       if (response.status === 204) {
-        setExpenseData(expenseData => expenseData.filter(exp => exp.id !== expenseId))
+        setExpenseData(expenseData => expenseData.filter(exp => exp._id !== expenseId))
         refresher()
       } else {
         throw new Error('Could not delete expense information.')
@@ -159,12 +159,12 @@ const Expense = () => { // Assuming incomeId is passed as a prop
               </thead>
               <tbody>
                 {sortedExpenses.map(exp => (
-                  <tr key={exp.id}>
+                  <tr key={exp._id}>
                     <td>{exp.name}</td>
                     <td>${exp.amount}</td>
                     <td>{exp.due_date}</td>
                     <td>
-                      <button className='button is-danger is-small' onClick={() => handleDelete(exp.id)}>
+                      <button className='button is-danger is-small' onClick={() => handleDelete(exp._id)}>
                         Delete
                   </button>
                     </td>
