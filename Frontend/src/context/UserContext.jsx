@@ -61,33 +61,33 @@ export const UserProvider = ({ children }) => {
           const [incomeResponse, expenseResponse] = await Promise.all([
             api.get(`/income/${userId}`),
             api.get(`/expenses/${userId}`)
-          ]);
+          ])
 
           if (incomeResponse.status === 200) {
-            setIncomeData(incomeResponse.data);
+            setIncomeData(incomeResponse.data)
             if (incomeResponse.data.length > 0) {
-              setIncomeId(incomeResponse.data[0]._id);
+              setIncomeId(incomeResponse.data[0]._id)
             }
           }
 
           if (expenseResponse.status === 200) {
-            setExpenseData(expenseResponse.data);
+            setExpenseData(expenseResponse.data)
           }
         } catch (error) {
-          console.error('Failed to fetch data:', error);
+          console.error('Failed to fetch data:', error)
         }
-      };
+      }
 
-      fetchData();
+      fetchData()
     }
-  }, [userId, refreshData]);
+  }, [userId, refreshData])
 
   const handleLogout = () => {
-    setToken(null);
-    setUserId(null);
-    localStorage.removeItem('token');
-    localStorage.removeItem('userId');
-  };
+    setToken(null)
+    setUserId(null)
+    localStorage.removeItem('token')
+    localStorage.removeItem('userId')
+  }
 
   return (
   // This lets any component get the token and user data

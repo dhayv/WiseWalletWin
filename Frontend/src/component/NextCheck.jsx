@@ -57,8 +57,8 @@ export const NextCheck = () => {
   }, [expenseData, incomeData, recentPay, refreshData])
 
   useEffect(() => {
-    console.log('Expenses Due:', expensesDue); // Log whenever expensesDue changes
-}, [expensesDue]);
+    console.log('Expenses Due:', expensesDue) // Log whenever expensesDue changes
+  }, [expensesDue])
 
   useEffect(() => {
     const updateDate = () => setCurrentDate(moment().format('MM-DD-YYYY'))
@@ -128,22 +128,22 @@ export const NextCheck = () => {
               <div>
                 <Table striped bordered hover>
                   <thead>
-                   <tr>
-                     <th>Name</th>
-                     <th>Amount</th>
-                     <th>Due Date</th>
-                   </tr>
-                 </thead>
-                  <tbody>
-                   {sortedExpenseDue.map(exp => (
-                     <tr key={exp._id}>
-                      <td>{exp.name}</td>
-                      <td>${exp.amount}</td>
-                      <td>{exp.due_date}</td>
-                      <td />
+                    <tr>
+                      <th>Name</th>
+                      <th>Amount</th>
+                      <th>Due Date</th>
                     </tr>
-                   ))}
-                 </tbody>
+                  </thead>
+                  <tbody>
+                    {sortedExpenseDue.map(exp => (
+                      <tr key={exp._id}>
+                        <td>{exp.name}</td>
+                        <td>${exp.amount}</td>
+                        <td>{exp.due_date}</td>
+                        <td />
+                      </tr>
+                    ))}
+                  </tbody>
                 </Table>
               </div>
 

@@ -165,7 +165,7 @@ const Expense = () => { // Assuming incomeId is passed as a prop
                     <td>
                       <button className='button is-danger is-small' onClick={() => handleDelete(exp._id)}>
                         Delete
-                  </button>
+                      </button>
                     </td>
                   </tr>
                 ))}
