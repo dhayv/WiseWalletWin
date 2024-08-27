@@ -1,8 +1,10 @@
 from models import Expense, Income
+from beanie import PydanticObjectId
 
 
 async def sum_of_all_expenses(user_id: str):
-    expenses = Expense.find(Expense.user_id == user_id)
+    user_id_obj = PydanticObjectId(user_id)
+    expenses = Expense.find({"user_id.$id": user_id_obj})
     total = 0
 
     async for expense in expenses:
