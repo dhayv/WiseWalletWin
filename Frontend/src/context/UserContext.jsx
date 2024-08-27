@@ -54,12 +54,13 @@ export const UserProvider = ({ children }) => {
     fetchUser()
   }, [token])
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (userId && refreshData) {
       const fetchData = async () => {
         try {
           const [incomeResponse, expenseResponse] = await Promise.all([
             api.get(`/income/${userId}`),
+            api.get(`/user/${userId}`),
             api.get(`/expenses/${userId}`)
           ])
 
