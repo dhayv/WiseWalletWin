@@ -54,7 +54,7 @@ export const UserProvider = ({ children }) => {
     fetchUser()
   }, [token])
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     if (userId && refreshData) {
       const fetchData = async () => {
         try {

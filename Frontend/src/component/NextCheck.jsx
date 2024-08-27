@@ -15,7 +15,8 @@ export const NextCheck = () => {
     setShowModal(true)
   }
 
-  const handleClose = () => {
+  const handleClose = (event) => {
+    event.stopPropagation()
     setShowModal(false)
   }
 
@@ -105,10 +106,10 @@ export const NextCheck = () => {
   const sortedExpenseDue = [...expensesDue].sort((a, b) => a.due_date - b.due_date)
 
   return (
-    <div className='card'>
+    <div className='card' style={{width: "400px"}} onClick={handleOpen}>
       <div className='card-content'>
-        <div className='content'>
-          <button onClick={handleOpen} className='button'>
+        <div className='content has-text-centered'>
+          <button  className='has-text-weight-bold subtitle'>
             <span>
               Next Check: {nextPayDate ? moment(nextPayDate, 'YYYY-MM-DD').format('MMM Do') : 'Calculating...'} for ${totalDueExpenses}
             </span>
@@ -120,7 +121,7 @@ export const NextCheck = () => {
             aria-labelledby='contained-modal-title-vcenter'
             centered
           >
-            <Modal.Header closeButton={handleClose}>
+            <Modal.Header onClick={(event) => handleClose(event)}>
               <Modal.Title id='contained-modal-title-vcenter'>Expenses Due</Modal.Title>
             </Modal.Header>
 
@@ -150,7 +151,7 @@ export const NextCheck = () => {
             </Modal.Body>
 
             <Modal.Footer>
-              <Button variant='secondary' onClick={handleClose}>Close</Button>
+              <Button variant='secondary' onClick={(event) => handleClose(event)}>Close</Button>
             </Modal.Footer>
           </Modal>
         </div>

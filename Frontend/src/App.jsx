@@ -17,11 +17,11 @@ const App = () => {
   return (
     <>
       <div className='container'>
-        <Row className='mb-4 p-2'>
-          <Col className='p-2'>
+        <Row className='mb-4 p-2 justify-content-center'>
+          <Col xs={12} md={4} className='p-2 d-flex justify-content-center'>
             <Income />
           </Col>
-          <Col className='p-2'>
+          <Col xs={12} md={4} className='p-2 d-flex justify-content-center'>
             <NextCheck />
           </Col>
         </Row>

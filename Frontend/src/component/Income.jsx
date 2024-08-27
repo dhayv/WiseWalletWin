@@ -16,7 +16,8 @@ const Income = () => {
     setShowModal(true)
   }
 
-  const handleClose = () => {
+  const handleClose = (event) => {
+    event.stopPropagation()
     setShowModal(false)
   }
 
@@ -47,6 +48,7 @@ const Income = () => {
       }
     }
     getIncome()
+    
   }, [userId, setShowModal, setIncomeId, incomeId, refreshData, setIncomeData])
 
   const submitIncome = async (e) => {
@@ -107,6 +109,7 @@ const Income = () => {
       setAmount(amount.toString()) // Ensure amount is a string for the input field
       setRecentPay(recent_pay)
       setLastPay(last_pay)
+      
     } else {
       setAmount('')
       setRecentPay('')
@@ -119,11 +122,11 @@ const Income = () => {
   }
 
   return (
-    <div className='card'>
+    <div className='card ' style={{width: "400px"}} onClick={handleOpen} >
       <div className='card-content'>
-        <div className='content'>
-          <div>
-            <button onClick={handleOpen} className='button'>
+        <div className='content has-text-centered is-hoverable'>
+          
+            <button  className='has-text-weight-bold subtitle'>
               <span className='has-text-weight-bold'>Income: ${amount || ''} </span>
             </button>
 
@@ -134,7 +137,7 @@ const Income = () => {
               aria-labelledby='contained-modal-title-vcenter'
               centered
             >
-              <Modal.Header closeButton={handleClose}>
+              <Modal.Header closeButton onClick={(event) => handleClose(event)}>
                 <Modal.Title id='contained-modal-title-vcenter'>Income</Modal.Title>
               </Modal.Header>
 
@@ -163,13 +166,13 @@ const Income = () => {
               </Modal.Body>
 
               <Modal.Footer>
-                <Button variant='secondary' onClick={handleClose}>Close</Button>
+                <Button variant='secondary' onClick={(event) => handleClose(event)}>Close</Button>
                 <Button className='button is-success' type='submit' onClick={submitIncome}>
                   {incomeData.length === 0 ? 'Add Income' : 'Save Changes'}
                 </Button>
               </Modal.Footer>
             </Modal>
-          </div>
+          
         </div>
       </div>
     </div>
