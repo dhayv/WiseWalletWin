@@ -23,7 +23,6 @@ USER_DATA = {
     "username": "johndoe",
     "email": "johndoe@example.com",
     "first_name": "John",
-    "phone_number": "123-456-7890",
     "password": "Password123!",
 }
 
@@ -167,22 +166,12 @@ def test_add_user(create_test_user: Dict[str, Any]) -> None:
     assert user["username"] == USER_DATA["username"]
     assert user["email"] == USER_DATA["email"]
     assert user["first_name"] == USER_DATA["first_name"]
-    assert user["phone_number"] == USER_DATA["phone_number"]
     assert "id" in user
 
 
 def test_add_user_with_invalid_password(client: TestClient) -> None:
     invalid_user_data = USER_DATA.copy()
     invalid_user_data["password"] = "weak"  # This should fail the regex validation
-    response = client.post("/api/user", json=invalid_user_data)
-    assert response.status_code == 422, response.json()
-    print(response.json())
-
-
-def test_add_user_with_invalid_phone(client: TestClient) -> None:
-    invalid_user_data = USER_DATA.copy()
-    invalid_user_data["phone_number"] = "1234567"
-
     response = client.post("/api/user", json=invalid_user_data)
     assert response.status_code == 422, response.json()
     print(response.json())
@@ -232,7 +221,6 @@ def test_read_user_me(client: TestClient, test_access_token: str) -> None:
     assert user_data["username"] == USER_DATA["username"]
     assert user_data["email"] == USER_DATA["email"]
     assert user_data["first_name"] == USER_DATA["first_name"]
-    assert user_data["phone_number"] == USER_DATA["phone_number"]
     assert "id" in user_data
 
 
@@ -242,7 +230,7 @@ def test_read_user(client: TestClient, create_test_user: Dict[str, Any]) -> None
     assert response.status_code == 200
     user_data = response.json()
 
-    for key in ["username", "email", "first_name", "phone_number"]:
+    for key in ["username", "email", "first_name"]:
         assert key in user_data
         assert user_data[key] == USER_DATA[key]
     assert "id" in user_data
@@ -263,7 +251,6 @@ def test_update_user_info(client: TestClient, create_test_user: Dict[str, Any]) 
 
     assert data["first_name"] == "Jane"
     assert data["email"] == "janedoe@example.com"
-    assert data["phone_number"] == USER_DATA["phone_number"]
     assert "id" in data
 
 

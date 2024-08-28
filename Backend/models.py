@@ -4,15 +4,10 @@ from datetime import date, datetime
 from typing import Optional
 
 from beanie import Document, Link, PydanticObjectId
-from pydantic import (BaseModel, EmailStr, Field, StringConstraints,
+from pydantic import (BaseModel, EmailStr, Field,
                       field_validator)
-from typing_extensions import Annotated
 
 logging.basicConfig(level=logging.INFO)
-
-
-# Regex for phone number validation
-phone_number_regex = r"^(?:\(\d{3}\)|\d{3}-?)\d{3}-?\d{4}$"
 
 
 # Base user model for common user fields
@@ -24,7 +19,6 @@ class BaseUser(Document):
         index=True,
     )
     first_name: Optional[str] = None
-    phone_number: Optional[str] = None
     is_email_verified: bool = Field(default=False, index=True)
 
     class Config:
@@ -44,13 +38,6 @@ class UserIn(BaseModel):
     first_name: Optional[str] = None
     email: EmailStr
     password: str = Field(..., min_length=8)
-    phone_number: Annotated[
-        str,
-        StringConstraints(
-            strip_whitespace=True,
-            pattern=r"^(?:\(\d{3}\)|\d{3})[-\s]?\d{3}[-\s]?\d{4}$",
-        ),
-    ]
 
     @field_validator("password")
     @classmethod
