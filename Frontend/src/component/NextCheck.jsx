@@ -21,41 +21,42 @@ export const NextCheck = () => {
   }
 
   useEffect(() => {
-    console.log('Expense Data:', expenseData) // present
+    // Ensure that all required data is available before running the logic
+    if (!recentPay || !incomeData || !expenseData) return
+
+    console.log('Expense Data:', expenseData)
     console.log('Income Data:', incomeData)
     console.log('Recent Pay Date:', recentPay)
 
-    if (recentPay) {
-      const nextPay = moment(recentPay, 'YYYY-MM-DD').add(14, 'days') // assuming bi-weekly pay cycle
-      setNextPayDate(nextPay.format('YYYY-MM-DD'))
-      console.log('Next Pay Date:', nextPay.format('YYYY-MM-DD'))
+    const nextPay = moment(recentPay, 'YYYY-MM-DD').add(14, 'days') // assuming bi-weekly pay cycle
+    setNextPayDate(nextPay.format('YYYY-MM-DD'))
+    console.log('Next Pay Date:', nextPay.format('YYYY-MM-DD'))
 
-      const startPeriod = moment(recentPay, 'YYYY-MM-DD')
-      const endPeriod = nextPay
-      console.log('Start of Pay Period:', startPeriod.format('YYYY-MM-DD'))
-      console.log('End of Pay Period:', endPeriod.format('YYYY-MM-DD'))
+    const startPeriod = moment(recentPay, 'YYYY-MM-DD')
+    const endPeriod = nextPay
+    console.log('Start of Pay Period:', startPeriod.format('YYYY-MM-DD'))
+    console.log('End of Pay Period:', endPeriod.format('YYYY-MM-DD'))
 
-      const dueExpenses = expenseData.filter(expense => {
-        // Convert due_date integer to a date for the current month
-        let expenseDueDate = moment(recentPay, 'YYYY-MM-DD').date(expense.due_date)
+    const dueExpenses = expenseData.filter(expense => {
+      let expenseDueDate = moment(recentPay, 'YYYY-MM-DD').date(expense.due_date)
+      if (expenseDueDate.date() !== expense.due_date) {
+        expenseDueDate = expenseDueDate.endOf('month')
+      }
+      if (expenseDueDate.isBefore(startPeriod)) {
+        expenseDueDate.add(1, 'month')
+      }
+      console.log('Expense Due Date:', expenseDueDate.format('YYYY-MM-DD'))
+      return expenseDueDate.isBetween(startPeriod, endPeriod, null, '[]')
+    })
 
-        // If due_date is before the start of next period, consider it for the next month
-        if (expenseDueDate.date() !== expense.due_date) {
-          expenseDueDate = expenseDueDate.endOf('month')
-        }
-
-        if (expenseDueDate.isBefore(startPeriod)) {
-          expenseDueDate.add(1, 'month')
-        }
-
-        console.log('Expense Due Date:', expenseDueDate.format('YYYY-MM-DD'))
-        return expenseDueDate.isBetween(startPeriod, endPeriod, null, '[]')
-      })
-
-      console.log('Due Expenses:', dueExpenses)
-      setExpensesDue(dueExpenses)
-    }
+    console.log('Due Expenses:', dueExpenses)
+    setExpensesDue(dueExpenses)
   }, [expenseData, incomeData, recentPay, refreshData])
+
+  useEffect(() => {
+    console.log('Expenses Due:', expensesDue)
+  }, [expensesDue])
+
 
   useEffect(() => {
     console.log('Expenses Due:', expensesDue) // Log whenever expensesDue changes
@@ -78,6 +79,8 @@ export const NextCheck = () => {
   }, [refreshData])
 
   useEffect(() => {
+    if (!nextPayDate || !incomeId) return
+    
     const updateIncomeData = async () => {
       if (nextPayDate && moment().isAfter(moment(nextPayDate, 'YYYY-MM-DD'))) {
         setCurrentDate(moment().format('MM-DD-YYYY')) // This might be redundant

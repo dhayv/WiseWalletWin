@@ -13,6 +13,7 @@ const Expense = () => { // Assuming incomeId is passed as a prop
   const [expenseId, setExpenseId] = useState(null)
   const [showModal, setShowModal] = useState(false)
 
+
   const handleOpen = () => {
     setShowModal(true)
   }
@@ -138,6 +139,10 @@ const Expense = () => { // Assuming incomeId is passed as a prop
     await deleteExpense(expenseId)
   }
 
+  if (!userId) {
+    return <div>Loading...</div> // Return a loading message or spinner
+  }
+  
   const sortedExpenses = [...expenseData].sort((a, b) => a.due_date - b.due_date)
   return (
     <div className='container'>

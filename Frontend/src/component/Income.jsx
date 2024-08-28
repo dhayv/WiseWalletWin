@@ -12,6 +12,8 @@ const Income = () => {
   const [lastPay, setLastPay] = useState('')
   const [loading, setLoading] = useState(true) // Add a loading state
 
+
+
   const handleOpen = () => {
     setShowModal(true)
   }
@@ -48,7 +50,6 @@ const Income = () => {
       }
     }
     getIncome()
-    
   }, [userId, setShowModal, setIncomeId, incomeId, refreshData, setIncomeData])
 
   const submitIncome = async (e) => {
@@ -109,7 +110,6 @@ const Income = () => {
       setAmount(amount.toString()) // Ensure amount is a string for the input field
       setRecentPay(recent_pay)
       setLastPay(last_pay)
-      
     } else {
       setAmount('')
       setRecentPay('')
@@ -121,58 +121,62 @@ const Income = () => {
     return <div>Loading...</div> // Render loading indicator while data is being fetched
   }
 
+  if (!userId) {
+    return <div>Loading...</div> // Return a loading message or spinner
+  }
+
   return (
-    <div className='card ' style={{width: "400px"}} onClick={handleOpen} >
+    <div className='card ' style={{ width: '400px' }} onClick={handleOpen}>
       <div className='card-content'>
         <div className='content has-text-centered is-hoverable'>
-          
-            <button  className='has-text-weight-bold subtitle'>
-              <span className='has-text-weight-bold'>Income: ${amount || ''} </span>
-            </button>
 
-            <Modal
-              show={showModal}
-              onHide={handleClose}
-              size='lg'
-              aria-labelledby='contained-modal-title-vcenter'
-              centered
-            >
-              <Modal.Header closeButton onClick={(event) => handleClose(event)}>
-                <Modal.Title id='contained-modal-title-vcenter'>Income</Modal.Title>
-              </Modal.Header>
+          <button className='has-text-weight-bold subtitle'>
+            <span className='has-text-weight-bold'>Income: ${amount || ''} </span>
+          </button>
 
-              <Modal.Body>
-                <Form>
-                  <label className='label'>Amount</label>
-                  <input
-                    className='input mb-5'
-                    type='number'
-                    placeholder='Amount'
-                    value={amount || ''}
-                    onChange={(e) => setAmount(e.target.value)}
-                    autoFocus
-                  />
-                  <label className='label'>Recent Pay Date</label>
-                  <input
-                    className='input mb-5'
-                    type='date'
-                    placeholder='Recent Pay Date'
-                    value={recentPay || ''}
-                    onChange={(e) => setRecentPay(e.target.value)}
-                  />
+          <Modal
+            show={showModal}
+            onHide={handleClose}
+            size='lg'
+            aria-labelledby='contained-modal-title-vcenter'
+            centered
+          >
+            <Modal.Header closeButton onClick={(event) => handleClose(event)}>
+              <Modal.Title id='contained-modal-title-vcenter'>Income</Modal.Title>
+            </Modal.Header>
 
-                </Form>
+            <Modal.Body>
+              <Form>
+                <label className='label'>Amount</label>
+                <input
+                  className='input mb-5'
+                  type='number'
+                  placeholder='Amount'
+                  value={amount || ''}
+                  onChange={(e) => setAmount(e.target.value)}
+                  autoFocus
+                />
+                <label className='label'>Recent Pay Date</label>
+                <input
+                  className='input mb-5'
+                  type='date'
+                  placeholder='Recent Pay Date'
+                  value={recentPay || ''}
+                  onChange={(e) => setRecentPay(e.target.value)}
+                />
 
-              </Modal.Body>
+              </Form>
 
-              <Modal.Footer>
-                <Button variant='secondary' onClick={(event) => handleClose(event)}>Close</Button>
-                <Button className='button is-success' type='submit' onClick={submitIncome}>
-                  {incomeData.length === 0 ? 'Add Income' : 'Save Changes'}
-                </Button>
-              </Modal.Footer>
-            </Modal>
-          
+            </Modal.Body>
+
+            <Modal.Footer>
+              <Button variant='secondary' onClick={(event) => handleClose(event)}>Close</Button>
+              <Button className='button is-success' type='submit' onClick={submitIncome}>
+                {incomeData.length === 0 ? 'Add Income' : 'Save Changes'}
+              </Button>
+            </Modal.Footer>
+          </Modal>
+
         </div>
       </div>
     </div>

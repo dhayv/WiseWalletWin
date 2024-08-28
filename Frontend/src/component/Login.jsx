@@ -32,8 +32,9 @@ const Login = () => {
       })
       if (userInfoResponse.status === 200) {
         const userData = userInfoResponse.data
-        localStorage.setItem('userId', userData.id) // Save userId to local storage
-        setUserId(userData.id) // Update userId in the context
+        console.log('the user data is', userData)
+        localStorage.setItem('userId', userData._id) // Save userId to local storage
+        setUserId(userData._id) // Update userId in the context
 
         navigate('/')
       }

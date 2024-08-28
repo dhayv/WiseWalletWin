@@ -25,42 +25,41 @@ export const UserProvider = ({ children }) => {
     // so it only runs once after the initial render.
   }, [refresher])
 
+  const fetchUser = useCallback(async () => {
+    if (token) {
+      try {
+        const response = await api.get('/user/me', {
+          headers: { Authorization: `Bearer ${token}` }
+        })
+        if (response.status === 200) {
+          const data = response.data
+          setUserData(data)
+          setUserId(data._id) // Set user ID here
+          console.log('User ID set to:', data._id)
+        } else {
+          handleLogout()
+        }
+      } catch (error) {
+        console.error('Failed to fetch user:', error)
+        handleLogout()
+      }
+    }
+  }, [token])
+
   useEffect(() => {
     const storedUserId = localStorage.getItem('userId')
     if (storedUserId) {
       setUserId(storedUserId)
     }
-  }, [])
+    fetchUser() // Fetch user data when the component mounts
+  }, [fetchUser])
 
   useEffect(() => {
-    const fetchUser = async () => {
-      if (token) {
-        try {
-          const response = await api.get('/user/me')
-          if (response.status === 200) {
-            const data = response.data
-            setUserData(data)
-            setUserId(data._id) // Set user ID here
-            console.log('User ID set to:', data._id)
-          } else {
-            handleLogout()
-          }
-        } catch (error) {
-          console.error('Failed to fetch user:', error)
-          handleLogout
-        }
-      }
-    }
-    fetchUser()
-  }, [token])
-
-  useLayoutEffect(() => {
     if (userId && refreshData) {
       const fetchData = async () => {
         try {
           const [incomeResponse, expenseResponse] = await Promise.all([
             api.get(`/income/${userId}`),
-            api.get(`/user/${userId}`),
             api.get(`/expenses/${userId}`)
           ])
 
