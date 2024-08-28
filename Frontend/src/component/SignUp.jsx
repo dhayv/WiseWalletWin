@@ -13,13 +13,13 @@ const SignUp = () => {
     email: '',
     passWord: '',
     confirmationPassword: '',
-    phoneNumber: ''
   })
   const [errorMessages, setErrorMessages] = useState([])
   const [showChecklist, setShowChecklist] = useState(false)
 
   const { setToken, setUserId } = useContext(UserContext)
   const navigate = useNavigate()
+  const [isPasswordVisible, setIsPasswordVisible] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target
@@ -33,7 +33,7 @@ const SignUp = () => {
   }
 
   const submitRegistration = async () => {
-    const { firstName, userName, email, passWord, confirmationPassword, phoneNumber } = formData
+    const { firstName, userName, email, passWord, confirmationPassword } = formData
 
     if (passWord !== confirmationPassword) {
       setErrorMessages(['Passwords do not match.'])
@@ -46,7 +46,6 @@ const SignUp = () => {
         username: userName,
         email,
         password: passWord,
-        phone_number: phoneNumber
       })
 
       if (userResponse.status === 201) {
@@ -100,6 +99,11 @@ const SignUp = () => {
     e.preventDefault()
     submitRegistration()
   }
+
+  const handleToggle = (e) => {
+    e.preventDefault();
+    setIsPasswordVisible(prevState => !prevState);
+  };
 
   return (
     <div
@@ -174,11 +178,11 @@ const SignUp = () => {
               {/* Password */}
               <div className='field'>
                 <label className='label' htmlFor='password'>Password</label>
-                <div className='control has-icons-left'>
+                <div className='control has-icons-left '>
                   <input
                     id='password'
                     name='passWord'
-                    type='password'
+                    type={isPasswordVisible ? 'text' : 'password'}
                     placeholder='Enter Password'
                     value={formData.passWord}
                     onChange={handleChange}
@@ -188,6 +192,13 @@ const SignUp = () => {
                   <span className='icon is-small is-left'>
                     <i className='fas fa-lock' />
                   </span>
+                  <span 
+                  className='icon is-medium is-left is-clickable' 
+                  aria-label={isPasswordVisible ? 'Hide password' : 'Show password'}
+                  style={{ cursor: 'pointer', marginLeft: '14.3rem' }} 
+                  onClick={handleToggle}>
+                  <i className={isPasswordVisible ? "fas fa-eye" : "fas fa-eye-slash"}></i>
+                </span>
                 </div>
               </div>
               {/* Confirm Password */}
@@ -211,7 +222,7 @@ const SignUp = () => {
               </div>
               {/* Password Checklist */}
               {showChecklist && (
-                <div className='field mt-3 pl-5'>
+                <div className='field mt-3'>
                   <PasswordChecklist
                     rules={['minLength', 'specialChar', 'number', 'capital', 'match']}
                     minLength={8}
@@ -221,24 +232,6 @@ const SignUp = () => {
                   />
                 </div>
               )}
-              {/* Phone Number */}
-              <div className='field'>
-                <label className='label' htmlFor='phoneNumber'>Phone Number (Optional)</label>
-                <div className='control has-icons-left'>
-                  <input
-                    id='phoneNumber'
-                    name='phoneNumber'
-                    type='text'
-                    placeholder='Enter Phone Number (e.g., 123-456-7890)'
-                    value={formData.phoneNumber}
-                    onChange={handleChange}
-                    className='input'
-                  />
-                  <span className='icon is-small is-left'>
-                    <i className='fas fa-phone' />
-                  </span>
-                </div>
-              </div>
               <ErrorMessage messages={errorMessages} />
               <br />
               {/* Button */}
