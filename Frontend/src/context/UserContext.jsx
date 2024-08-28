@@ -15,15 +15,7 @@ export const UserProvider = ({ children }) => {
   const [incomeData, setIncomeData] = useState([])
   const [expenseData, setExpenseData] = useState([])
 
-  const refresher = useCallback(() => {
-    setRefreshData(prev => !prev)
-  }, [])
 
-  useEffect(() => {
-    refresher()
-    // This effect doesn't depend on any props or state,
-    // so it only runs once after the initial render.
-  }, [refresher])
 
   const fetchUser = useCallback(async () => {
     if (token) {
@@ -91,7 +83,7 @@ export const UserProvider = ({ children }) => {
 
   return (
   // This lets any component get the token and user data
-    <UserContext.Provider value={{ token, setToken, userId, setUserId, incomeId, setIncomeId, refresher, refreshData, userData, totalExpenses, setTotalExpenses, recentPay, setRecentPay, incomeData, setIncomeData, expenseData, setExpenseData }}>
+    <UserContext.Provider value={{ token, setToken, userId, setUserId, incomeId, setIncomeId, refreshData, userData, totalExpenses, setTotalExpenses, recentPay, setRecentPay, incomeData, setIncomeData, expenseData, setExpenseData }}>
       {children}
     </UserContext.Provider>
   )
