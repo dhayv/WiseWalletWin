@@ -5,7 +5,7 @@ import api from '../api' // Importing your API instance
 import { Form, Modal, Button } from 'react-bootstrap'
 
 const Income = () => {
-  const { userId, incomeId, setIncomeId, refreshData, refresher, recentPay, setRecentPay, incomeData, setIncomeData } = useContext(UserContext)
+  const { userId, incomeId, setIncomeId, refreshData, recentPay, setRecentPay, incomeData, setIncomeData } = useContext(UserContext)
   const [showModal, setShowModal] = useState(false)
   const [errorMessage, setErrorMessage] = useState('')
   const [amount, setAmount] = useState('')
@@ -14,12 +14,13 @@ const Income = () => {
 
 
 
-  const handleOpen = () => {
+  const handleOpen = (e) => {
+    e.stopPropagation
     setShowModal(true)
   }
 
-  const handleClose = (event) => {
-    event.stopPropagation()
+  const handleClose = (e) => {
+    if (e) e.stopPropagation()
     setShowModal(false)
   }
 
@@ -73,9 +74,17 @@ const Income = () => {
         data: payload
       })
       const data = response.data
-      setIncomeData(prevData => method === 'post' ? [...prevData, data] : [data])
-
-      refresher()
+      if (method === 'post') {
+        // For POST, append the new income entry
+        setIncomeData(prevData => [...prevData, data]);
+        
+      } else if (method === 'put') {
+        // For PUT, update the existing entry
+        setIncomeData(prevData =>
+            prevData.map(income => income._id === incomeId ? data : income)
+        );
+        
+      }
       handleClose()
     } catch (error) {
       console.error('Error response:', error.response)
@@ -141,7 +150,7 @@ const Income = () => {
             aria-labelledby='contained-modal-title-vcenter'
             centered
           >
-            <Modal.Header closeButton onClick={(event) => handleClose(event)}>
+            <Modal.Header closeButton onClick={(e) => handleClose(e)}>
               <Modal.Title id='contained-modal-title-vcenter'>Income</Modal.Title>
             </Modal.Header>
 

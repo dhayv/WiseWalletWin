@@ -5,7 +5,7 @@ import '../styles/App.css'
 import { Button, Modal, Form } from 'react-bootstrap'
 
 const Expense = () => { // Assuming incomeId is passed as a prop
-  const { userId, token, incomeId, refreshData, refresher, expenseData, setExpenseData, setTotalExpenses } = useContext(UserContext)
+  const { userId, token, incomeId, refreshData, expenseData, setExpenseData, setTotalExpenses } = useContext(UserContext)
   const [name, setName] = useState('')
   const [amount, setAmount] = useState('')
   const [dueDate, setDueDate] = useState('')
@@ -59,10 +59,9 @@ const Expense = () => { // Assuming incomeId is passed as a prop
       })
 
       if (response.status === 201) {
-        const data = response.data
+        const newExpense = response.data
 
-        setExpenseData(prevExpenses => [...prevExpenses, ...[response.data]])
-        refresher()
+        setExpenseData(prevExpenses => [...prevExpenses, newExpense])
         handleClose()
       } else {
         throw new Error('Could not add expense information.', response.data)
@@ -82,7 +81,6 @@ const Expense = () => { // Assuming incomeId is passed as a prop
       if (response.status === 200) {
         const data = await response.data
         setExpenseData(expenseData.map(exp => exp._id === expenseId ? data : exp))
-        refresher()
         handleClose()
       } else {
         throw new Error('Could not update expense information.')
@@ -97,8 +95,7 @@ const Expense = () => { // Assuming incomeId is passed as a prop
     try {
       const response = await api.delete(`/expenses/${expenseId}`)
       if (response.status === 204) {
-        setExpenseData(expenseData => expenseData.filter(exp => exp._id !== expenseId))
-        refresher()
+        setExpenseData(prevExpenses => prevExpenses.filter(exp => exp._id !== expenseId))
       } else {
         throw new Error('Could not delete expense information.')
       }
@@ -142,7 +139,6 @@ const Expense = () => { // Assuming incomeId is passed as a prop
   if (!userId) {
     return <div>Loading...</div> // Return a loading message or spinner
   }
-  
   const sortedExpenses = [...expenseData].sort((a, b) => a.due_date - b.due_date)
   return (
     <div className='container'>
