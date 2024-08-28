@@ -10,10 +10,18 @@ router = APIRouter()
 class IncomeService:
 
     async def add_income(self, income_data: IncomeBase, user_id: str) -> Income:
-        db_income = Income(**income_data.model_dump(), user_id=user_id)
+        existing_income = await Income.find_one({"user_id.$id": PydanticObjectId(user_id)})
 
-        await db_income.insert()
-        return db_income
+        if existing_income:
+            # Update the existing income entry
+            update_data = income_data.model_dump(exclude_unset=True)
+            await existing_income.update({"$set": update_data})
+            return existing_income
+        else:
+            # Create a new income entry
+            new_income = Income(**income_data.model_dump(), user_id=user_id)
+            await new_income.insert()
+            return new_income
 
     async def read_all_incomes(self, user_id: str) -> list[Income]:
         try:
