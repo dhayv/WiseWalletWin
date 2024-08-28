@@ -3,7 +3,6 @@ from typing import Optional
 
 from beanie import PydanticObjectId
 from bson import ObjectId
-from bson.dbref import DBRef
 from fastapi import HTTPException
 from models import Expense, ExpenseBase, ExpenseUpdate, Income
 
@@ -29,14 +28,9 @@ class ExpenseService:
         return expense
 
     async def read_expense(self, income_id: str, user_id: str) -> list[Expense]:
-        income_id_obj = PydanticObjectId(income_id)
-        user_id_obj = PydanticObjectId(user_id)
-
-        income_ref = DBRef(collection="Income", id=income_id_obj)
-        user_ref = DBRef(collection="Users", id=user_id_obj)
 
         expenses = await Expense.find(
-            {"income_id": income_ref, "user_id": user_ref}
+            {"income_id.$id": PydanticObjectId(income_id), "user_id.$id": PydanticObjectId(user_id)}
         ).to_list()
         logging.info(f"Income_id found: {income_id}")
         logging.info(f"user_id found: {user_id}")
@@ -68,9 +62,7 @@ class ExpenseService:
         if not expense_id or not ObjectId.is_valid(expense_id):
             raise HTTPException(status_code=400, detail="Invalid expense ID")
 
-        expense_id_obj = PydanticObjectId(expense_id)
-
-        db_expense = await Expense.get(expense_id_obj)
+        db_expense = await Expense.get(PydanticObjectId(expense_id))
         if not db_expense:
             raise HTTPException(status_code=404, detail="Expense not found")
 
