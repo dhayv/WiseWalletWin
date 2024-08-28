@@ -27,7 +27,7 @@ export const UserProvider = ({ children }) => {
           const data = response.data
           setUserData(data)
           setUserId(data._id) // Set user ID here
-          console.log('User ID set to:', data._id)
+          // console.log('User ID set to:', data._id)
         } else {
           handleLogout()
         }

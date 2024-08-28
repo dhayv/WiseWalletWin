@@ -36,10 +36,10 @@ const Income = () => {
       try {
         const response = await api.get(`/income/${userId}`)
         const data = response.data || []
-        console.log('Income data fetched:', data)
+        // console.log('Income data fetched:', data)
 
         setIncomeData(data)
-        console.log('income data is: ', { incomeData })
+        // console.log('income data is: ', { incomeData })
         setShowModal(data.length === 0) // Show form if no data
         if (data.length > 0) {
           setIncomeId(data[0]._id)
