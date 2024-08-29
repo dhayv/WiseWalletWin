@@ -1,55 +1,69 @@
-from fastapi import HTTPException, Response, status
+import logging
+from typing import Optional
+
+from beanie import PydanticObjectId
+from bson import ObjectId
+from fastapi import HTTPException
 from models import Expense, ExpenseBase, ExpenseUpdate, Income
-from sqlmodel import Session, select
 
 
 class ExpenseService:
-    def __init__(self, db_session: Session):
-        self.db = db_session
 
-    def add_expense(self, expense_data: ExpenseBase, income_id: int, user_id: int):
-        income = self.db.exec(
-            select(Income).filter(Income.id == income_id, Income.user_id == user_id)
-        ).first()
+    async def add_expense(
+        self, expense_data: ExpenseBase, income_id: str, user_id: str
+    ) -> Expense:
+        income = await Income.find_one(
+            {
+                "_id": PydanticObjectId(income_id),
+                "user_id.$id": PydanticObjectId(user_id),
+            }
+        )
         if not income:
             raise HTTPException(status_code=404, detail="Income not found")
 
         expense = Expense(
-            **expense_data.model_dump(), income_id=income_id, user_id=user_id
+            **expense_data.model_dump(), income_id=income.id, user_id=user_id
         )
-        self.db.add(expense)
-        self.db.commit()
-        self.db.refresh(expense)
+        await expense.insert()
         return expense
 
-    def read_expense(self, income_id: int, user_id: int):
-        statement = select(Expense).where(
-            Expense.income_id == income_id, Expense.user_id == user_id
-        )
-        results = self.db.exec(statement)
-        expenses = results.all()
+    async def read_expense(self, income_id: str, user_id: str) -> list[Expense]:
+
+        expenses = await Expense.find(
+            {"income_id.$id": PydanticObjectId(income_id), "user_id.$id": PydanticObjectId(user_id)}
+        ).to_list()
+        logging.info(f"Income_id found: {income_id}")
+        logging.info(f"user_id found: {user_id}")
+        logging.info(f"Expenses found: {expenses}")
 
         return expenses
 
-    def update_expense(
+        # {"_id":{"$oid":"66ccb0c8f53d14be21c53ce8"},
+        # "name":"Rent",
+        # "amount":{"$numberDouble":"1.0"},
+        # "due_date":{"$numberInt":"5"},
+        # "user_id":{"$ref":"Users","$id":{"$oid":"66cb717d0911daf5a7756434"}},
+        # "income_id":{"$ref":"Income","$id":{"$oid":"66cb737780d784482c2dbdf5"}}}
+
+    async def update_expense(
         self,
-        expense_id: int,
+        expense_id: str,
         expense_data: ExpenseUpdate,
-    ):
-        db_expense = self.db.get(Expense, expense_id)
+    ) -> Optional[Expense]:
+        db_expense = await Expense.get(expense_id)
         if not db_expense:
             raise HTTPException(status_code=404, detail="Expense not found")
-        expense_data_dict = expense_data.model_dump(exclude_unset=True)
-        for key, value in expense_data_dict.items():
-            setattr(db_expense, key, value)
-        self.db.commit()
-        self.db.refresh(db_expense)
+
+        await db_expense.update({"$set": expense_data.model_dump(exclude_unset=True)})
+
         return db_expense
 
-    def delete_expense(self, expense_id: int):
-        db_expense = self.db.get(Expense, expense_id)
+    async def delete_expense(self, expense_id: str) -> None:
+        if not expense_id or not ObjectId.is_valid(expense_id):
+            raise HTTPException(status_code=400, detail="Invalid expense ID")
+
+        db_expense = await Expense.get(PydanticObjectId(expense_id))
         if not db_expense:
-            raise HTTPException(status_code=404, detail="Not found")
-        self.db.delete(db_expense)
-        self.db.commit()
-        return Response(status_code=status.HTTP_204_NO_CONTENT)
+            raise HTTPException(status_code=404, detail="Expense not found")
+
+        await db_expense.delete()

@@ -1,41 +1,43 @@
-import React, { useState, useContext } from 'react';
-import PasswordChecklist from "react-password-checklist";
-import { UserContext } from '../context/UserContext';
-import 'react-phone-number-input/style.css';
-import ErrorMessage from './ErrorMessage';
-import api from '../api';
+import React, { useState, useContext } from 'react'
+import PasswordChecklist from 'react-password-checklist'
+import { UserContext } from '../context/UserContext'
+import 'react-phone-number-input/style.css'
+import ErrorMessage from './ErrorMessage'
+import api from '../api'
+import { useNavigate } from 'react-router-dom'
 
-const SignUp = ({ setShowSignUp }) => {
+const SignUp = () => {
   const [formData, setFormData] = useState({
     firstName: '',
     userName: '',
     email: '',
     passWord: '',
     confirmationPassword: '',
-    phoneNumber: '',
-  });
-  const [errorMessages, setErrorMessages] = useState([]);
-  const [showChecklist, setShowChecklist] = useState(false);
+  })
+  const [errorMessages, setErrorMessages] = useState([])
+  const [showChecklist, setShowChecklist] = useState(false)
 
-  const { setToken, setUserId } = useContext(UserContext);
+  const { setToken, setUserId } = useContext(UserContext)
+  const navigate = useNavigate()
+  const [isPasswordVisible, setIsPasswordVisible] = useState(false);
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
+    const { name, value } = e.target
     setFormData((prevFormData) => ({
       ...prevFormData,
-      [name]: value,
-    }));
+      [name]: value
+    }))
     if (name === 'passWord' || name === 'confirmationPassword') {
-      setShowChecklist(true);
+      setShowChecklist(true)
     }
-  };
+  }
 
   const submitRegistration = async () => {
-    const { firstName, userName, email, passWord, confirmationPassword, phoneNumber } = formData;
+    const { firstName, userName, email, passWord, confirmationPassword } = formData
 
     if (passWord !== confirmationPassword) {
-      setErrorMessages(['Passwords do not match.']);
-      return;
+      setErrorMessages(['Passwords do not match.'])
+      return
     }
 
     try {
@@ -44,62 +46,73 @@ const SignUp = ({ setShowSignUp }) => {
         username: userName,
         email,
         password: passWord,
-        phone_number: phoneNumber,
-      });
+      })
 
       if (userResponse.status === 201) {
-        const params = new URLSearchParams();
-        params.append('username', userName);
-        params.append('password', passWord);
+        const params = new URLSearchParams()
+        params.append('username', userName)
+        params.append('password', passWord)
 
+        // retieve token
         const tokenResponse = await api.post('/token', params, {
-          headers: { 'Content-type': 'application/x-www-form-urlencoded' },
-        });
+          headers: { 'Content-type': 'application/x-www-form-urlencoded' }
+        })
 
         if (tokenResponse.status === 200) {
-          const data = tokenResponse.data;
-          localStorage.setItem('token', data.access_token);
-          setToken(data.access_token);
+          const data = tokenResponse.data
 
+          // store token to context
+          localStorage.setItem('token', data.access_token)
+          setToken(data.access_token)
+
+          // get user info
           const userInfoResponse = await api.get('/user/me', {
-            headers: { Authorization: `Bearer ${data.access_token}` },
-          });
+            headers: { Authorization: `Bearer ${data.access_token}` }
+          })
 
           if (userInfoResponse.status === 200) {
-            const userData = userInfoResponse.data;
-            localStorage.setItem('userId', userData.id);
-            setUserId(userData.id);
+            const userData = userInfoResponse.data
+
+            // store token
+            localStorage.setItem('userId', userData._id)
+            setUserId(userData._id)
+
+            // to home
+            navigate('/')
           }
         } else {
-          setErrorMessages(['Failed to register or log in']);
+          setErrorMessages(['Failed to register or log in'])
         }
       } else {
-        setErrorMessages(['Failed to register']);
+        setErrorMessages(['Failed to register'])
       }
     } catch (error) {
       if (error.response && error.response.data && error.response.data.errors) {
-        setErrorMessages(error.response.data.errors.map((err) => err.msg));
+        setErrorMessages(error.response.data.errors.map((err) => err.msg))
       } else {
-        setErrorMessages(['Registration failed']);
+        setErrorMessages(['Registration failed'])
       }
     }
-  };
+  }
 
   const handleSubmit = (e) => {
+    e.preventDefault()
+    submitRegistration()
+  }
+
+  const handleToggle = (e) => {
     e.preventDefault();
-    submitRegistration();
+    setIsPasswordVisible(prevState => !prevState);
   };
 
   return (
-    <div className=''>
+    <div
+      className='container is-flex is-justify-content-center is-align-items-center'
+      style={{ minHeight: '100vh' }}
+    >
       <div className='columns is-centered'>
-        <div className='column is-full-mobile is-three-quarters-tablet is-half-desktop'>
-          <div className='has-text-centered'>
-            <h1 className='title is-4'>Welcome to Wise Wallet Win!</h1>
-            <h2 className='subtitle is-6'>
-              We're excited to help you take control of your finances. Start by adding your income and expenses, and let us guide you towards smarter financial decisions.
-            </h2>
-          </div>
+        <div className='column '>
+
           <div className='box'>
             <form onSubmit={handleSubmit}>
               <h1 className='title has-text-centered'>Sign Up</h1>
@@ -118,7 +131,7 @@ const SignUp = ({ setShowSignUp }) => {
                     required
                   />
                   <span className='icon is-small is-left'>
-                    <i className='fas fa-user'></i>
+                    <i className='fas fa-user' />
                   </span>
                 </div>
               </div>
@@ -138,7 +151,7 @@ const SignUp = ({ setShowSignUp }) => {
                     autoComplete='username'
                   />
                   <span className='icon is-small is-left'>
-                    <i className='fas fa-user'></i>
+                    <i className='fas fa-user' />
                   </span>
                 </div>
               </div>
@@ -158,18 +171,18 @@ const SignUp = ({ setShowSignUp }) => {
                     autoComplete='email'
                   />
                   <span className='icon is-small is-left'>
-                    <i className='fas fa-envelope'></i>
+                    <i className='fas fa-envelope' />
                   </span>
                 </div>
               </div>
               {/* Password */}
               <div className='field'>
                 <label className='label' htmlFor='password'>Password</label>
-                <div className='control has-icons-left'>
+                <div className='control has-icons-left '>
                   <input
                     id='password'
                     name='passWord'
-                    type='password'
+                    type={isPasswordVisible ? 'text' : 'password'}
                     placeholder='Enter Password'
                     value={formData.passWord}
                     onChange={handleChange}
@@ -177,8 +190,15 @@ const SignUp = ({ setShowSignUp }) => {
                     autoComplete='new-password'
                   />
                   <span className='icon is-small is-left'>
-                    <i className='fas fa-lock'></i>
+                    <i className='fas fa-lock' />
                   </span>
+                  <span 
+                  className='icon is-medium is-left is-clickable' 
+                  aria-label={isPasswordVisible ? 'Hide password' : 'Show password'}
+                  style={{ cursor: 'pointer', marginLeft: '14.3rem' }} 
+                  onClick={handleToggle}>
+                  <i className={isPasswordVisible ? "fas fa-eye" : "fas fa-eye-slash"}></i>
+                </span>
                 </div>
               </div>
               {/* Confirm Password */}
@@ -196,15 +216,15 @@ const SignUp = ({ setShowSignUp }) => {
                     autoComplete='new-password'
                   />
                   <span className='icon is-small is-left'>
-                    <i className='fas fa-lock'></i>
+                    <i className='fas fa-lock' />
                   </span>
                 </div>
               </div>
               {/* Password Checklist */}
               {showChecklist && (
-                <div className="field mt-3 pl-5">
+                <div className='field mt-3'>
                   <PasswordChecklist
-                    rules={["minLength", "specialChar", "number", "capital", "match"]}
+                    rules={['minLength', 'specialChar', 'number', 'capital', 'match']}
                     minLength={8}
                     value={formData.passWord}
                     valueAgain={formData.confirmationPassword}
@@ -212,25 +232,6 @@ const SignUp = ({ setShowSignUp }) => {
                   />
                 </div>
               )}
-              {/* Phone Number */}
-              <div className='field'>
-                <label className='label' htmlFor='phoneNumber'>Phone Number (Optional)</label>
-                <div className='control has-icons-left'>
-                  <input
-                    id='phoneNumber'
-                    name='phoneNumber'
-                    type='text'
-                    placeholder='Enter Phone Number (e.g., 123-456-7890)'
-                    value={formData.phoneNumber}
-                    onChange={handleChange}
-                    pattern="^(?:\(\d{3}\)|\d{3})[- ]?\d{3}[- ]?\d{4}$"
-                    className='input'
-                  />
-                  <span className='icon is-small is-left'>
-                    <i className='fas fa-phone'></i>
-                  </span>
-                </div>
-              </div>
               <ErrorMessage messages={errorMessages} />
               <br />
               {/* Button */}
@@ -238,14 +239,14 @@ const SignUp = ({ setShowSignUp }) => {
                 Sign Up
               </button>
             </form>
-            <button className='button is-link is-light is-fullwidth mt-4' onClick={() => setShowSignUp(false)} style={{ marginTop: '10px' }}>
-              Have an account? Login
+            <button className='button is-link is-light is-fullwidth mt-4' onClick={() => navigate('/login')} style={{ marginTop: '10px' }}>
+              Have an account already? Login
             </button>
           </div>
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default SignUp;
+export default SignUp

@@ -3,20 +3,33 @@ import re
 from datetime import date, datetime
 from typing import Optional
 
-from pydantic import BaseModel, EmailStr, StringConstraints, field_validator
-from sqlmodel import AutoString, Field, SQLModel
-from typing_extensions import Annotated
+from beanie import Document, Link, PydanticObjectId
+from pydantic import (BaseModel, EmailStr, Field,
+                      field_validator)
 
-# Regex for phone number validation
-phone_number_regex = r"^(?:\(\d{3}\)|\d{3}-?)\d{3}-?\d{4}$"
+logging.basicConfig(level=logging.INFO)
 
 
 # Base user model for common user fields
-class BaseUser(SQLModel):
-    username: str = Field(index=True)
-    email: EmailStr = Field(unique=True, index=True, sa_type=AutoString)
+class BaseUser(Document):
+    username: str = Field(..., index=True)
+    email: EmailStr = Field(
+        ...,
+        unique=True,
+        index=True,
+    )
     first_name: Optional[str] = None
-    phone_number: Optional[str]
+    is_email_verified: bool = Field(default=False, index=True)
+
+    class Config:
+        arbitrary_types_allowed = True
+        populate_by_name = True
+
+
+# SQLModel for ORM mapping, including hashed_password and disabled fields
+class Users(BaseUser):
+    hashed_password: str
+    disabled: Optional[bool] = False
 
 
 # Input model including password validation
@@ -25,13 +38,6 @@ class UserIn(BaseModel):
     first_name: Optional[str] = None
     email: EmailStr
     password: str = Field(..., min_length=8)
-    phone_number: Annotated[
-        str,
-        StringConstraints(
-            strip_whitespace=True,
-            pattern=r"^(?:\(\d{3}\)|\d{3})[-\s]?\d{3}[-\s]?\d{4}$",
-        ),
-    ]
 
     @field_validator("password")
     @classmethod
@@ -49,14 +55,9 @@ class UserIn(BaseModel):
 
 # Output model to send user data back to the client
 class UserOut(BaseUser):
-    id: int
-
-
-# SQLModel for ORM mapping, including hashed_password and disabled fields
-class Users(BaseUser, table=True):
-    id: Optional[int] = Field(default=None, primary_key=True)
-    hashed_password: str
-    disabled: Optional[bool] = False
+    id: Optional[PydanticObjectId] = Field(
+        default_factory=PydanticObjectId, alias="_id"
+    )
 
 
 # Model for updating user information
@@ -65,6 +66,21 @@ class UserUpdate(BaseModel):
     email: Optional[EmailStr] = None
     first_name: Optional[str] = None
     password: Optional[str] = None
+
+
+class Income(Document):
+    id: Optional[PydanticObjectId] = Field(
+        default_factory=PydanticObjectId, alias="_id"
+    )
+    amount: float = Field(index=True)
+    recent_pay: date = Field(index=True)  # Ensuring this is a date object
+    last_pay: Optional[date] = None  # This can be None or a date object
+
+    user_id: Link[Users]
+
+    class Config:
+        arbitrary_types_allowed = True
+        populate_by_name = True
 
 
 class IncomeBase(BaseModel):
@@ -103,22 +119,29 @@ class IncomeBase(BaseModel):
         return value
 
 
-class Income(IncomeBase, SQLModel, table=True):
-    id: Optional[int] = Field(default=None, primary_key=True)
-    amount: float = Field(index=True)
-    recent_pay: date = Field(index=True)  # Ensuring this is a date object
-    last_pay: Optional[date] = None  # This can be None or a date object
-
-    user_id: Optional[int] = Field(
-        default=None, foreign_key="users.id", unique=True, index=True
-    )
-
-
 # passed incomebase to reduce extra validation
 class IncomeUpdate(IncomeBase):
     amount: Optional[float] = None
     recent_pay: Optional[date] = None
     last_pay: Optional[date] = None
+
+
+class Expense(Document):
+    id: Optional[PydanticObjectId] = Field(
+        default_factory=PydanticObjectId, alias="_id"
+    )
+    name: str = Field(index=True)
+    amount: float = Field(index=True)
+    due_date: Optional[int] = Field(
+        default=None, ge=1, le=31, index=True
+    )  # Due date of the expense (days of the month(1-30 or 31))
+
+    user_id: Link[Users]
+    income_id: Link[Income]
+
+    class Config:
+        arbitrary_types_allowed = True
+        populate_by_name = True
 
 
 class ExpenseBase(BaseModel):
@@ -138,18 +161,6 @@ class ExpenseBase(BaseModel):
             return v_int
         except ValueError:
             raise ValueError("Due date must be an integer and between 1 and 31")
-
-
-class Expense(SQLModel, table=True):
-    id: Optional[int] = Field(default=None, primary_key=True)
-    name: str = Field(index=True)
-    amount: float = Field(index=True)
-    due_date: Optional[int] = Field(
-        default=None, index=True
-    )  # Due date of the expense (days of the month(1-30 or 31))
-
-    user_id: Optional[int] = Field(default=None, foreign_key="users.id", index=True)
-    income_id: Optional[int] = Field(default=None, foreign_key="income.id", index=True)
 
 
 # Pydantic Models for Request Validation and Serialization

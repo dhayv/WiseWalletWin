@@ -1,3 +1,4 @@
-.env
+*.env
 .flake8
-.txt
+*.txt
+*.pyc

@@ -29,13 +29,7 @@ const Remaining = () => {
   }, [token, userId, refreshData]) // Run the effect on component mount and when token or userId changes
 
   return (
-    <div className='card'>
-      <div className='card-content'>
-        <span className='has-text-weight-bold '>Remaining: ${formattedRemain}</span>
-        {errorMessage && <p className='help is-danger'>{errorMessage}</p>}
-      </div>
-
-    </div>
+    <span className='has-text-weight-bold '>Remaining: ${formattedRemain}</span>
   )
 }
 

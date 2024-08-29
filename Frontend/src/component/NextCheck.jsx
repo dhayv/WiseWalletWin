@@ -1,76 +1,54 @@
-import React, { useContext, useEffect, useState } from 'react';
-import moment from 'moment';
-import { UserContext } from '../context/UserContext';
-import api from '../api';
-import '../styles/NextCheck.css'
+import { React, useContext, useEffect, useState } from 'react'
+import moment from 'moment'
+import { UserContext } from '../context/UserContext'
+import api from '../api'
+import { Table, Modal, Button } from 'react-bootstrap'
 
 export const NextCheck = () => {
-  const { recentPay, incomeId, setIncomeData, incomeData, expenseData, refreshData } = useContext(UserContext);
-  const [currentDate, setCurrentDate] = useState(moment().format('MM-DD-YYYY'));
-  const [nextPayDate, setNextPayDate] = useState('');
-  const [expensesDue, setExpensesDue] = useState([]);
+  const { recentPay, incomeId, setIncomeData, incomeData, expenseData, refreshData } = useContext(UserContext)
+  const [currentDate, setCurrentDate] = useState(moment().format('MM-DD-YYYY'))
+  const [nextPayDate, setNextPayDate] = useState('')
+  const [expensesDue, setExpensesDue] = useState([])
+  const [showModal, setShowModal] = useState(false)
 
+  const handleOpen = () => {
+    setShowModal(true);
+  };
+
+  const handleClose = (event) => {
+    event.stopPropagation();
+    setShowModal(false);
+  };
+
+  // Consolidate logic into one useEffect for efficiency
   useEffect(() => {
-    console.log("Expense Data:", expenseData);
-    console.log("Income Data:", incomeData);
-    console.log("Recent Pay Date:", recentPay);
+    if (!recentPay || !incomeData || !expenseData) return;
 
-    if (recentPay) {
-      const nextPay = moment(recentPay, 'YYYY-MM-DD').add(14, 'days'); // assuming bi-weekly pay cycle
-      setNextPayDate(nextPay.format('YYYY-MM-DD'));
-      console.log('Next Pay Date:', nextPay.format('YYYY-MM-DD'));
+    const nextPay = moment(recentPay, 'YYYY-MM-DD').add(14, 'days'); // assuming bi-weekly pay cycle
+    setNextPayDate(nextPay.format('YYYY-MM-DD'));
 
-      const startOfNextPeriod = moment(recentPay, 'YYYY-MM-DD').add(1, 'days'); // Day after recent pay date
-      const endOfNextPeriod = moment(recentPay, 'YYYY-MM-DD').add(15, 'days'); // 14 days after recent pay date
-      console.log('Start of Next Period:', startOfNextPeriod.format('YYYY-MM-DD'));
-      console.log('End of Next Period:', endOfNextPeriod.format('YYYY-MM-DD'));
+    const startPeriod = moment(recentPay, 'YYYY-MM-DD');
+    const endPeriod = nextPay;
 
-      const startPostPayPeriod =  moment(startOfNextPeriod, 'YYYY-MM-DD').add(15, 'days');
-      const endPostPayPeriod =  moment(startOfNextPeriod, 'YYYY-MM-DD').add(25, 'days');
-      console.log('Start of Post Period:', startPostPayPeriod.format('YYYY-MM-DD'));
-      console.log('End of Post Period:', endPostPayPeriod.format('YYYY-MM-DD'));
+    const dueExpenses = expenseData.filter(expense => {
+      let expenseDueDate = moment(recentPay, 'YYYY-MM-DD').date(expense.due_date);
+      if (expenseDueDate.date() !== expense.due_date) {
+        expenseDueDate = expenseDueDate.endOf('month');
+      }
+      if (expenseDueDate.isBefore(startPeriod)) {
+        expenseDueDate.add(1, 'month');
+      }
+      return expenseDueDate.isBetween(startPeriod, endPeriod, null, '[]');
+    });
 
-      const dueExpenses = expenseData.filter(expense => {
-        // Convert due_date integer to a date for the current month
-        let expenseDueDate = moment().date(expense.due_date);
+    setExpensesDue(dueExpenses);
 
-        // If due_date is before the start of next period, consider it for the next month
-        if (expenseDueDate.isBefore(startPostPayPeriod)) {
-          expenseDueDate = expenseDueDate.add(1, 'months');
-        }
-
-        console.log('Expense Due Date:', expenseDueDate.format('YYYY-MM-DD'));
-        return expenseDueDate.isBetween(startPostPayPeriod, endPostPayPeriod, null, '[]');
-      });
-
-      console.log('Due Expenses:', dueExpenses);
-      setExpensesDue(dueExpenses);
-    }
-  }, [expenseData, incomeData, recentPay, refreshData]);
-
-  useEffect(() => {
-    const updateDate = () => setCurrentDate(moment().format('MM-DD-YYYY'));
-
-    const now = moment();
-    const midnight = moment().endOf('day').add(1, 'second');
-    const msToMidnight = midnight.diff(now);
-
-    const intervalId = setInterval(updateDate, 86400000);
-    const timeoutId = setTimeout(updateDate, msToMidnight);
-
-    return () => {
-      clearTimeout(timeoutId);
-      clearInterval(intervalId);
-    };
-  }, [refreshData]);
-
-  useEffect(() => {
+    // Update income data if next pay date is past
     const updateIncomeData = async () => {
       if (nextPayDate && moment().isAfter(moment(nextPayDate, 'YYYY-MM-DD'))) {
-        setCurrentDate(moment().format('MM-DD-YYYY')); // This might be redundant
         try {
           const response = await api.put(`/income/${incomeId}`, {
-            recent_pay: moment(nextPayDate).format('MM-DD-YYYY')
+            recent_pay: nextPayDate
           });
           if (response.status === 200) {
             setIncomeData(response.data);
@@ -81,51 +59,85 @@ export const NextCheck = () => {
           console.error('Error updating income data:', error);
         }
       }
-      console.log('Income Data Updated:', incomeData);
     };
 
     updateIncomeData();
-  }, [nextPayDate, incomeId, setIncomeData, refreshData]);
+  }, [expenseData, incomeData, recentPay, refreshData, nextPayDate, incomeId, setIncomeData]);
 
- const totalDueExpenses = expensesDue.reduce((sum, expense) => sum + expense.amount, 0);
- console.log('Total Due Expenses:', totalDueExpenses);
+  // Update current date once a day at midnight
+  useEffect(() => {
+    const updateDate = () => setCurrentDate(moment().format('MM-DD-YYYY'));
 
- const sortedExpenseDue = [...expensesDue].sort((a, b) => a.due_date - b.due_date);
+    const now = moment();
+    const midnight = moment().endOf('day').add(1, 'second');
+    const msToMidnight = midnight.diff(now);
+
+    const intervalId = setInterval(updateDate, 86400000); // Update every 24 hours
+    const timeoutId = setTimeout(updateDate, msToMidnight); // Initial update at midnight
+
+    return () => {
+      clearTimeout(timeoutId);
+      clearInterval(intervalId);
+    };
+  }, []);
+
+  const totalDueExpenses = expensesDue.reduce((sum, expense) => sum + expense.amount, 0);
+  const sortedExpenseDue = [...expensesDue].sort((a, b) => a.due_date - b.due_date);
 
 
- return (
-    <div className='card has-text-centered'>
-      <div className='card-content '>
-        <div className='content '>
-          <p className='has-text-weight-bold'>
-            Next Check: {nextPayDate ? moment(nextPayDate, 'YYYY-MM-DD').format('MMM Do') : 'Calculating...'} for ${totalDueExpenses}
-          </p>
-          <div>
-            <table className='table is-half is-centered'>
-          <thead>
-            <tr>
-              <th>Name</th>
-              <th>Amount</th>
-              <th>Due Date</th>
-            </tr>
-          </thead>
-          <tbody>
-            {sortedExpenseDue.map(exp => (
-              <tr key={exp.id}>
-                <td>{exp.name}</td>
-                <td>${exp.amount}</td>
-                <td>{exp.due_date}</td>
-                <td>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-          </div>
+  return (
+    <div className='card' style={{width: "400px"}} onClick={handleOpen}>
+      <div className='card-content'>
+        <div className='content has-text-centered'>
+          <button  className='has-text-weight-bold subtitle'>
+            <span>
+              Next Check: {nextPayDate ? moment(nextPayDate, 'YYYY-MM-DD').format('MMM Do') : 'Calculating...'} for ${totalDueExpenses}
+            </span>
+          </button>
+          <Modal
+            show={showModal}
+            onHide={handleClose}
+            size='lg'
+            aria-labelledby='contained-modal-title-vcenter'
+            centered
+          >
+            <Modal.Header onClick={(event) => handleClose(event)}>
+              <Modal.Title id='contained-modal-title-vcenter'>Expenses Due</Modal.Title>
+            </Modal.Header>
+
+            <Modal.Body>
+              <div>
+                <Table striped bordered hover>
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>Amount</th>
+                      <th>Due Date</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {sortedExpenseDue.map(exp => (
+                      <tr key={exp._id}>
+                        <td>{exp.name}</td>
+                        <td>${exp.amount}</td>
+                        <td>{exp.due_date}</td>
+                        <td />
+                      </tr>
+                    ))}
+                  </tbody>
+                </Table>
+              </div>
+
+            </Modal.Body>
+
+            <Modal.Footer>
+              <Button variant='secondary' onClick={(event) => handleClose(event)}>Close</Button>
+            </Modal.Footer>
+          </Modal>
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default NextCheck;
+export default NextCheck

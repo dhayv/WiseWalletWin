@@ -1,4 +1,4 @@
-import React, { createContext, useEffect, useState, useCallback } from 'react'
+import React, { createContext, useEffect, useState, useCallback, useLayoutEffect } from 'react'
 import api from '../api'
 
 export const UserContext = createContext()
@@ -15,78 +15,75 @@ export const UserProvider = ({ children }) => {
   const [incomeData, setIncomeData] = useState([])
   const [expenseData, setExpenseData] = useState([])
 
-  const refresher = useCallback(() => {
-    setRefreshData(prev => !prev);
-  }, []);
 
-  useEffect(() => {
-    refresher();
-    // This effect doesn't depend on any props or state,
-    // so it only runs once after the initial render.
-  }, [refresher]); 
 
+  const fetchUser = useCallback(async () => {
+    if (token) {
+      try {
+        const response = await api.get('/user/me', {
+          headers: { Authorization: `Bearer ${token}` }
+        })
+        if (response.status === 200) {
+          const data = response.data
+          setUserData(data)
+          setUserId(data._id) // Set user ID here
+          // console.log('User ID set to:', data._id)
+        } else {
+          handleLogout()
+        }
+      } catch (error) {
+        console.error('Failed to fetch user:', error)
+        handleLogout()
+      }
+    }
+  }, [token])
 
   useEffect(() => {
     const storedUserId = localStorage.getItem('userId')
     if (storedUserId) {
       setUserId(storedUserId)
     }
-  }, [])
+    fetchUser() // Fetch user data when the component mounts
+  }, [fetchUser])
 
   useEffect(() => {
-    const fetchUser = async () => {
-      if (token) {
+    if (userId && refreshData) {
+      const fetchData = async () => {
         try {
-          const response = await api.get('/user/me')
-          if (response.status === 200) {
-            const data = response.data
-            setUserData(data)
-            setUserId(data.id) // Set user ID here
-            console.log('User ID set to:', data.id)
-          } else {
-            setToken(null)
-            localStorage.removeItem('token')
+          const [incomeResponse, expenseResponse] = await Promise.all([
+            api.get(`/income/${userId}`),
+            api.get(`/expenses/${userId}`)
+          ])
+
+          if (incomeResponse.status === 200) {
+            setIncomeData(incomeResponse.data)
+            if (incomeResponse.data.length > 0) {
+              setIncomeId(incomeResponse.data[0]._id)
+            }
+          }
+
+          if (expenseResponse.status === 200) {
+            setExpenseData(expenseResponse.data)
           }
         } catch (error) {
-          console.error('Failed to fetch user:', error)
-          setToken(null)
-          localStorage.removeItem('token')
+          console.error('Failed to fetch data:', error)
         }
-      } else {
-        setUserData(null)
-        setUserId(null)
-        localStorage.removeItem('userId')
-        localStorage.removeItem('token')
       }
-    }
-    fetchUser()
-  }, [token])
 
-  useEffect(() => {
-    const getSum = async () => {
-      if (!userId) return // Prevent running if userId is null or undefined
-
-      try {
-        const response = await api.get(`/user/${userId}/total_expenses`)
-        if (response.status === 200) {
-          setTotalExpenses(response.data) // Ensure this matches the API response structure
-        } else {
-          throw new Error('Error fetching total expenses')
-        }
-      } catch (error) {
-        console.error('Error fetching total expenses:', error)
-        setTotalExpenses({ total_expenses: 0 }) // Set a default value in case of error
-      }
-    }
-
-    if (userId) {
-      getSum() // Only call the function if userId is available
+      fetchData()
     }
   }, [userId, refreshData])
 
+  const handleLogout = () => {
+    setToken(null)
+    setUserId(null)
+    localStorage.removeItem('token')
+    localStorage.removeItem('userId')
+  }
+
   return (
   // This lets any component get the token and user data
-    <UserContext.Provider value={{ token, setToken, userId, setUserId, incomeId, setIncomeId, refresher, refreshData, userData, totalExpenses, setTotalExpenses, recentPay, setRecentPay, incomeData, setIncomeData, expenseData, setExpenseData}}>
+    <UserContext.Provider value={{ token, setToken, userId, setUserId, incomeId, setIncomeId, refreshData, userData, totalExpenses, setTotalExpenses, recentPay, setRecentPay, incomeData, setIncomeData, expenseData, setExpenseData }}>
       {children}
     </UserContext.Provider>
   )
