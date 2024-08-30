@@ -12,8 +12,6 @@ const Income = () => {
   const [lastPay, setLastPay] = useState('')
   const [loading, setLoading] = useState(true) // Add a loading state
 
-
-
   const handleOpen = (e) => {
     e.stopPropagation
     setShowModal(true)
@@ -76,14 +74,12 @@ const Income = () => {
       const data = response.data
       if (method === 'post') {
         // For POST, append the new income entry
-        setIncomeData(prevData => [...prevData, data]);
-        
+        setIncomeData(prevData => [...prevData, data])
       } else if (method === 'put') {
         // For PUT, update the existing entry
         setIncomeData(prevData =>
-            prevData.map(income => income._id === incomeId ? data : income)
-        );
-        
+          prevData.map(income => income._id === incomeId ? data : income)
+        )
       }
       handleClose()
     } catch (error) {

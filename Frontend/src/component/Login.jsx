@@ -1,60 +1,57 @@
-import React, { useState, useContext } from 'react';
-import ErrorMessage from './ErrorMessage';
-import { UserContext } from '../context/UserContext';
-import api from '../api';
-import { useNavigate } from 'react-router-dom';
-
+import React, { useState, useContext } from 'react'
+import ErrorMessage from './ErrorMessage'
+import { UserContext } from '../context/UserContext'
+import api from '../api'
+import { useNavigate } from 'react-router-dom'
 
 const Login = () => {
-  const [userName, setUserName] = useState('');
-  const [passWord, setPassword] = useState('');
-  const [errorMessage, setErrorMessage] = useState('');
-  const { setToken, setUserId, setIncomeData, setIncomeId } = useContext(UserContext);
-  const navigate = useNavigate();
-  const [isPasswordVisible, setIsPasswordVisible] = useState(false);
+  const [userName, setUserName] = useState('')
+  const [passWord, setPassword] = useState('')
+  const [errorMessage, setErrorMessage] = useState('')
+  const { setToken, setUserId, setIncomeData, setIncomeId } = useContext(UserContext)
+  const navigate = useNavigate()
+  const [isPasswordVisible, setIsPasswordVisible] = useState(false)
 
   const submitLogin = async () => {
     try {
-      const params = new URLSearchParams();
-      params.append('username', userName);
-      params.append('password', passWord);
+      const params = new URLSearchParams()
+      params.append('username', userName)
+      params.append('password', passWord)
 
-      const response = await api.post('/token', params);
+      const response = await api.post('/token', params)
 
-
-      localStorage.setItem('token', response.data.access_token);
-      setToken(response.data.access_token);
+      localStorage.setItem('token', response.data.access_token)
+      setToken(response.data.access_token)
 
       const userInfoResponse = await api.get('/user/me', {
         headers: { Authorization: `Bearer ${response.data.access_token}` }
-      });
+      })
       if (userInfoResponse.status === 200) {
+        const userData = userInfoResponse.data
 
-        const userData = userInfoResponse.data;
+        localStorage.setItem('userId', userData._id) // Save userId to local storage
+        setUserId(userData._id) // Update userId in the context
 
-        localStorage.setItem('userId', userData._id); // Save userId to local storage
-        setUserId(userData._id); // Update userId in the context
-
-        navigate('/');
+        navigate('/')
       }
     } catch (error) {
-      setErrorMessage(error.response?.data?.detail || 'Login failed');
+      setErrorMessage(error.response?.data?.detail || 'Login failed')
     }
-  };
+  }
 
   const handleSubmit = (e) => {
-    e.preventDefault();
-    submitLogin();
-  };
+    e.preventDefault()
+    submitLogin()
+  }
 
   const handlePasswordChange = (e) => {
-    setPassword(e.target.value);
-  };
+    setPassword(e.target.value)
+  }
 
   const handleToggle = (e) => {
-    e.preventDefault();
-    setIsPasswordVisible(prevState => !prevState);
-  };
+    e.preventDefault()
+    setIsPasswordVisible(prevState => !prevState)
+  }
 
   return (
     <div
@@ -103,15 +100,16 @@ const Login = () => {
                     autoComplete='current-password'
                   />
                   <span className='icon is-small is-left'>
-                    <i className='fas fa-lock'/>
+                    <i className='fas fa-lock' />
                   </span>
-                  <span 
-                  className='icon is-medium is-left is-clickable' 
-                  aria-label={isPasswordVisible ? 'Hide password' : 'Show password'}
-                  style={{ cursor: 'pointer', marginLeft: '14.5rem' }} 
-                  onClick={handleToggle}>
-                  <i className={isPasswordVisible ? "fas fa-eye" : "fas fa-eye-slash"}></i>
-                </span>
+                  <span
+                    className='icon is-medium is-left is-clickable'
+                    aria-label={isPasswordVisible ? 'Hide password' : 'Show password'}
+                    style={{ cursor: 'pointer', marginLeft: '14.5rem' }}
+                    onClick={handleToggle}
+                  >
+                    <i className={isPasswordVisible ? 'fas fa-eye' : 'fas fa-eye-slash'} />
+                  </span>
                 </div>
               </div>
               <ErrorMessage message={errorMessage} />
@@ -128,7 +126,7 @@ const Login = () => {
         </div>
       </div>
     </div>
-  );
+  )
 }
 
-export default Login;
+export default Login

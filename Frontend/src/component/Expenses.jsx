@@ -13,7 +13,6 @@ const Expense = () => { // Assuming incomeId is passed as a prop
   const [expenseId, setExpenseId] = useState(null)
   const [showModal, setShowModal] = useState(false)
 
-
   const handleOpen = () => {
     setShowModal(true)
   }
@@ -37,12 +36,10 @@ const Expense = () => { // Assuming incomeId is passed as a prop
 
         const sumResponse = await api.get(`/user/${userId}/total_expenses`)
         if (sumResponse.status === 200) {
-          setTotalExpenses(sumResponse.data) 
+          setTotalExpenses(sumResponse.data)
         } else {
           throw new Error('Error fetching total expenses')
         }
-  
-
       } catch (error) {
         setErrorMessage(error.message)
       }
@@ -75,9 +72,6 @@ const Expense = () => { // Assuming incomeId is passed as a prop
       } else {
         throw new Error('Could not add expense information.', response.data)
       };
-
-
-      
     } catch (error) {
       setErrorMessage(error.message)
     }
@@ -116,7 +110,6 @@ const Expense = () => { // Assuming incomeId is passed as a prop
     }
     ;
   }
-
 
   const handleSubmit = (e) => {
     e.preventDefault()

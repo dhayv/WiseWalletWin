@@ -12,14 +12,14 @@ const SignUp = () => {
     userName: '',
     email: '',
     passWord: '',
-    confirmationPassword: '',
+    confirmationPassword: ''
   })
   const [errorMessages, setErrorMessages] = useState([])
   const [showChecklist, setShowChecklist] = useState(false)
 
   const { setToken, setUserId } = useContext(UserContext)
   const navigate = useNavigate()
-  const [isPasswordVisible, setIsPasswordVisible] = useState(false);
+  const [isPasswordVisible, setIsPasswordVisible] = useState(false)
 
   const handleChange = (e) => {
     const { name, value } = e.target
@@ -45,7 +45,7 @@ const SignUp = () => {
         first_name: firstName,
         username: userName,
         email,
-        password: passWord,
+        password: passWord
       })
 
       if (userResponse.status === 201) {
@@ -101,9 +101,9 @@ const SignUp = () => {
   }
 
   const handleToggle = (e) => {
-    e.preventDefault();
-    setIsPasswordVisible(prevState => !prevState);
-  };
+    e.preventDefault()
+    setIsPasswordVisible(prevState => !prevState)
+  }
 
   return (
     <div
@@ -192,13 +192,14 @@ const SignUp = () => {
                   <span className='icon is-small is-left'>
                     <i className='fas fa-lock' />
                   </span>
-                  <span 
-                  className='icon is-medium is-left is-clickable' 
-                  aria-label={isPasswordVisible ? 'Hide password' : 'Show password'}
-                  style={{ cursor: 'pointer', marginLeft: '14.3rem' }} 
-                  onClick={handleToggle}>
-                  <i className={isPasswordVisible ? "fas fa-eye" : "fas fa-eye-slash"}></i>
-                </span>
+                  <span
+                    className='icon is-medium is-left is-clickable'
+                    aria-label={isPasswordVisible ? 'Hide password' : 'Show password'}
+                    style={{ cursor: 'pointer', marginLeft: '14.3rem' }}
+                    onClick={handleToggle}
+                  >
+                    <i className={isPasswordVisible ? 'fas fa-eye' : 'fas fa-eye-slash'} />
+                  </span>
                 </div>
               </div>
               {/* Confirm Password */}

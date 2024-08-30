@@ -16,7 +16,7 @@ const Header = ({ title }) => {
     setExpenseData([])
     localStorage.removeItem('token')
     localStorage.removeItem('userId')
-    navigate("/")
+    navigate('/')
   }
 
   const toggleDropdown = () => {
