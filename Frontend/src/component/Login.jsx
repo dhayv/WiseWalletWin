@@ -9,7 +9,7 @@ const Login = () => {
   const [userName, setUserName] = useState('');
   const [passWord, setPassword] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
-  const { setToken, setUserId } = useContext(UserContext);
+  const { setToken, setUserId, setIncomeData, setIncomeId } = useContext(UserContext);
   const navigate = useNavigate();
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
 
@@ -21,6 +21,7 @@ const Login = () => {
 
       const response = await api.post('/token', params);
 
+
       localStorage.setItem('token', response.data.access_token);
       setToken(response.data.access_token);
 
@@ -28,7 +29,9 @@ const Login = () => {
         headers: { Authorization: `Bearer ${response.data.access_token}` }
       });
       if (userInfoResponse.status === 200) {
+
         const userData = userInfoResponse.data;
+
         localStorage.setItem('userId', userData._id); // Save userId to local storage
         setUserId(userData._id); // Update userId in the context
 

@@ -18,4 +18,4 @@ services:
       - ./frontend:/usr/src/app
     environment:
       - VITE_APP_API_URL=${VITE_APP_API_URL}
-    command: npm run dev
+    command: npm run dev -- --host

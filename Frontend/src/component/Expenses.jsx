@@ -34,13 +34,22 @@ const Expense = () => { // Assuming incomeId is passed as a prop
         } else {
           throw new Error('Could not load expense information.')
         }
+
+        const sumResponse = await api.get(`/user/${userId}/total_expenses`)
+        if (sumResponse.status === 200) {
+          setTotalExpenses(sumResponse.data) 
+        } else {
+          throw new Error('Error fetching total expenses')
+        }
+  
+
       } catch (error) {
         setErrorMessage(error.message)
       }
     }
 
     getExpense()
-  }, [incomeId, setExpenseId, refreshData, setExpenseData])
+  }, [incomeId, setExpenseId, setExpenseData])
 
   const submitExpense = async (e) => {
     e.preventDefault()
@@ -66,6 +75,9 @@ const Expense = () => { // Assuming incomeId is passed as a prop
       } else {
         throw new Error('Could not add expense information.', response.data)
       };
+
+
+      
     } catch (error) {
       setErrorMessage(error.message)
     }
@@ -105,27 +117,6 @@ const Expense = () => { // Assuming incomeId is passed as a prop
     ;
   }
 
-  useEffect(() => {
-    const getSum = async () => {
-      if (!userId) return // Prevent running if userId is null or undefined
-
-      try {
-        const response = await api.get(`/user/${userId}/total_expenses`)
-        if (response.status === 200) {
-          setTotalExpenses(response.data) // Ensure this matches the API response structure
-        } else {
-          throw new Error('Error fetching total expenses')
-        }
-      } catch (error) {
-        console.error('Error fetching total expenses:', error)
-        setTotalExpenses({ total_expenses: 0 }) // Set a default value in case of error
-      }
-    }
-
-    if (userId) {
-      getSum() // Only call the function if userId is available
-    }
-  }, [userId, refreshData])
 
   const handleSubmit = (e) => {
     e.preventDefault()

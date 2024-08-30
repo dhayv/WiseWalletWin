@@ -1,5 +1,6 @@
 import React, { createContext, useEffect, useState, useCallback, useLayoutEffect } from 'react'
 import api from '../api'
+import { useNavigate } from 'react-router-dom'
 
 export const UserContext = createContext()
 
@@ -14,37 +15,66 @@ export const UserProvider = ({ children }) => {
   const [recentPay, setRecentPay] = useState('')
   const [incomeData, setIncomeData] = useState([])
   const [expenseData, setExpenseData] = useState([])
+  const navigate = useNavigate()
 
+
+  const fetchIncomeAndExpenses = useCallback(async (userId) => {
+    try {
+
+      setIncomeData([]);
+      setExpenseData([]);
+      setIncomeId(null);
+
+      const incomeResponse = await api.get(`/income/${userId}`);
+      if (incomeResponse.status === 200) {
+        const incomeData = incomeResponse.data;
+        setIncomeData(incomeData);
+        if (incomeData.length > 0) {
+          const firstIncomeId = incomeData[0]._id;
+          setIncomeId(firstIncomeId);
+
+          // fetch expenses associated with incomeId
+          const expenseResponse = await api.get(`/expenses/${firstIncomeId}`);
+          if (expenseResponse.status === 200) {
+            setExpenseData(expenseResponse.data);
+          }
+        }
+      }
+    } catch (error) {
+      console.error('Failed to fetch income and expenses:', error);
+    }
+  }, []);
 
 
   const fetchUser = useCallback(async () => {
-    if (token) {
-      try {
-        const response = await api.get('/user/me', {
-          headers: { Authorization: `Bearer ${token}` }
-        })
-        if (response.status === 200) {
-          const data = response.data
-          setUserData(data)
-          setUserId(data._id) // Set user ID here
-          // console.log('User ID set to:', data._id)
-        } else {
-          handleLogout()
-        }
-      } catch (error) {
-        console.error('Failed to fetch user:', error)
-        handleLogout()
+    try {
+      const response = await api.get('/user/me', {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      if (response.status === 200) {
+        const data = response.data;
+        setUserData(data);
+        setUserId(data._id);
+        localStorage.setItem('userId', data._id);
+
+        // Fetch Income and Expenses after setting the userId
+        await fetchIncomeAndExpenses(data._id);
+      } else {
+        handleLogout();
       }
+    } catch (error) {
+      console.error('Failed to fetch user:', error);
+      handleLogout();
     }
-  }, [token])
+  }, [token, fetchIncomeAndExpenses]);
 
   useEffect(() => {
-    const storedUserId = localStorage.getItem('userId')
-    if (storedUserId) {
-      setUserId(storedUserId)
+    if (token) {
+      fetchUser();
     }
-    fetchUser() // Fetch user data when the component mounts
-  }, [fetchUser])
+  }, [token, fetchUser]);
+  
 
   useEffect(() => {
     if (userId && refreshData) {
@@ -75,10 +105,19 @@ export const UserProvider = ({ children }) => {
   }, [userId, refreshData])
 
   const handleLogout = () => {
+    // Completely clear previous users data
     setToken(null)
     setUserId(null)
+    setIncomeId(null)
+    setUserData(null)
+    setTotalExpenses({ total: 0 })
+    setRecentPay('')
+    setIncomeData([])
+    setExpenseData([])
     localStorage.removeItem('token')
     localStorage.removeItem('userId')
+    navigate("/")
+    
   }
 
   return (

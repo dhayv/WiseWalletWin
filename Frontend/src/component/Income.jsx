@@ -51,7 +51,7 @@ const Income = () => {
       }
     }
     getIncome()
-  }, [userId, setShowModal, setIncomeId, incomeId, refreshData, setIncomeData])
+  }, [userId, setShowModal, setIncomeId, incomeId, setIncomeData])
 
   const submitIncome = async (e) => {
     e.preventDefault()
@@ -65,7 +65,7 @@ const Income = () => {
       last_pay: lastPay ? formatLast : null // Correct date format
     }
 
-    console.log('Submitting payload:', payload)
+    // console.log('Submitting payload:', payload)
 
     try {
       const response = await api({

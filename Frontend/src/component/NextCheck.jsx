@@ -62,7 +62,7 @@ export const NextCheck = () => {
     };
 
     updateIncomeData();
-  }, [expenseData, incomeData, recentPay, refreshData, nextPayDate, incomeId, setIncomeData]);
+  }, [expenseData, incomeData, incomeId, setIncomeData]);
 
   // Update current date once a day at midnight
   useEffect(() => {
