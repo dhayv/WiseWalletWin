@@ -41,6 +41,7 @@ class UserService:
             email=user_data.email,
             hashed_password=hashed_password,
             first_name=user_data.first_name,
+            is_email_verified=False
         )
         await db_user.insert()
         logging.info(

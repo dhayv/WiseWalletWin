@@ -20,6 +20,7 @@ const SignUp = () => {
   const { setToken, setUserId } = useContext(UserContext)
   const navigate = useNavigate()
   const [isPasswordVisible, setIsPasswordVisible] = useState(false)
+  const [register, setRegister] = useState(false)
 
   const handleChange = (e) => {
     const { name, value } = e.target
@@ -49,43 +50,18 @@ const SignUp = () => {
       })
 
       if (userResponse.status === 201) {
-        const params = new URLSearchParams()
-        params.append('username', userName)
-        params.append('password', passWord)
+        setRegisterSuccess(true)
 
-        // retieve token
-        const tokenResponse = await api.post('/token', params, {
-          headers: { 'Content-type': 'application/x-www-form-urlencoded' }
-        })
+        setErrorMessages(['Account created successfully. Please check your email to verify your account.']);
 
-        if (tokenResponse.status === 200) {
-          const data = tokenResponse.data
-
-          // store token to context
-          localStorage.setItem('token', data.access_token)
-          setToken(data.access_token)
-
-          // get user info
-          const userInfoResponse = await api.get('/user/me', {
-            headers: { Authorization: `Bearer ${data.access_token}` }
-          })
-
-          if (userInfoResponse.status === 200) {
-            const userData = userInfoResponse.data
-
-            // store token
-            localStorage.setItem('userId', userData._id)
-            setUserId(userData._id)
-
-            // to home
-            navigate('/')
-          }
-        } else {
-          setErrorMessages(['Failed to register or log in'])
-        }
-      } else {
-        setErrorMessages(['Failed to register'])
-      }
+        
+        setTimeout(() => {
+            navigate('/login');
+        }, 3000);
+    } else {
+        setErrorMessages(['Failed to register']);
+    }
+      
     } catch (error) {
       if (error.response && error.response.data && error.response.data.errors) {
         setErrorMessages(error.response.data.errors.map((err) => err.msg))
@@ -239,6 +215,13 @@ const SignUp = () => {
               <button className='button is-primary is-fullwidth' type='submit'>
                 Sign Up
               </button>
+              {registerSuccess && ( 
+              <article className='message'>
+                <div className="message-body">
+                  Account created successfully. Please check your email to verify your account.'
+                </div> 
+            </article>
+            )}
             </form>
             <button className='button is-link is-light is-fullwidth mt-4' onClick={() => navigate('/login')} style={{ marginTop: '10px' }}>
               Have an account already? Login
@@ -249,5 +232,8 @@ const SignUp = () => {
     </div>
   )
 }
+
+
+
 
 export default SignUp
