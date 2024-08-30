@@ -68,7 +68,7 @@ export const UserProvider = ({ children }) => {
         handleLogout();
       }
     } catch (error) {
-      console.error('Failed to fetch user:', error);
+      // console.error('Failed to fetch user:', error);
       handleLogout();
     }
   }, [token, fetchIncomeAndExpenses]);

@@ -20,7 +20,7 @@ const SignUp = () => {
   const { setToken, setUserId } = useContext(UserContext)
   const navigate = useNavigate()
   const [isPasswordVisible, setIsPasswordVisible] = useState(false)
-  const [register, setRegister] = useState(false)
+  const [registerSuccess, setRegisterSuccess] = useState(false)
 
   const handleChange = (e) => {
     const { name, value } = e.target
@@ -36,10 +36,6 @@ const SignUp = () => {
   const submitRegistration = async () => {
     const { firstName, userName, email, passWord, confirmationPassword } = formData
 
-    if (passWord !== confirmationPassword) {
-      setErrorMessages(['Passwords do not match.'])
-      return
-    }
 
     try {
       const userResponse = await api.post('/user', {
@@ -52,12 +48,10 @@ const SignUp = () => {
       if (userResponse.status === 201) {
         setRegisterSuccess(true)
 
-        setErrorMessages(['Account created successfully. Please check your email to verify your account.']);
-
         
         setTimeout(() => {
             navigate('/login');
-        }, 3000);
+        }, 7000);
     } else {
         setErrorMessages(['Failed to register']);
     }
