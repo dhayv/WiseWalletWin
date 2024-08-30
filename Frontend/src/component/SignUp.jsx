@@ -12,14 +12,15 @@ const SignUp = () => {
     userName: '',
     email: '',
     passWord: '',
-    confirmationPassword: '',
+    confirmationPassword: ''
   })
   const [errorMessages, setErrorMessages] = useState([])
   const [showChecklist, setShowChecklist] = useState(false)
 
   const { setToken, setUserId } = useContext(UserContext)
   const navigate = useNavigate()
-  const [isPasswordVisible, setIsPasswordVisible] = useState(false);
+  const [isPasswordVisible, setIsPasswordVisible] = useState(false)
+  const [registerSuccess, setRegisterSuccess] = useState(false)
 
   const handleChange = (e) => {
     const { name, value } = e.target
@@ -35,57 +36,26 @@ const SignUp = () => {
   const submitRegistration = async () => {
     const { firstName, userName, email, passWord, confirmationPassword } = formData
 
-    if (passWord !== confirmationPassword) {
-      setErrorMessages(['Passwords do not match.'])
-      return
-    }
 
     try {
       const userResponse = await api.post('/user', {
         first_name: firstName,
         username: userName,
         email,
-        password: passWord,
+        password: passWord
       })
 
       if (userResponse.status === 201) {
-        const params = new URLSearchParams()
-        params.append('username', userName)
-        params.append('password', passWord)
+        setRegisterSuccess(true)
 
-        // retieve token
-        const tokenResponse = await api.post('/token', params, {
-          headers: { 'Content-type': 'application/x-www-form-urlencoded' }
-        })
-
-        if (tokenResponse.status === 200) {
-          const data = tokenResponse.data
-
-          // store token to context
-          localStorage.setItem('token', data.access_token)
-          setToken(data.access_token)
-
-          // get user info
-          const userInfoResponse = await api.get('/user/me', {
-            headers: { Authorization: `Bearer ${data.access_token}` }
-          })
-
-          if (userInfoResponse.status === 200) {
-            const userData = userInfoResponse.data
-
-            // store token
-            localStorage.setItem('userId', userData._id)
-            setUserId(userData._id)
-
-            // to home
-            navigate('/')
-          }
-        } else {
-          setErrorMessages(['Failed to register or log in'])
-        }
-      } else {
-        setErrorMessages(['Failed to register'])
-      }
+        
+        setTimeout(() => {
+            navigate('/login');
+        }, 7000);
+    } else {
+        setErrorMessages(['Failed to register']);
+    }
+      
     } catch (error) {
       if (error.response && error.response.data && error.response.data.errors) {
         setErrorMessages(error.response.data.errors.map((err) => err.msg))
@@ -101,9 +71,9 @@ const SignUp = () => {
   }
 
   const handleToggle = (e) => {
-    e.preventDefault();
-    setIsPasswordVisible(prevState => !prevState);
-  };
+    e.preventDefault()
+    setIsPasswordVisible(prevState => !prevState)
+  }
 
   return (
     <div
@@ -192,13 +162,14 @@ const SignUp = () => {
                   <span className='icon is-small is-left'>
                     <i className='fas fa-lock' />
                   </span>
-                  <span 
-                  className='icon is-medium is-left is-clickable' 
-                  aria-label={isPasswordVisible ? 'Hide password' : 'Show password'}
-                  style={{ cursor: 'pointer', marginLeft: '14.3rem' }} 
-                  onClick={handleToggle}>
-                  <i className={isPasswordVisible ? "fas fa-eye" : "fas fa-eye-slash"}></i>
-                </span>
+                  <span
+                    className='icon is-medium is-left is-clickable'
+                    aria-label={isPasswordVisible ? 'Hide password' : 'Show password'}
+                    style={{ cursor: 'pointer', marginLeft: '14.3rem' }}
+                    onClick={handleToggle}
+                  >
+                    <i className={isPasswordVisible ? 'fas fa-eye' : 'fas fa-eye-slash'} />
+                  </span>
                 </div>
               </div>
               {/* Confirm Password */}
@@ -238,6 +209,13 @@ const SignUp = () => {
               <button className='button is-primary is-fullwidth' type='submit'>
                 Sign Up
               </button>
+              {registerSuccess && ( 
+              <article className='message'>
+                <div className="message-body">
+                  Account created successfully. Please check your email to verify your account.'
+                </div> 
+            </article>
+            )}
             </form>
             <button className='button is-link is-light is-fullwidth mt-4' onClick={() => navigate('/login')} style={{ marginTop: '10px' }}>
               Have an account already? Login
@@ -248,5 +226,8 @@ const SignUp = () => {
     </div>
   )
 }
+
+
+
 
 export default SignUp

@@ -2,14 +2,21 @@ import React, { useContext, useState } from 'react'
 import { UserContext } from '../context/UserContext'
 import 'bulma/css/bulma.min.css'
 import '../styles/Header.css' // Custom styles if needed
+import { useNavigate } from 'react-router-dom'
 
 const Header = ({ title }) => {
-  const { token, setToken } = useContext(UserContext)
+  const { token, setToken, setIncomeData, setExpenseData, setUserId } = useContext(UserContext)
   const [isActive, setIsActive] = useState(false)
+  const navigate = useNavigate()
 
   const handleLogout = () => {
     setToken(null)
+    setUserId(null)
+    setIncomeData([])
+    setExpenseData([])
     localStorage.removeItem('token')
+    localStorage.removeItem('userId')
+    navigate('/')
   }
 
   const toggleDropdown = () => {

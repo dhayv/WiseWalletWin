@@ -35,12 +35,12 @@ class EmailService:
 
         # SMTP configuration
         smtp_server = os.getenv("ZOHO_SERVER")
-        smtp_port = 2525  # Trying port 2525
+        smtp_port = 465  # Trying port 2525
         smtp_username = os.getenv("ZOHO_USERNAME")
         smtp_password = os.getenv("ZOHO_PASSWORD")
 
         try:
-            with smtplib.SMTP(smtp_server, smtp_port) as server:
+            with smtplib.SMTP(smtp_server, smtp_port, timeout=60) as server:
                 print("Connecting to SMTP server")  # Debugging statement
                 server.starttls()
                 server.login(smtp_username, smtp_password)

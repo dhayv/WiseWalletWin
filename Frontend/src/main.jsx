@@ -36,7 +36,11 @@ export const Layout = () => (
 const router = createBrowserRouter([
   {
     errorElement: <ErrorMessage />,
-    element: <Layout />,
+    element: (
+      <UserProvider>
+        <Layout />
+      </UserProvider>
+    ),
     children: [
       {
         path: '/login',
@@ -93,8 +97,6 @@ const router = createBrowserRouter([
 
 createRoot(document.getElementById('root')).render(
   <React.StrictMode>
-    <UserProvider>
-      <RouterProvider router={router} />
-    </UserProvider>
+    <RouterProvider router={router} />
   </React.StrictMode>
 )
