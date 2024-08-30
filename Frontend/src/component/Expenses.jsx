@@ -46,7 +46,7 @@ const Expense = () => { // Assuming incomeId is passed as a prop
     }
 
     getExpense()
-  }, [incomeId, setExpenseId, setExpenseData])
+  }, [incomeId, userId, setExpenseData, setTotalExpenses])
 
   const submitExpense = async (e) => {
     e.preventDefault()
@@ -69,6 +69,9 @@ const Expense = () => { // Assuming incomeId is passed as a prop
 
         setExpenseData(prevExpenses => [...prevExpenses, newExpense])
         handleClose()
+        setName('')
+        setAmount('')
+        setDueDate('')
       } else {
         throw new Error('Could not add expense information.', response.data)
       };
@@ -102,6 +105,7 @@ const Expense = () => { // Assuming incomeId is passed as a prop
       const response = await api.delete(`/expenses/${expenseId}`)
       if (response.status === 204) {
         setExpenseData(prevExpenses => prevExpenses.filter(exp => exp._id !== expenseId))
+        await updateTotalExpenses()
       } else {
         throw new Error('Could not delete expense information.')
       }
@@ -110,6 +114,19 @@ const Expense = () => { // Assuming incomeId is passed as a prop
     }
     ;
   }
+
+  const updateTotalExpenses = async () => {
+    try {
+        const sumResponse = await api.get(`/user/${userId}/total_expenses`)
+        if (sumResponse.status === 200) {
+          setTotalExpenses(sumResponse.data)
+        } else {
+          throw new Error('Error fetching total expenses')
+        }
+    } catch (error) {
+        setErrorMessage(error.message)
+      }
+    }
 
   const handleSubmit = (e) => {
     e.preventDefault()

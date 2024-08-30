@@ -49,7 +49,7 @@ const Income = () => {
       }
     }
     getIncome()
-  }, [userId, setShowModal, setIncomeId, incomeId, setIncomeData])
+  }, [userId, setIncomeId,, setIncomeData])
 
   const submitIncome = async (e) => {
     e.preventDefault()
