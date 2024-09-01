@@ -1,10 +1,13 @@
 name: CI/CD Pipeline
 
 on:
-  push:  
+  workflow_dispatch:  
+  push:
     branches:
-      - '**'  # Match all branches
-  workflow_dispatch:  # Allows manual triggering of the workflow
+      - main
+    paths: 
+      - 'backend/**'
+      - 'frontend/**'
 
 jobs:
   lint:
@@ -27,26 +30,6 @@ jobs:
           key: ${{ runner.os }}-pip-${{ hashFiles('backend/requirements.txt') }}
           restore-keys: |
             ${{ runner.os }}-pip-
-
-      - name: Install dependencies and linters
-        run: |
-          pip install isort black
-
-      - name: Isort
-        run: isort . --profile black
-
-      - name: Format code with Black
-        run: black .
-
-      - name: Commit changes if needed
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          git config --local user.email "action@github.com"
-          git config --local user.name "GitHub Action"
-          git add -A
-          git diff --exit-code || git commit -m "Apply formatting"
-          git push
         
       - name: Set up Environment for Super-Linter
         uses: actions/setup-node@v4.0.2
@@ -60,38 +43,85 @@ jobs:
           VALIDATE_PYTHON_BLACK: false
         continue-on-error: true
 
-  deploy:
-    name: Deploy Code
+  jobs:
+    dockerize-backend:
     runs-on: ubuntu-latest
-    needs: lint  # Ensure lint job completes first
-    if: github.ref == 'refs/heads/main'  # Run this job only on the main branch
-
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v4.1.7
 
-      - name: Rsync and Deployments Action
-        uses: easingthemes/ssh-deploy@v5.0.3
+      - name: List directory contents
+        run: ls -R
+
+      - name: Setup Docker Buildx
+        uses: docker/setup-buildx-action@v3.4.0
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3.2.0
         with:
-          SSH_PRIVATE_KEY: ${{ secrets.SSH_KEY }}
-          REMOTE_HOST: ${{ secrets.EC2_ADDRESS }}
-          REMOTE_USER: ubuntu
-          SOURCE: "."
-          TARGET: "~/app"
-          ARGS: "-avz --verbose"
-          SSH_CMD_ARGS: "-vvv"
-          EXCLUDE: "/node_modules/,/.git/,/.env/,/venv/,/__pycache__/,/db.sqlite3/,/Basic_Script/,/README.md/,/api.js/,/main.py/,/database.py/"
-          SCRIPT_BEFORE: |
-            ssh-keyscan -H ${{ secrets.REMOTE_HOST }} >> ~/.ssh/known_hosts
-            ls
-          SCRIPT_AFTER: |
-            sudo systemctl stop frontend.service
-            sudo systemctl stop backend-container.service
-            cd ~/app/frontend
-            npm install
-            npm run build
-            npm prune --production
-            sudo systemctl restart backend-container.service
-            sudo systemctl restart frontend.service
-            sudo systemctl status backend-container.service
-            sudo systemctl status frontend.service
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}  
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v6.4.1
+        with:
+          context: backend/
+          push: true
+          tags: ${{ secrets.DOCKER_USERNAME }}/wisewallet-backend:latest
+        
+    deploy: 
+      needs: dockerize-backend
+      runs-on: aws-ec2
+      steps: 
+        - name: Pull image from Docker Hub
+          run: docker pull ${{ secrets.DOCKER_USERNAME }}/wisewallet-backend:latest
+        - name: Delete old Container
+          run: docker rm -f backend-container
+        - name: Run docker container
+          run: sudo systemctl restart backend.service
+
+    jobs:
+      build:
+        runs-on: ubuntu-latest
+    
+        steps:
+          - name: Checkout code
+            uses: actions/checkout@v4.1.7
+    
+          - name: Set up Node.js
+            uses: actions/setup-node@v4.0.3
+            with:
+              node-version: 20.12.1
+    
+          - name: Cache Node.js modules
+            uses: actions/cache@v4
+            with:
+              path: |
+                frontend/node_modules
+              key: ${{ runner.os }}-node-${{ hashFiles('**/frontend/package-lock.json') }}
+              restore-keys: |
+                ${{ runner.os }}-node-
+    
+          - name: List directory contents
+            run: ls -R
+    
+          - name: Install dependencies
+            run: |
+              cd ./frontend
+              npm install
+    
+          - name: Build the frontend
+            run: |
+              cd ./frontend
+              npm run build
+    
+          - name: Configure AWS credentials
+            uses: aws-actions/configure-aws-credentials@v4
+            with:
+              role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+              role-session-name: GitHubActionsSession
+              aws-region: ${{ secrets.AWS_REGION }}
+    
+          - name: Deploy to S3
+            run: |
+              aws s3 sync ./frontend/dist/ s3://${{ secrets.AWS_S3_BUCKET }} --region ${{ secrets.AWS_REGION }} --delete
