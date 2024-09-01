@@ -36,7 +36,6 @@ const SignUp = () => {
   const submitRegistration = async () => {
     const { firstName, userName, email, passWord, confirmationPassword } = formData
 
-
     try {
       const userResponse = await api.post('/user', {
         first_name: firstName,
@@ -48,14 +47,12 @@ const SignUp = () => {
       if (userResponse.status === 201) {
         setRegisterSuccess(true)
 
-        
         setTimeout(() => {
-            navigate('/login');
-        }, 7000);
-    } else {
-        setErrorMessages(['Failed to register']);
-    }
-      
+          navigate('/login')
+        }, 7000)
+      } else {
+        setErrorMessages(['Failed to register'])
+      }
     } catch (error) {
       if (error.response && error.response.data && error.response.data.errors) {
         setErrorMessages(error.response.data.errors.map((err) => err.msg))
@@ -209,13 +206,13 @@ const SignUp = () => {
               <button className='button is-primary is-fullwidth' type='submit'>
                 Sign Up
               </button>
-              {registerSuccess && ( 
-              <article className='message'>
-                <div className="message-body">
-                  Account created successfully. Please check your email to verify your account.'
-                </div> 
-            </article>
-            )}
+              {registerSuccess && (
+                <article className='message'>
+                  <div className='message-body'>
+                    Account created successfully. Please check your email to verify your account.'
+                  </div>
+                </article>
+              )}
             </form>
             <button className='button is-link is-light is-fullwidth mt-4' onClick={() => navigate('/login')} style={{ marginTop: '10px' }}>
               Have an account already? Login
@@ -226,8 +223,5 @@ const SignUp = () => {
     </div>
   )
 }
-
-
-
 
 export default SignUp
