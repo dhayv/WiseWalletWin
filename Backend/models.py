@@ -4,8 +4,7 @@ from datetime import date, datetime
 from typing import Optional
 
 from beanie import Document, Link, PydanticObjectId
-from pydantic import (BaseModel, EmailStr, Field,
-                      field_validator)
+from pydantic import BaseModel, EmailStr, Field, field_validator
 
 logging.basicConfig(level=logging.INFO)
 

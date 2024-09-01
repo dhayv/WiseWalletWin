@@ -17,78 +17,72 @@ export const UserProvider = ({ children }) => {
   const [expenseData, setExpenseData] = useState([])
   const navigate = useNavigate()
 
-
   const fetchIncomeAndExpenses = useCallback(async (userId) => {
     try {
+      setIncomeData([])
+      setExpenseData([])
+      setIncomeId(null)
 
-      setIncomeData([]);
-      setExpenseData([]);
-      setIncomeId(null);
-
-      const incomeResponse = await api.get(`/income/${userId}`);
+      const incomeResponse = await api.get(`/income/${userId}`)
       if (incomeResponse.status === 200) {
-        const incomeData = incomeResponse.data;
-        setIncomeData(incomeData);
+        const incomeData = incomeResponse.data
+        setIncomeData(incomeData)
         if (incomeData.length > 0) {
-          const firstIncomeId = incomeData[0]._id;
-          setIncomeId(firstIncomeId);
+          const firstIncomeId = incomeData[0]._id
+          setIncomeId(firstIncomeId)
 
           // fetch expenses associated with incomeId
-          const expenseResponse = await api.get(`/expenses/${firstIncomeId}`);
+          const expenseResponse = await api.get(`/expenses/${firstIncomeId}`)
           if (expenseResponse.status === 200) {
-            setExpenseData(expenseResponse.data);
+            setExpenseData(expenseResponse.data)
           }
         }
       }
     } catch (error) {
-      console.error('Failed to fetch income and expenses:', error);
+      console.error('Failed to fetch income and expenses:', error)
     }
-  }, []);
-
+  }, [])
 
   const fetchUser = useCallback(async () => {
     try {
-
-      setUserData(null);
-      setUserId(null);
+      setUserData(null)
+      setUserId(null)
 
       const response = await api.get('/user/me', {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+        headers: { Authorization: `Bearer ${token}` }
+      })
 
       if (response.status === 200) {
-        const data = response.data;
-        setUserData(data);
-        setUserId(data._id);
-        localStorage.setItem('userId', data._id);
+        const data = response.data
+        setUserData(data)
+        setUserId(data._id)
+        localStorage.setItem('userId', data._id)
 
         // Fetch Income and Expenses after setting the userId
-        await fetchIncomeAndExpenses(data._id);
+        await fetchIncomeAndExpenses(data._id)
       } else {
-        handleLogout();
+        handleLogout()
       }
     } catch (error) {
       // console.error('Failed to fetch user:', error);
-      handleLogout();
+      handleLogout()
     }
-  }, [token, fetchIncomeAndExpenses]);
+  }, [token, fetchIncomeAndExpenses])
 
   useEffect(() => {
     if (token) {
-      fetchUser();
+      fetchUser()
     }
-  }, [token, fetchUser]);
-  
+  }, [token, fetchUser])
 
   useEffect(() => {
     if (userId && refreshData) {
       const fetchData = async () => {
         try {
+          setIncomeData([])
+          setExpenseData([])
+          setIncomeId(null)
 
-          setIncomeData([]);
-          setExpenseData([]);
-          setIncomeId(null);
-          
           const [incomeResponse, expenseResponse] = await Promise.all([
             api.get(`/income/${userId}`),
             api.get(`/expenses/${userId}`)
@@ -125,8 +119,7 @@ export const UserProvider = ({ children }) => {
     setExpenseData([])
     localStorage.removeItem('token')
     localStorage.removeItem('userId')
-    navigate("/")
-    
+    navigate('/')
   }
 
   return (

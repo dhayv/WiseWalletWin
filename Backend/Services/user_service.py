@@ -1,6 +1,7 @@
 import logging
 
 from fastapi import BackgroundTasks, HTTPException, Response, status
+
 from models import UserIn, Users, UserUpdate
 from Services.auth import create_email_access_token, get_password_hash
 from Services.email_client import EmailService
@@ -41,7 +42,7 @@ class UserService:
             email=user_data.email,
             hashed_password=hashed_password,
             first_name=user_data.first_name,
-            is_email_verified=False
+            is_email_verified=False,
         )
         await db_user.insert()
         logging.info(

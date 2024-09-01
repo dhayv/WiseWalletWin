@@ -3,6 +3,7 @@ from datetime import timedelta
 
 from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm, SecurityScopes
+
 from models import UserIn, UserOut, Users, UserUpdate
 from Services.auth import (ACCESS_TOKEN_EXPIRES_MINUTES, Token,
                            authenticate_user, create_access_token,
