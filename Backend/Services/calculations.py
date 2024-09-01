@@ -1,5 +1,6 @@
-from models import Expense, Income
 from beanie import PydanticObjectId
+
+from models import Expense, Income
 
 
 async def sum_of_all_expenses(user_id: str):

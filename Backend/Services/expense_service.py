@@ -4,6 +4,7 @@ from typing import Optional
 from beanie import PydanticObjectId
 from bson import ObjectId
 from fastapi import HTTPException
+
 from models import Expense, ExpenseBase, ExpenseUpdate, Income
 
 
@@ -30,7 +31,10 @@ class ExpenseService:
     async def read_expense(self, income_id: str, user_id: str) -> list[Expense]:
 
         expenses = await Expense.find(
-            {"income_id.$id": PydanticObjectId(income_id), "user_id.$id": PydanticObjectId(user_id)}
+            {
+                "income_id.$id": PydanticObjectId(income_id),
+                "user_id.$id": PydanticObjectId(user_id),
+            }
         ).to_list()
         logging.info(f"Income_id found: {income_id}")
         logging.info(f"user_id found: {user_id}")

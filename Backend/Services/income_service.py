@@ -2,6 +2,7 @@ import logging
 
 from beanie import PydanticObjectId
 from fastapi import APIRouter, HTTPException
+
 from models import Income, IncomeBase, IncomeUpdate
 
 router = APIRouter()
@@ -10,7 +11,9 @@ router = APIRouter()
 class IncomeService:
 
     async def add_income(self, income_data: IncomeBase, user_id: str) -> Income:
-        existing_income = await Income.find_one({"user_id.$id": PydanticObjectId(user_id)})
+        existing_income = await Income.find_one(
+            {"user_id.$id": PydanticObjectId(user_id)}
+        )
 
         if existing_income:
             # Update the existing income entry
