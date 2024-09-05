@@ -37,7 +37,8 @@ jobs:
 
   deploy:
     needs: dockerize-backend
-    runs-on: aws-ec2  # Ensure this custom runner is correctly configured
+    name: aws-ec2
+    runs-on: self-hosted  
     steps:
       - name: Pull image from Docker Hub
         run: docker pull ${{ secrets.DOCKER_USERNAME }}/wisewallet-backend:latest
@@ -99,3 +100,9 @@ jobs:
       - name: Deploy to S3
         run: |
           aws s3 sync ./Frontend/dist/ s3://${{ secrets.AWS_S3_BUCKET }} --region ${{ secrets.AWS_REGION }} --delete
+
+      - name: Invalidate CloudFront cache
+        run: |
+          aws cloudfront create-invalidation \
+            --distribution-id ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }} \
+            --paths "/index.html"
