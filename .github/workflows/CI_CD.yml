@@ -6,8 +6,8 @@ on:
     branches:
       - main
     paths: 
-      - 'backend/**'
-      - 'frontend/**'
+      - './Backend/**'
+      - './Frontend/**'
 
 jobs:
   dockerize-backend:
@@ -31,7 +31,7 @@ jobs:
       - name: Build and push Docker image
         uses: docker/build-push-action@v6.4.1
         with:
-          context: ./backend/
+          context: ./Backend/
           push: true
           tags: ${{ secrets.DOCKER_USERNAME }}/wisewallet-backend:latest
 
@@ -43,7 +43,7 @@ jobs:
         run: docker pull ${{ secrets.DOCKER_USERNAME }}/wisewallet-backend:latest
 
       - name: Delete old Container
-        run: docker rm -f backend-container
+        run: docker rm -f ${{ secrets.DOCKER_USERNAME }}/wisewallet-backend:latest
 
       - name: Run docker container
         run: sudo systemctl restart backend.service
@@ -72,14 +72,14 @@ jobs:
 
       - name: Install dependencies
         run: |
-          cd ./frontend
+          cd ./Frontend
           npm install
 
       - name: Build the frontend
         env:
           VITE_APP_API_URL: ${{ secrets.VITE_APP_API_URL }}
         run: |
-          cd ./frontend
+          cd ./Frontend
           npm run build
 
       - name: Configure AWS credentials
