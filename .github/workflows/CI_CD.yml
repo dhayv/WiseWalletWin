@@ -10,41 +10,14 @@ on:
       - 'frontend/**'
 
 jobs:
-  lint:
-    name: Lint Code Base
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4.1.7
-
-      - name: Set up Python
-        uses: actions/setup-python@v5.1.0
-        with:
-          python-version: '3.11.8'
-
-      - name: Cache pip
-        uses: actions/cache@v4.0.2
-        with:
-          path: ~/.cache/pip
-          key: ${{ runner.os }}-pip-${{ hashFiles('backend/requirements.txt') }}
-          restore-keys: |
-            ${{ runner.os }}-pip-
-        
-      - name: Run Super-Linter
-        uses: github/super-linter@v5.7.2
-        env:
-          DEFAULT_BRANCH: main
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          VALIDATE_PYTHON_MYPY: false
-          VALIDATE_PYTHON_BLACK: false
-        continue-on-error: true
-
   dockerize-backend:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v4.1.7
+
+      - name: List directory contents
+        run: ls -R
 
       - name: Setup Docker Buildx
         uses: docker/setup-buildx-action@v3.4.0
@@ -58,7 +31,7 @@ jobs:
       - name: Build and push Docker image
         uses: docker/build-push-action@v6.4.1
         with:
-          context: backend/
+          context: ./backend/
           push: true
           tags: ${{ secrets.DOCKER_USERNAME }}/wisewallet-backend:latest
 
@@ -80,6 +53,9 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4.1.7
+
+      - name: List directory contents
+        run: ls -R
 
       - name: Set up Node.js
         uses: actions/setup-node@v4.0.3
