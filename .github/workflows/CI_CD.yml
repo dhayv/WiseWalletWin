@@ -72,8 +72,8 @@ jobs:
       - name: Cache Node.js modules
         uses: actions/cache@v4
         with:
-          path: frontend/node_modules
-          key: ${{ runner.os }}-node-${{ hashFiles('**/frontend/package-lock.json') }}
+          path: Frontend/node_modules
+          key: ${{ runner.os }}-node-${{ hashFiles('**/Frontend/package-lock.json') }}
           restore-keys: |
             ${{ runner.os }}-node-
 
@@ -98,4 +98,4 @@ jobs:
 
       - name: Deploy to S3
         run: |
-          aws s3 sync ./frontend/dist/ s3://${{ secrets.AWS_S3_BUCKET }} --region ${{ secrets.AWS_REGION }} --delete
+          aws s3 sync ./Frontend/dist/ s3://${{ secrets.AWS_S3_BUCKET }} --region ${{ secrets.AWS_REGION }} --delete
