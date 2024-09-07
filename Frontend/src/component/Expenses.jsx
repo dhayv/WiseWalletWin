@@ -68,6 +68,8 @@ const Expense = () => { // Assuming incomeId is passed as a prop
         const newExpense = response.data
 
         setExpenseData(prevExpenses => [...prevExpenses, newExpense])
+        await updateTotalExpenses()
+        
         handleClose()
         setName('')
         setAmount('')
@@ -117,16 +119,16 @@ const Expense = () => { // Assuming incomeId is passed as a prop
 
   const updateTotalExpenses = async () => {
     try {
-      const sumResponse = await api.get(`/user/${userId}/total_expenses`)
-      if (sumResponse.status === 200) {
-        setTotalExpenses(sumResponse.data)
-      } else {
-        throw new Error('Error fetching total expenses')
-      }
+        const sumResponse = await api.get(`/user/${userId}/total_expenses`)
+        if (sumResponse.status === 200) {
+          setTotalExpenses(sumResponse.data)
+        } else {
+          throw new Error('Error fetching total expenses')
+        }
     } catch (error) {
-      setErrorMessage(error.message)
+        setErrorMessage(error.message)
+      }
     }
-  }
 
   const handleSubmit = (e) => {
     e.preventDefault()
