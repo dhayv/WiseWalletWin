@@ -1,4 +1,4 @@
-import { React, useContext, useEffect, useState } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import moment from 'moment'
 import { UserContext } from '../context/UserContext'
 import api from '../api'
@@ -6,7 +6,7 @@ import { Table, Modal, Button } from 'react-bootstrap'
 
 export const NextCheck = () => {
   const { recentPay, incomeId, setIncomeData, incomeData, expenseData, refreshData } = useContext(UserContext)
-  const [currentDate, setCurrentDate] = useState(moment().format('MM-DD-YYYY'))
+  const [currentDate, setCurrentDate] = useState(moment().format('YYYY-MM-DD'))
   const [nextPayDate, setNextPayDate] = useState('')
   const [expensesDue, setExpensesDue] = useState([])
   const [showModal, setShowModal] = useState(false)
@@ -24,19 +24,20 @@ export const NextCheck = () => {
   useEffect(() => {
     if (!recentPay || !incomeData || !expenseData) return
 
-    const nextPay = moment(recentPay, 'YYYY-MM-DD').add(14, 'days') // assuming bi-weekly pay cycle
+    const nextPay = moment(recentPay, 'YYYY-MM-DD').add(14, 'days') // bi-weekly pay cycle
     setNextPayDate(nextPay.format('YYYY-MM-DD'))
 
-    const startPeriod = moment(recentPay, 'YYYY-MM-DD')
-    const endPeriod = nextPay
+    // future forecast calculator to help users plan ahead an extra two week
+    const startPeriod = moment(nextPay, 'YYYY-MM-DD') // start counting from next pay date
+    const endPeriod = moment(startPeriod, 'YYYY-MM-DD').add(15, 'days') // 2 weeks after next pay date include pay date
 
     const dueExpenses = expenseData.filter(expense => {
-      let expenseDueDate = moment(recentPay, 'YYYY-MM-DD').date(expense.due_date)
-      if (expenseDueDate.date() !== expense.due_date) {
-        expenseDueDate = expenseDueDate.endOf('month')
+      let expenseDueDate = moment(recentPay, 'YYYY-MM-DD').set('date', expense.due_date)
+      if (!expenseDueDate.isValid()) {
+        expenseDueDate = expenseDueDate.clone().endOf('month')
       }
       if (expenseDueDate.isBefore(startPeriod)) {
-        expenseDueDate.add(1, 'month')
+        expenseDueDate = expenseDueDate.clone().add(1, 'month') // Clone before mutating
       }
       return expenseDueDate.isBetween(startPeriod, endPeriod, null, '[]')
     })
@@ -72,13 +73,12 @@ export const NextCheck = () => {
     const midnight = moment().endOf('day').add(1, 'second')
     const msToMidnight = midnight.diff(now)
 
-    const intervalId = setInterval(updateDate, 86400000) // Update every 24 hours
-    const timeoutId = setTimeout(updateDate, msToMidnight) // Initial update at midnight
+    const timeoutId = setTimeout(() => {
+      updateDate()
+      setInterval(updateDate, 86400000) // Set interval to update every 24 hours after the first update
+    }, msToMidnight)
 
-    return () => {
-      clearTimeout(timeoutId)
-      clearInterval(intervalId)
-    }
+    return () => clearTimeout(timeoutId)
   }, [])
 
   const totalDueExpenses = expensesDue.reduce((sum, expense) => sum + expense.amount, 0)
@@ -116,7 +116,7 @@ export const NextCheck = () => {
                   </thead>
                   <tbody>
                     {sortedExpenseDue.map(exp => (
-                      <tr key={exp._id}>
+                      <tr key={exp._id || exp.name}>
                         <td>{exp.name}</td>
                         <td>${exp.amount}</td>
                         <td>{exp.due_date}</td>
