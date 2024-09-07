@@ -50,6 +50,7 @@ const Expense = () => { // Assuming incomeId is passed as a prop
 
   const submitExpense = async (e) => {
     e.preventDefault()
+    setErrorMessage('')
 
     if (!incomeId) {
       console.error('Invalid or undefined incomeId:', incomeId)
@@ -68,6 +69,8 @@ const Expense = () => { // Assuming incomeId is passed as a prop
         const newExpense = response.data
 
         setExpenseData(prevExpenses => [...prevExpenses, newExpense])
+        await updateTotalExpenses()
+
         handleClose()
         setName('')
         setAmount('')
@@ -194,7 +197,7 @@ const Expense = () => { // Assuming incomeId is passed as a prop
             </Modal.Header>
 
             <Modal.Body>
-              <Form className='expense-form'>
+              <Form className='expense-form' onSubmit={handleSubmit}>
                 <div className='row'>
                   <div className='field'>
                     <label htmlFor='expense-name'>Name</label>
@@ -232,7 +235,7 @@ const Expense = () => { // Assuming incomeId is passed as a prop
                     />
                   </div>
                   <div className='col-sm'>
-                    <button type='submit' className='button is-primary is-fullwidth mt-4' onClick={handleSubmit}>
+                    <button type='submit' className='button is-primary is-fullwidth mt-4'>
                       Add
                     </button>
                   </div>
