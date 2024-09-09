@@ -4,7 +4,22 @@ All notable changes to this project will be documented here.
 
 ---
 
-## [2.1.0] - 2024-09-07
+## [2.1.1] - 09-09-2024
+
+### Refactored
+
+- Edited/Removed loggin info to remove sensitive user info in API responses.
+
+### Fixed
+
+- Fixed nexxt check calculations from over counting days.
+- Shifted "Add Expense" button for improved UX.
+- Expense Table is now scollable vertically
+- The remainder section now accurately forecasts expense predictions.
+- Date format fixed to automatically update next paydate if date passed.
+
+
+## [2.1.0] - 09-07-2024
 
 ### Added
 
@@ -16,7 +31,7 @@ All notable changes to this project will be documented here.
 - Resolved expense list update issues after adding new expenses.
 - The remainder section now accurately forecasts expense predictions.
 
-## [2.0.0] - 2024-09-07
+## [2.0.0] - 09-05-2024
 
 ### Backend Changes
 
@@ -42,7 +57,7 @@ All notable changes to this project will be documented here.
 - **Backend**: The backend container is built, pushed to **Docker Hub**, and deployed via **GitHub Actions**. The EC2 instance pulls the latest container and restarts the backend service automatically.
 - **Frontend**: The frontend is built and deployed to an **AWS S3** bucket, with **CloudFront** cache invalidation ensuring users receive the most up-to-date version.
 
-## [1.0.0] - 09-01-2024 - Initial Release
+## [1.0.0] - 04-15-2024 - Initial Release
 
 ### Features
 

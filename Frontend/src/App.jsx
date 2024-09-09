@@ -29,7 +29,7 @@ const App = () => {
             <Remaining />
           </Row> */}
 
-        <Row className='mt-5 justify-content-center p-2'>
+        <Row className='mt-0 justify-content-center p-2'>
           <Col className='text-center'>
             <span className='has-text-weight-bold subtitle has-text-centered mb-3'>
               Expenses: ${totalExpenses?.total_expenses || 0}

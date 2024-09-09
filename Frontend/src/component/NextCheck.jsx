@@ -48,8 +48,9 @@ export const NextCheck = () => {
     const updateIncomeData = async () => {
       if (nextPayDate && moment().isAfter(moment(nextPayDate, 'YYYY-MM-DD'))) {
         try {
+          const formatDate = nextPayDate && moment(nextPayDate).format('MM-DD-YYYY')
           const response = await api.put(`/income/${incomeId}`, {
-            recent_pay: nextPayDate
+            recent_pay: formatDate
           })
           if (response.status === 200) {
             setIncomeData(response.data)

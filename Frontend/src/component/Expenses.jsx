@@ -1,8 +1,8 @@
 import React, { useContext, useState, useEffect } from 'react'
 import { UserContext } from '../context/UserContext'
 import api from '../api'
-import '../styles/App.css'
 import { Button, Modal, Form } from 'react-bootstrap'
+import "../styles/App.css"
 
 const Expense = () => { // Assuming incomeId is passed as a prop
   const { userId, token, incomeId, refreshData, expenseData, setExpenseData, setTotalExpenses } = useContext(UserContext)
@@ -146,44 +146,47 @@ const Expense = () => { // Assuming incomeId is passed as a prop
   const sortedExpenses = [...expenseData].sort((a, b) => a.due_date - b.due_date)
   return (
     <div className='container'>
-      <div className='columns is centered'>
+      <div className='columns'>
 
         <div className=''>
-
-          <div className='table'>
-
-            <table className='table is-fullwidth'>
-              <thead>
-                <tr>
-                  <th>Name</th>
-                  <th>Amount</th>
-                  <th>Due Date</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {sortedExpenses.map(exp => (
-                  <tr key={exp._id}>
-                    <td>{exp.name}</td>
-                    <td>${exp.amount}</td>
-                    <td>{exp.due_date}</td>
-                    <td>
-                      <button className='button is-danger is-small' onClick={() => handleDelete(exp._id)}>
-                        Delete
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-
-          </div>
-
-          <div className='has-text-centered mt-5'>
+          <div className='has-text-centered'>
             <button className='button is-primary' onClick={handleOpen}>
               <span className='has-text-weight-bold'>Add Expense</span>
             </button>
           </div>
+
+          <div className='table-container mt-3' >
+          <div className='table'>
+
+<table className='table is-fullwidth'>
+  <thead>
+    <tr>
+      <th >Name</th>
+      <th>Amount</th>
+      <th>Due </th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    {sortedExpenses.map(exp => (
+      <tr key={exp._id}>
+        <td className='has-text-left'>{exp.name}</td>
+        <td>${exp.amount}</td>
+        <td>{exp.due_date}</td>
+        <td>
+          <button className='button is-danger is-small' onClick={() => handleDelete(exp._id)}>
+            Delete
+          </button>
+        </td>
+      </tr>
+    ))}
+  </tbody>
+</table>
+
+</div>
+          </div>
+
+          
 
           <Modal
             show={showModal}

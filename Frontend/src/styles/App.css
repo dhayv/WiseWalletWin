@@ -9,7 +9,7 @@
   
   .column {
     display: 0;
-    justify-content: center;
+    justify-content: left;
   }
   
   .subtitle {
@@ -26,15 +26,36 @@
     border-bottom: none;
   }
 
+  table {
+    width: 100%; 
+    box-sizing: border-box;
+    border-collapse: collapse;
+  }
+
+  table thead th {
+    padding: 10px; 
+    margin: 0;     
+  }
+
   /* App.css */
 .table-container {
-  display: flex;
-  justify-content: center;
+    border-radius: 30px;
+    height: 650px;
+    padding: 0 10px 10px 10px;
+    overflow: scroll;
+    padding: 0 1em; 
 }
 
-.table {
-  margin: 0 auto; /* Ensures the table itself is centered */
-}
 
+table thead{
+  position: sticky;
+  top: 0px;
+  background: #fff;
+  z-index: 10; 
+  opacity: 1;
+  transform: translateZ(0) scale(1);
+  height: 25px;  
+  line-height: 25px;
+}
   
   
