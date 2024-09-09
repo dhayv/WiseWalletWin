@@ -38,8 +38,8 @@ const SignUp = () => {
 
     try {
       const userResponse = await api.post('/user', {
-        first_name: firstName,
-        username: userName,
+        first_name: firstName.trim().toLowerCase(),
+        username: userName.trim().toLowerCase(),
         email,
         password: passWord
       })

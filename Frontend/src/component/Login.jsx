@@ -15,7 +15,7 @@ const Login = () => {
   const submitLogin = async () => {
     try {
       const params = new URLSearchParams()
-      params.append('username', userName)
+      params.append('username', userName.trim().toLowerCase())
       params.append('password', passWord)
 
       const response = await api.post('/token', params)
