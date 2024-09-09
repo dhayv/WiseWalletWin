@@ -8,16 +8,16 @@ All notable changes to this project will be documented here.
 
 ### Refactored
 
-- Edited/Removed loggin info to remove sensitive user info in API responses.
+- Updated logging to remove sensitive user information from API responses
 
 ### Fixed
 
 - Fixed nexxt check calculations from over counting days.
-- Shifted "Add Expense" button for improved UX.
-- Expense Table is now scollable vertically
-- The remainder section now accurately forecasts expense predictions.
-- Date format fixed to automatically update next paydate if date passed.
-
+- Improved UX by repositioning the "Add Expense" button.
+- Made the Expense Table vertically scrollable for easier navigation.
+- Corrected the remainder section to accurately predict future expenses.
+- Fixed the date format to automatically update the next pay date when the current date has passed.
+- Ensured username handling is now case-insensitive.
 
 ## [2.1.0] - 09-07-2024
 
