@@ -1,4 +1,3 @@
-import logging
 from datetime import timedelta
 
 from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, status
@@ -17,9 +16,6 @@ from Services.calculations import calc_income_minus_expenses, sum_of_all_expense
 from Services.user_service import UserService
 
 router = APIRouter()
-
-
-logging.basicConfig(level=logging.INFO)
 
 
 def get_user_service() -> UserService:
@@ -105,7 +101,6 @@ async def read_user_me(
 # This endpoint is used to get the profile of a specific user based on their user_id.
 @router.get("/user/{user_id}", response_model=UserOut)
 async def read_user(user_id: str, service: UserService = Depends(get_user_service)):
-    logging.info(f"User ID passed to IncomeService: {user_id}")
     return await service.read_user(user_id)
 
 
