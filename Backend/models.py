@@ -18,7 +18,7 @@ class BaseUser(Document):
         index=True,
     )
     first_name: Optional[str] = None
-    is_email_verified: bool = Field(default=False, index=True)
+    is_email_verified: bool = Field(default=True, index=True)
 
     class Config:
         arbitrary_types_allowed = True
