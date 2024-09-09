@@ -1,6 +1,5 @@
 from beanie import PydanticObjectId
 from fastapi import APIRouter, HTTPException
-
 from models import Income, IncomeBase, IncomeUpdate
 
 router = APIRouter()
@@ -25,7 +24,9 @@ class IncomeService:
             return new_income
 
     async def read_all_incomes(self, user_id: str) -> list[Income]:
-        incomes = await Income.find({"user_id.$id": PydanticObjectId(user_id)}).to_list()
+        incomes = await Income.find(
+            {"user_id.$id": PydanticObjectId(user_id)}
+        ).to_list()
 
         return incomes
 

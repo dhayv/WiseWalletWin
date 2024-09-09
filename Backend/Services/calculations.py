@@ -1,5 +1,4 @@
 from beanie import PydanticObjectId
-
 from models import Expense, Income
 
 
