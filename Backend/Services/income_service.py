@@ -1,5 +1,3 @@
-import logging
-
 from beanie import PydanticObjectId
 from fastapi import APIRouter, HTTPException
 
@@ -27,14 +25,7 @@ class IncomeService:
             return new_income
 
     async def read_all_incomes(self, user_id: str) -> list[Income]:
-        try:
-            incomes = await Income.find(
-                {"user_id.$id": PydanticObjectId(user_id)}
-            ).to_list()
-            logging.info(f"Query successful. Incomes found: {incomes}")
-        except Exception as e:
-            logging.error(f"Error querying incomes: {str(e)}")
-            incomes = []
+        incomes = await Income.find({"user_id.$id": PydanticObjectId(user_id)}).to_list()
 
         return incomes
 
