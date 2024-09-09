@@ -1,4 +1,3 @@
-import logging
 from typing import Optional
 
 from beanie import PydanticObjectId
@@ -36,9 +35,6 @@ class ExpenseService:
                 "user_id.$id": PydanticObjectId(user_id),
             }
         ).to_list()
-        logging.info(f"Income_id found: {income_id}")
-        logging.info(f"user_id found: {user_id}")
-        logging.info(f"Expenses found: {expenses}")
 
         return expenses
 
