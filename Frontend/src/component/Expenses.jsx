@@ -2,7 +2,7 @@ import React, { useContext, useState, useEffect } from 'react'
 import { UserContext } from '../context/UserContext'
 import api from '../api'
 import { Button, Modal, Form } from 'react-bootstrap'
-import "../styles/App.css"
+import '../styles/App.css'
 
 const Expense = () => { // Assuming incomeId is passed as a prop
   const { userId, token, incomeId, refreshData, expenseData, setExpenseData, setTotalExpenses } = useContext(UserContext)
@@ -155,38 +155,36 @@ const Expense = () => { // Assuming incomeId is passed as a prop
             </button>
           </div>
 
-          <div className='table-container mt-3' >
-          <div className='table'>
+          <div className='table-container mt-3'>
+            <div className='table'>
 
-<table className='table is-fullwidth'>
-  <thead>
-    <tr>
-      <th >Name</th>
-      <th>Amount</th>
-      <th>Due </th>
-      <th>Actions</th>
-    </tr>
-  </thead>
-  <tbody>
-    {sortedExpenses.map(exp => (
-      <tr key={exp._id}>
-        <td className='has-text-left'>{exp.name}</td>
-        <td>${exp.amount}</td>
-        <td>{exp.due_date}</td>
-        <td>
-          <button className='button is-danger is-small' onClick={() => handleDelete(exp._id)}>
-            Delete
-          </button>
-        </td>
-      </tr>
-    ))}
-  </tbody>
-</table>
+              <table className='table is-fullwidth'>
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Amount</th>
+                    <th>Due </th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {sortedExpenses.map(exp => (
+                    <tr key={exp._id}>
+                      <td className='has-text-left'>{exp.name}</td>
+                      <td>${exp.amount}</td>
+                      <td>{exp.due_date}</td>
+                      <td>
+                        <button className='button is-danger is-small' onClick={() => handleDelete(exp._id)}>
+                          Delete
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
 
-</div>
+            </div>
           </div>
-
-          
 
           <Modal
             show={showModal}
