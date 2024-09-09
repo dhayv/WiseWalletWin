@@ -25,6 +25,6 @@ get_database = client.get_database(database_name)
 async def check_connection():
     try:
         await client.admin.command("ping")
-        logging.info("Pinged your deployment. Successfully connected to MongoDB!")
+        logging.info("Connected to MongoDB!")
     except Exception as e:
         logging.error(f"An error occurred while connecting to MongoDB: {e}")
