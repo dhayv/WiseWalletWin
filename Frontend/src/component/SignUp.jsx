@@ -209,7 +209,7 @@ const SignUp = () => {
               {registerSuccess && (
                 <article className='message'>
                   <div className='message-body'>
-                    Account created successfully. Please check your email to verify your account.'
+                    Account created successfully.
                   </div>
                 </article>
               )}
