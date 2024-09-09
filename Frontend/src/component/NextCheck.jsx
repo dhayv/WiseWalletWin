@@ -29,7 +29,7 @@ export const NextCheck = () => {
 
     // future forecast calculator to help users plan ahead an extra two week
     const startPeriod = moment(nextPay, 'YYYY-MM-DD') // start counting from next pay date
-    const endPeriod = moment(startPeriod, 'YYYY-MM-DD').add(15, 'days') // 2 weeks after next pay date include pay date
+    const endPeriod = moment(startPeriod, 'YYYY-MM-DD').add(14, 'days') // 2 weeks after next pay date include pay date
 
     const dueExpenses = expenseData.filter(expense => {
       let expenseDueDate = moment(recentPay, 'YYYY-MM-DD').set('date', expense.due_date)
