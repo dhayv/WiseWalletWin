@@ -1,4 +1,3 @@
-import base64
 import os
 from datetime import datetime, timedelta, timezone
 from typing import List
@@ -33,14 +32,14 @@ def get_password_hash(password):
     pwd_bytes = password.encode("utf-8")
     salt = bcrypt.gensalt()
     hashed_password = bcrypt.hashpw(password=pwd_bytes, salt=salt)
-    return base64.b64encode(hashed_password).decode("utf-8")
+    return hashed_password.decode("utf-8")
 
 
 def verify_password(plain_password, hashed_password):
-    hashed_password_bytes = base64.b64decode(hashed_password.encode("utf-8"))
-    password_byte_enc = plain_password.encode("utf-8")
+    password_bytes = plain_password.encode("utf-8")
+    hashed_password_bytes = hashed_password.encode("utf-8")
     return bcrypt.checkpw(
-        password=password_byte_enc, hashed_password=hashed_password_bytes
+        password=password_bytes, hashed_password=hashed_password_bytes
     )
 
 

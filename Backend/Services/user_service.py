@@ -7,7 +7,7 @@ from Services.email_client import EmailService
 class UserService:
 
     async def get_user_by_username(self, username: str):
-        user = await Users.find_one(Users.username == username)
+        user = await Users.find_one(Users.username == username.lower)
 
         return user
 
@@ -26,7 +26,7 @@ class UserService:
         hashed_password = get_password_hash(user_data.password)
 
         db_user = Users(
-            username=user_data.username,
+            username=user_data.username.lower(),
             email=user_data.email,
             hashed_password=hashed_password,
             first_name=user_data.first_name,
