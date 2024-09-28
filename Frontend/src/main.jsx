@@ -16,6 +16,7 @@ import Income from './component/Income.jsx'
 import Expense from './component/Expenses.jsx'
 import Remaining from './component/Remaining'
 import NextCheck from './component/NextCheck'
+import Homepage from './component/HomePage.jsx'
 
 if (import.meta.env.PROD) {
   console.log = function () {}
@@ -36,12 +37,18 @@ export const Layout = () => (
 const router = createBrowserRouter([
   {
     errorElement: <ErrorMessage />,
-    element: (
-      <UserProvider>
+    path: '/',
+    element: 
+      < Homepage/>
+    ,
+    children: [
+      {
+        path: '/layout',
+        element: <UserProvider>
         <Layout />
       </UserProvider>
-    ),
-    children: [
+
+      },
       {
         path: '/login',
         element: <Login />
@@ -51,7 +58,7 @@ const router = createBrowserRouter([
         element: <SignUp />
       },
       {
-        path: '/',
+        path: '/app',
         element: (
           <ProtectedRoute>
             <App />
