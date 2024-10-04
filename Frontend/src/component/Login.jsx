@@ -32,7 +32,7 @@ const Login = () => {
         localStorage.setItem('userId', userData._id) // Save userId to local storage
         setUserId(userData._id) // Update userId in the context
 
-        navigate('/')
+        navigate('/app')
       }
     } catch (error) {
       setErrorMessage(error.response?.data?.detail || 'Login failed')
