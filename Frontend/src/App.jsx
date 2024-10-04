@@ -1,5 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react'
-import Header from './component/Header'
+import React, { useContext, useState } from 'react'
 import { UserContext } from './context/UserContext'
 import Income from './component/Income'
 import Remaining from './component/Remaining'
