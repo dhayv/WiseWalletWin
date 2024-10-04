@@ -2,12 +2,14 @@ import * as React from 'react'
 import { createRoot } from 'react-dom/client'
 import { createBrowserRouter, RouterProvider, Outlet } from 'react-router-dom'
 import App from './App.jsx'
-
 import 'bootstrap/dist/css/bootstrap.min.css'
 import './App'
 import { UserProvider } from './context/UserContext.jsx'
+import './input.css'
+
 import Header from './component/Header.jsx'
 import Footer from './component/Footer.jsx'
+import Homepage from './component/HomePage.jsx'
 import ErrorMessage from './component/ErrorMessage.jsx'
 import Login from './component/Login'
 import SignUp from './component/SignUp'
@@ -16,7 +18,7 @@ import Income from './component/Income.jsx'
 import Expense from './component/Expenses.jsx'
 import Remaining from './component/Remaining'
 import NextCheck from './component/NextCheck'
-import Homepage from './component/HomePage.jsx'
+
 
 if (import.meta.env.PROD) {
   console.log = function () {}
@@ -38,15 +40,15 @@ const router = createBrowserRouter([
   {
     errorElement: <ErrorMessage />,
     path: '/',
-    element: 
-      < Homepage/>
-    ,
-    children: [
-      {
-        path: '/layout',
-        element: <UserProvider>
+    element: (
+      <UserProvider>
         <Layout />
       </UserProvider>
+      ),
+    children: [
+      {
+        path: '/',
+        element: <Homepage/>
 
       },
       {
