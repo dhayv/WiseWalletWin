@@ -8,6 +8,9 @@ html, body, #root {
   padding: 0; 
 }
 
+* {
+  font-family: "DM Sans", sans-serif;
+}
 
 
 #page-content{
