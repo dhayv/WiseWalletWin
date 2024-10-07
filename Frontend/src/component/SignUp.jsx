@@ -170,7 +170,7 @@ const SignUp = () => {
                 </div>
               </div>
               {/* Confirm Password */}
-              <div className='field'>
+              <div className='field mb-0'>
                 <label className='label' htmlFor='confirmationPassword'>Confirm Password</label>
                 <div className='control has-icons-left'>
                   <input
@@ -190,13 +190,14 @@ const SignUp = () => {
               </div>
               {/* Password Checklist */}
               {showChecklist && (
-                <div className='field mt-3'>
+                <div className='field mb-0'>
                   <PasswordChecklist
-                    rules={['minLength', 'specialChar', 'number', 'capital', 'match']}
+                    rules={['minLength', 'specialChar', 'number', 'capital', 'match', 'noSpaces']}
                     minLength={8}
                     value={formData.passWord}
                     valueAgain={formData.confirmationPassword}
                     onChange={(isValid) => {}}
+                    iconSize={10}
                   />
                 </div>
               )}
@@ -214,8 +215,11 @@ const SignUp = () => {
                 </article>
               )}
             </form>
-            <button className='button is-link is-light is-fullwidth mt-4' onClick={() => navigate('/login')} style={{ marginTop: '10px' }}>
+            <button className='button is-link is-light is-fullwidth mt-3' onClick={() => navigate('/login')} style={{ marginTop: '10px' }}>
               Have an account already? Login
+            </button>
+            <button style={{alignContent: 'center'}} className='button mt-3 is-white is-fullwidth' onClick={() => navigate('/')} > 
+            Back to Home
             </button>
           </div>
         </div>

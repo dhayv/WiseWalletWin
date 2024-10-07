@@ -84,7 +84,7 @@ const Login = () => {
                 </div>
               </div>
               {/* Password */}
-              <div className='field'>
+              <div className='field mb-0'>
                 <label className='label' htmlFor='password'>Password</label>
                 <div className='control has-icons-left has-icon-right'>
                   <input
@@ -119,8 +119,12 @@ const Login = () => {
                 Login
               </button>
             </form>
-            <button className='button is-link is-light is-fullwidth mt-4' onClick={() => navigate('/signup')} style={{ marginTop: '10px' }}>
+            <button className='button is-link is-light is-fullwidth mt-3' onClick={() => navigate('/signup')} style={{ marginTop: '10px' }}>
               Don't have an account? Sign Up
+            </button>
+            
+            <button style={{alignContent: 'center'}} className='button mt-3 is-white is-fullwidth' onClick={() => navigate('/')} > 
+            Back to Home
             </button>
           </div>
         </div>
