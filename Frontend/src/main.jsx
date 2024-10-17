@@ -19,7 +19,6 @@ import Expense from './component/Expenses.jsx'
 import Remaining from './component/Remaining'
 import NextCheck from './component/NextCheck'
 
-
 if (import.meta.env.PROD) {
   console.log = function () {}
 }
@@ -44,11 +43,11 @@ const router = createBrowserRouter([
       <UserProvider>
         <Layout />
       </UserProvider>
-      ),
+    ),
     children: [
       {
         path: '/',
-        element: <Homepage/>
+        element: <Homepage />
 
       },
       {

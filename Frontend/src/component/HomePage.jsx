@@ -1,30 +1,30 @@
-import React from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Player } from '@lottiefiles/react-lottie-player';
-import meditatedata from '../assets/meditating.json';
-import '../styles/Hompage.css';
+import React from 'react'
+import { useNavigate } from 'react-router-dom'
+import { Player } from '@lottiefiles/react-lottie-player'
+import meditatedata from '../assets/meditating.json'
+import '../styles/Hompage.css'
 
 const Homepage = () => {
-  const navigate = useNavigate();
+  const navigate = useNavigate()
 
   const handleLogin = () => {
-    navigate('/login');
-  };
+    navigate('/login')
+  }
 
   const handleSignUp = () => {
-    navigate('/signup');
-  };
+    navigate('/signup')
+  }
 
   return (
     <div>
       {/* Navigation Bar */}
-      <nav className="navbar" role="navigation" aria-label="main navigation">
-        <div className="navbar-menu">
-          <div className="buttons">
-            <button className="button is-primary" onClick={handleSignUp}>
+      <nav className='navbar' role='navigation' aria-label='main navigation'>
+        <div className='navbar-menu'>
+          <div className='buttons'>
+            <button className='button is-primary' onClick={handleSignUp}>
               <strong>Sign Up</strong>
             </button>
-            <button className="button is-light" onClick={handleLogin}>
+            <button className='button is-light' onClick={handleLogin}>
               Log In
             </button>
           </div>
@@ -32,14 +32,14 @@ const Homepage = () => {
       </nav>
 
       {/* Main Content */}
-      <main className="main-content">
+      <main className='main-content'>
         <h1>Get Started Today</h1>
         <Player
           autoplay
           loop
           src={meditatedata}
-          className="lottie-player"
-          aria-label="Meditating animation"
+          className='lottie-player'
+          aria-label='Meditating animation'
         />
         <h2>
           Predict your expenses, budget smarter, and eliminate financial stress.
@@ -50,7 +50,7 @@ const Homepage = () => {
         </p>
       </main>
     </div>
-  );
-};
+  )
+}
 
-export default Homepage;
+export default Homepage

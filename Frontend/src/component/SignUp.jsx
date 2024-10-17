@@ -48,12 +48,12 @@ const SignUp = () => {
         setTimeout(() => {
           navigate('/login')
         }, 7000)
-      } 
+      }
     } catch (error) {
       if (error.response && error.response.data && error.response.data.detail) {
-        setErrorMessages(error.response.data.detail);
+        setErrorMessages(error.response.data.detail)
       } else {
-        setErrorMessages('Registration failed. Please try again.');
+        setErrorMessages('Registration failed. Please try again.')
       }
     }
   }
@@ -77,10 +77,10 @@ const SignUp = () => {
         <div className='column '>
 
           <div className='box'>
-          {errorMessages && (
-            <div className="notification is-danger is-light">
-              {errorMessages}
-            </div>
+            {errorMessages && (
+              <div className='notification is-danger is-light'>
+                {errorMessages}
+              </div>
             )}
             <form onSubmit={handleSubmit}>
               <h1 className='title has-text-centered'>Sign Up</h1>
@@ -202,7 +202,7 @@ const SignUp = () => {
                   />
                 </div>
               )}
-              
+
               <br />
               {/* Button */}
               <button className='button is-primary is-fullwidth' type='submit'>
@@ -219,8 +219,8 @@ const SignUp = () => {
             <button className='button is-link is-light is-fullwidth mt-3' onClick={() => navigate('/login')} style={{ marginTop: '10px' }}>
               Have an account already? Login
             </button>
-            <button style={{alignContent: 'center'}} className='button mt-3 is-white is-fullwidth' onClick={() => navigate('/')} > 
-            Back to Home
+            <button style={{ alignContent: 'center' }} className='button mt-3 is-white is-fullwidth' onClick={() => navigate('/')}>
+              Back to Home
             </button>
           </div>
         </div>
