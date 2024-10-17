@@ -1,0 +1,83 @@
+.navbar {
+    padding: 1rem 2rem;
+  }
+  
+  .navbar-menu {
+    display: flex;
+    justify-content: flex-end;
+  }
+  
+  .buttons .button {
+    margin-left: 0.5rem;
+  }
+  
+  .main-content {
+    display: grid;
+    place-items: center;
+    text-align: center;
+    padding: 2rem;
+    margin-top: 2.5rem;
+    padding: 0;
+  }
+  
+  .main-content h1 {
+    font-size: 2.5rem;
+    margin: 0;
+  }
+  
+  .main-content h2 {
+    font-weight: 800;
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+    margin-top: 0;
+  }
+  
+  .main-content p {
+    font-weight: 600;
+    font-size: 1.125rem;
+    max-width: 600px;
+  }
+
+  .lottie-player,
+.lottie-player * {
+  margin: 0;
+  padding: 0;
+}
+  
+  .lottie-player {
+    width: 500px;
+    height: 500px;
+    margin: 0;
+    padding: 0;
+  }
+  
+  @media (max-width: 768px) {
+    .navbar {
+      padding: 1rem;
+    }
+  
+    .main-content {
+      padding: 1rem;
+      margin-top: 2.5rem;
+    }
+  
+    .main-content h1 {
+      font-size: 2rem;
+    }
+  
+    .main-content h2 {
+      font-size: 1.25rem;
+      margin-top: 0;
+    }
+  
+    .main-content p {
+      font-size: 1rem;
+    }
+
+    .lottie-player {
+        width: 350px;
+        height: 350px;
+        
+      }
+  }
+  

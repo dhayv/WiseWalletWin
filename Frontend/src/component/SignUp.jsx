@@ -2,7 +2,6 @@ import React, { useState, useContext } from 'react'
 import PasswordChecklist from 'react-password-checklist'
 import { UserContext } from '../context/UserContext'
 import 'react-phone-number-input/style.css'
-import ErrorMessage from './ErrorMessage'
 import api from '../api'
 import { useNavigate } from 'react-router-dom'
 
@@ -14,7 +13,7 @@ const SignUp = () => {
     passWord: '',
     confirmationPassword: ''
   })
-  const [errorMessages, setErrorMessages] = useState([])
+  const [errorMessages, setErrorMessages] = useState('')
   const [showChecklist, setShowChecklist] = useState(false)
 
   const { setToken, setUserId } = useContext(UserContext)
@@ -46,18 +45,15 @@ const SignUp = () => {
 
       if (userResponse.status === 201) {
         setRegisterSuccess(true)
-
         setTimeout(() => {
           navigate('/login')
         }, 7000)
-      } else {
-        setErrorMessages(['Failed to register'])
-      }
+      } 
     } catch (error) {
-      if (error.response && error.response.data && error.response.data.errors) {
-        setErrorMessages(error.response.data.errors.map((err) => err.msg))
+      if (error.response && error.response.data && error.response.data.detail) {
+        setErrorMessages(error.response.data.detail);
       } else {
-        setErrorMessages(['Registration failed'])
+        setErrorMessages('Registration failed. Please try again.');
       }
     }
   }
@@ -81,6 +77,11 @@ const SignUp = () => {
         <div className='column '>
 
           <div className='box'>
+          {errorMessages && (
+            <div className="notification is-danger is-light">
+              {errorMessages}
+            </div>
+            )}
             <form onSubmit={handleSubmit}>
               <h1 className='title has-text-centered'>Sign Up</h1>
               {/* First Name */}
@@ -170,7 +171,7 @@ const SignUp = () => {
                 </div>
               </div>
               {/* Confirm Password */}
-              <div className='field'>
+              <div className='field mb-0'>
                 <label className='label' htmlFor='confirmationPassword'>Confirm Password</label>
                 <div className='control has-icons-left'>
                   <input
@@ -190,17 +191,18 @@ const SignUp = () => {
               </div>
               {/* Password Checklist */}
               {showChecklist && (
-                <div className='field mt-3'>
+                <div className='field mb-0'>
                   <PasswordChecklist
-                    rules={['minLength', 'specialChar', 'number', 'capital', 'match']}
+                    rules={['minLength', 'specialChar', 'number', 'capital', 'match', 'noSpaces']}
                     minLength={8}
                     value={formData.passWord}
                     valueAgain={formData.confirmationPassword}
                     onChange={(isValid) => {}}
+                    iconSize={10}
                   />
                 </div>
               )}
-              <ErrorMessage messages={errorMessages} />
+              
               <br />
               {/* Button */}
               <button className='button is-primary is-fullwidth' type='submit'>
@@ -214,8 +216,11 @@ const SignUp = () => {
                 </article>
               )}
             </form>
-            <button className='button is-link is-light is-fullwidth mt-4' onClick={() => navigate('/login')} style={{ marginTop: '10px' }}>
+            <button className='button is-link is-light is-fullwidth mt-3' onClick={() => navigate('/login')} style={{ marginTop: '10px' }}>
               Have an account already? Login
+            </button>
+            <button style={{alignContent: 'center'}} className='button mt-3 is-white is-fullwidth' onClick={() => navigate('/')} > 
+            Back to Home
             </button>
           </div>
         </div>

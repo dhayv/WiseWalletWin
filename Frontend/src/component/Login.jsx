@@ -32,10 +32,10 @@ const Login = () => {
         localStorage.setItem('userId', userData._id) // Save userId to local storage
         setUserId(userData._id) // Update userId in the context
 
-        navigate('/')
+        navigate('/app')
       }
     } catch (error) {
-      setErrorMessage(error.response?.data?.detail || 'Login failed')
+      setErrorMessage(error.response?.data?.detail || 'Invalid Username or password')
     }
   }
 
@@ -58,6 +58,7 @@ const Login = () => {
       className='container is-flex is-justify-content-center is-align-items-center'
       style={{ minHeight: '100vh' }}
     >
+      
       <div className='columns is-centered'>
         <div className='column'>
           <div className='box'>
@@ -65,6 +66,7 @@ const Login = () => {
               <h1 className='title has-text-centered'>Login</h1>
               {/* UserName */}
               <div className='field'>
+              {errorMessage && <div className="notification is-danger is-light">{errorMessage}</div>}
                 <label className='label' htmlFor='username'>Username</label>
                 <div className='control has-icons-left'>
                   <input
@@ -84,7 +86,7 @@ const Login = () => {
                 </div>
               </div>
               {/* Password */}
-              <div className='field'>
+              <div className='field mb-0'>
                 <label className='label' htmlFor='password'>Password</label>
                 <div className='control has-icons-left has-icon-right'>
                   <input
@@ -119,8 +121,12 @@ const Login = () => {
                 Login
               </button>
             </form>
-            <button className='button is-link is-light is-fullwidth mt-4' onClick={() => navigate('/signup')} style={{ marginTop: '10px' }}>
+            <button className='button is-link is-light is-fullwidth mt-3' onClick={() => navigate('/signup')} style={{ marginTop: '10px' }}>
               Don't have an account? Sign Up
+            </button>
+            
+            <button style={{alignContent: 'center'}} className='button mt-3 is-white is-fullwidth' onClick={() => navigate('/')} > 
+            Back to Home
             </button>
           </div>
         </div>
