@@ -1,3 +1,4 @@
+import React, { useContext } from 'react'
 import { UserContext } from './context/UserContext'
 import Income from './component/Income'
 import NextCheck from './component/NextCheck'
