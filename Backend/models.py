@@ -71,15 +71,18 @@ class Income(Document):
     id: Optional[PydanticObjectId] = Field(
         default_factory=PydanticObjectId, alias="_id"
     )
-    amount: float = Field(index=True)
+    amount: float = Field(index=True)  # When a user first creates an account they start with zero so th
     recent_pay: date = Field(index=True)  # Ensuring this is a date object
-    last_pay: Optional[date] = None  # This can be None or a date object
+    last_pay: Optional[date] = None
 
     user_id: Link[Users]
 
     class Config:
         arbitrary_types_allowed = True
         populate_by_name = True
+
+    class Settings:
+        keep_nulls = False
 
 
 class IncomeBase(BaseModel):
@@ -141,6 +144,9 @@ class Expense(Document):
     class Config:
         arbitrary_types_allowed = True
         populate_by_name = True
+
+    class Settings:
+        keep_nulls = False
 
 
 class ExpenseBase(BaseModel):
