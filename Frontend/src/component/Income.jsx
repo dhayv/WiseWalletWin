@@ -5,15 +5,15 @@ import api from '../api' // Importing your API instance
 import { Form, Modal, Button } from 'react-bootstrap'
 
 const Income = () => {
-  const { userId, incomeId, setIncomeId, refreshData, recentPay, setRecentPay, incomeData, setIncomeData } = useContext(UserContext)
+  const { userId, incomeId, setIncomeId, recentPay, setRecentPay, incomeData, setIncomeData } = useContext(UserContext)
   const [showModal, setShowModal] = useState(false)
-  const [errorMessage, setErrorMessage] = useState('')
+  const [setErrorMessage] = useState('')
   const [amount, setAmount] = useState('')
   const [lastPay, setLastPay] = useState('')
   const [loading, setLoading] = useState(true) // Add a loading state
 
   const handleOpen = (e) => {
-    e.stopPropagation
+    e.stopPropagation()
     setShowModal(true)
   }
 
@@ -49,7 +49,7 @@ const Income = () => {
       }
     }
     getIncome()
-  }, [userId, setIncomeId,, setIncomeData])
+  }, [userId, setIncomeId, setIncomeData])
 
   const submitIncome = async (e) => {
     e.preventDefault()
@@ -89,23 +89,6 @@ const Income = () => {
       console.log('Validation Errors:', error.response?.data?.detail)
       // Optional: Display validation errors to the user
       setErrorMessage(error.response?.data?.detail.join(', '))
-    }
-  }
-
-  const deleteIncome = async () => {
-    try {
-      const response = await api.delete(`/income/${incomeId}`, {
-        data: {
-          amount,
-          recent_pay: formatRecent,
-          last_pay: formatLast
-        }
-      })
-      if (response.status === 200) {
-        setIncomeData(response.data)
-      }
-    } catch (error) {
-      setErrorMessage(error.message)
     }
   }
 

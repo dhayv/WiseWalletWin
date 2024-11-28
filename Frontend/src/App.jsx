@@ -1,16 +1,13 @@
-import React, { useContext, useState } from 'react'
+import React, { useContext } from 'react'
 import { UserContext } from './context/UserContext'
 import Income from './component/Income'
-import Remaining from './component/Remaining'
 import NextCheck from './component/NextCheck'
 import Expenses from './component/Expenses'
-import Footer from './component/Footer'
 import 'bulma/css/bulma.min.css'
 import 'bootstrap/dist/css/bootstrap.min.css'
 import { Row, Col } from 'react-bootstrap'
 
 const App = () => {
-  const [message, setMessage] = useState('')
   const { totalExpenses } = useContext(UserContext)
 
   return (

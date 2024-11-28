@@ -12,6 +12,9 @@ class IncomeService:
             {"user_id.$id": PydanticObjectId(user_id)}
         )
 
+        if income_data is None:
+            return HTTPException(status_code=400, detail="Null not allowed")
+
         if existing_income:
             # Update the existing income entry
             update_data = income_data.model_dump(exclude_unset=True)
@@ -35,7 +38,15 @@ class IncomeService:
         income_id: str,
         income_data: IncomeUpdate,
     ) -> Income:
+
+        if income_data is None:
+            return HTTPException(status_code=400, detail="Null not allowed")
+
         db_income = await Income.get(income_id)
+
+        if db_income in None:
+            return HTTPException(status_code=400, detail="Null not allowed")
+
         if not db_income:
             raise HTTPException(status_code=404, detail="income not found")
         await db_income.update({"$set": income_data.model_dump(exclude_unset=True)})
