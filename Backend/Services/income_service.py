@@ -8,12 +8,12 @@ router = APIRouter()
 class IncomeService:
 
     async def add_income(self, income_data: IncomeBase, user_id: str) -> Income:
+        if income_data is None:
+            raise HTTPException(status_code=400, detail="Null not allowed")
+
         existing_income = await Income.find_one(
             {"user_id.$id": PydanticObjectId(user_id)}
         )
-
-        if income_data is None:
-            return HTTPException(status_code=400, detail="Null not allowed")
 
         if existing_income:
             # Update the existing income entry
@@ -40,12 +40,12 @@ class IncomeService:
     ) -> Income:
 
         if income_data is None:
-            return HTTPException(status_code=400, detail="Null not allowed")
+            raise HTTPException(status_code=400, detail="Null not allowed")
 
         db_income = await Income.get(income_id)
 
-        if db_income in None:
-            return HTTPException(status_code=400, detail="Null not allowed")
+        if db_income is None:
+            raise HTTPException(status_code=400, detail="Null not allowed")
 
         if not db_income:
             raise HTTPException(status_code=404, detail="income not found")
