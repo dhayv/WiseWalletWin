@@ -19,7 +19,7 @@ class BaseUser(Document):
     )
     first_name: Optional[str] = None
     is_email_verified: bool = Field(default=True, index=True)
-    account_created: datetime = Field(default_factory=datetime.now(timezone.utc))
+    account_created: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     last_login: Optional[datetime] = None
 
     class Config:
