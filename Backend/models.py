@@ -1,6 +1,6 @@
 import logging
 import re
-from datetime import date, datetime
+from datetime import date, datetime, timezone
 from typing import Optional
 
 from beanie import Document, Link, PydanticObjectId
@@ -19,6 +19,8 @@ class BaseUser(Document):
     )
     first_name: Optional[str] = None
     is_email_verified: bool = Field(default=True, index=True)
+    account_created: datetime = Field(default_factory=datetime.now(timezone.utc))
+    last_login: Optional[datetime] = None
 
     class Config:
         arbitrary_types_allowed = True
