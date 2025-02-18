@@ -11,6 +11,7 @@ logging.basicConfig(level=logging.INFO)
 
 class Category(Document):
     name: Optional[str] = None
+    description: str = Field(..., description="Category Description")
 
     class Config:
         arbitrary_types_allowed = True
