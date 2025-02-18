@@ -2,12 +2,13 @@ import logging
 import os
 from contextlib import asynccontextmanager
 
-from data_base.database import init_db
-from data_base.db_utils import check_connection
 from dotenv import load_dotenv
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from models import Expense, Income, Users
+
+from data_base.database import init_db
+from data_base.db_utils import check_connection
+from models import Category, Expense, Income, Users
 from router import expenses_endpoint as expense_router
 from router import income_endpoint as income_router
 from router import user_endpoint as user_router
@@ -19,10 +20,25 @@ logging.basicConfig(
 )
 
 
+async def prepopulate_categories():
+    default_categories = []
+
+    for cat in default_categories:
+        existing = await Category.find_one(Category.name == cat["name"])
+        if not existing:
+            new_cat = Category(**cat)
+            await new_cat.insert()
+            print(f"Inserted category: {new_cat.name}")
+        else:
+            print(f"Category {cat['name']} already exists.")
+
+
 # Startup event before server starts
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    await init_db(models=[Users, Expense, Income])
+    await init_db(models=[Users, Expense, Income, Category])
+    await prepopulate_categories()
+
     logging.info("Database Created")
 
     await check_connection()
