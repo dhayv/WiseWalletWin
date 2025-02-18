@@ -20,19 +20,6 @@ logging.basicConfig(
 )
 
 
-async def prepopulate_categories():
-    default_categories = []
-
-    for cat in default_categories:
-        existing = await Category.find_one(Category.name == cat["name"])
-        if not existing:
-            new_cat = Category(**cat)
-            await new_cat.insert()
-            print(f"Inserted category: {new_cat.name}")
-        else:
-            print(f"Category {cat['name']} already exists.")
-
-
 # Startup event before server starts
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -44,6 +31,31 @@ async def lifespan(app: FastAPI):
     await check_connection()
 
     yield
+
+
+async def prepopulate_categories():
+    default_categories = [
+        # Expense categories (if you decide to include these)
+        {"name": "Food", "description": "Money spent on groceries, dining out, etc."},
+        {"name": "Rent", "description": "Monthly rent or mortgage payments."},
+        {"name": "Utilities", "description": "Bills for electricity, water, gas, etc."},
+        {"name": "Phone Bill", "description": "Mobile phone service charges."},
+        {"name": "Online Services", "description": "Subscriptions to online platforms."},
+        {"name": "Groceries", "description": "Regular grocery shopping expenses."},
+        {"name": "Debt Repayment", "description": "Payments toward loans or credit card debt."},
+        {"name": "Insurance", "description": "Insurance premiums for health, car, etc."},
+        {"name": "Investments & Savings", "description": "Money allocated for investments or savings."},
+        {"name": "Business Expense", "description": "Costs related to running a business."},
+    ]
+
+    for cat in default_categories:
+        existing = await Category.find_one(Category.name == cat["name"])
+        if not existing:
+            new_cat = Category(**cat)
+            await new_cat.insert()
+            print(f"Inserted category: {new_cat.name}")
+        else:
+            print(f"Category {cat['name']} already exists.")
 
 
 app = FastAPI(lifespan=lifespan, debug=True)
