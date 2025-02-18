@@ -35,7 +35,6 @@ async def lifespan(app: FastAPI):
 
 async def prepopulate_categories():
     default_categories = [
-        # Expense categories (if you decide to include these)
         {"name": "Food", "description": "Money spent on groceries, dining out, etc."},
         {"name": "Rent", "description": "Monthly rent or mortgage payments."},
         {"name": "Utilities", "description": "Bills for electricity, water, gas, etc."},
