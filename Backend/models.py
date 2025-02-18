@@ -9,6 +9,14 @@ from pydantic import BaseModel, EmailStr, Field, field_validator
 logging.basicConfig(level=logging.INFO)
 
 
+class Category(Document):
+    name: Optional[str] = None
+
+    class Config:
+        arbitrary_types_allowed = True
+        populate_by_name = True
+
+
 # Base user model for common user fields
 class BaseUser(Document):
     username: str = Field(..., index=True)
@@ -19,7 +27,9 @@ class BaseUser(Document):
     )
     first_name: Optional[str] = None
     is_email_verified: bool = Field(default=True, index=True)
-    account_created: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    account_created: datetime = Field(
+        default_factory=lambda: datetime.now(timezone.utc)
+    )
     last_login: Optional[datetime] = None
 
     class Config:
@@ -73,7 +83,9 @@ class Income(Document):
     id: Optional[PydanticObjectId] = Field(
         default_factory=PydanticObjectId, alias="_id"
     )
-    amount: float = Field(default=0.0)  # When a user first creates an account they start with zero so th
+    amount: float = Field(
+        default=0.0
+    )  # When a user first creates an account they start with zero so th
     recent_pay: date = Field(index=True)  # Ensuring this is a date object
     last_pay: Optional[date] = None
 
@@ -142,6 +154,7 @@ class Expense(Document):
 
     user_id: Link[Users]
     income_id: Link[Income]
+    category: Link[Category]
 
     class Config:
         arbitrary_types_allowed = True
