@@ -1,4 +1,6 @@
-from fastapi import BackgroundTasks, HTTPException, Response, status
+from beanie import PydanticObjectId
+from fastapi import HTTPException, Response, status
+
 from models import UserIn, Users, UserUpdate
 from Services.auth import get_password_hash
 
@@ -15,7 +17,7 @@ class UserService:
 
         return await statement
 
-    async def add_user(self, user_data: UserIn, background_task: BackgroundTasks):
+    async def add_user(self, user_data: UserIn):
 
         if await self.get_user_by_username(user_data.username):
             raise HTTPException(status_code=400, detail="Username already exists")
@@ -38,7 +40,7 @@ class UserService:
     # user/me
 
     async def read_user(self, user_id: str):
-        result = await Users.find_one(Users.id == user_id)
+        result = await Users.get(PydanticObjectId(user_id))
 
         if not result:
             raise HTTPException(status_code=404, detail="User account not found")
@@ -50,7 +52,7 @@ class UserService:
         if not result:
             raise HTTPException(status_code=404, detail="User not found")
 
-        update_data = user_update.model_dump_json(exclude_unset=True)
+        update_data = user_update.model_dump(exclude_unset=True)
 
         if "password" in update_data:
             hashed_password = get_password_hash(update_data["password"])
@@ -61,7 +63,7 @@ class UserService:
         return result
 
     async def delete_user(self, user_id):
-        user = await Users.get(Users.id == user_id)
+        user = await Users.get(PydanticObjectId(user_id))
 
         if not user:
             raise HTTPException(status_code=404, detail="User account not found")
