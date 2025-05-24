@@ -2,11 +2,13 @@ import logging
 import os
 from contextlib import asynccontextmanager
 
-from data_base.database import init_db
-from data_base.db_utils import check_connection
 from dotenv import load_dotenv
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from mangum import Mangum
+
+from data_base.database import init_db
+from data_base.db_utils import check_connection
 from models import Expense, Income, Users
 from router import expenses_endpoint as expense_router
 from router import income_endpoint as income_router
@@ -52,6 +54,8 @@ def hello():
 app.include_router(expense_router.router, prefix="/api")
 app.include_router(income_router.router, prefix="/api")
 app.include_router(user_router.router, prefix="/api")
+
+handler = Mangum(app)
 
 if __name__ == "__main__":
     import uvicorn
