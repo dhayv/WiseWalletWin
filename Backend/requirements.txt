@@ -34,7 +34,6 @@ emoji==2.12.1
 eventlet==0.40.0
 fastapi==0.112.1
 fastapi-cli==0.0.5
-fastapi-mail==1.4.1
 fasteners==0.19
 flake8==7.1.1
 Flask==3.0.3
