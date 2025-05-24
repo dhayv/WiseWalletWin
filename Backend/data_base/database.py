@@ -1,6 +1,7 @@
 import logging
 
 from beanie import Document, init_beanie
+
 from data_base.db_utils import get_database
 from models import Expense, Income, Users
 

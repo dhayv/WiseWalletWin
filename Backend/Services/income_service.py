@@ -1,5 +1,6 @@
 from beanie import PydanticObjectId
 from fastapi import APIRouter, HTTPException
+
 from models import Income, IncomeBase, IncomeUpdate
 
 router = APIRouter()
@@ -28,7 +29,7 @@ class IncomeService:
                 amount=default_amount,
                 recent_pay=income_data.recent_pay,
                 last_pay=income_data.last_pay,
-                user_id=user_id
+                user_id=user_id,
             )
 
             await new_income.insert()

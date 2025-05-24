@@ -71,7 +71,9 @@ class Income(Document):
     id: Optional[PydanticObjectId] = Field(
         default_factory=PydanticObjectId, alias="_id"
     )
-    amount: float = Field(default=0.0)  # When a user first creates an account they start with zero so th
+    amount: float = Field(
+        default=0.0
+    )  # When a user first creates an account they start with zero so th
     recent_pay: date = Field(index=True)  # Ensuring this is a date object
     last_pay: Optional[date] = None
 

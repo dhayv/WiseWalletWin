@@ -3,6 +3,7 @@ from typing import Optional
 from beanie import PydanticObjectId
 from bson import ObjectId
 from fastapi import HTTPException
+
 from models import Expense, ExpenseBase, ExpenseUpdate, Income
 
 
