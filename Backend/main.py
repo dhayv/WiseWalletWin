@@ -55,4 +55,9 @@ app.include_router(expense_router.router, prefix="/api")
 app.include_router(income_router.router, prefix="/api")
 app.include_router(user_router.router, prefix="/api")
 
-handler = Mangum(app)
+handler = Mangum(app, lifespan="off")
+
+if __name__ == "__main__":
+    import uvicorn
+
+    uvicorn.run(app, host="0.0.0.0", port=9000)
