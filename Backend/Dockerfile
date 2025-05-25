@@ -1,16 +1,16 @@
 FROM public.ecr.aws/lambda/python:3.11
 
 # 
-WORKDIR /code
+WORKDIR /var/task
 
 # 
-COPY ./requirements.txt /code/requirements.txt
+COPY requirements.txt .
 
 # 
-RUN pip install --no-cache-dir --upgrade -r /code/requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
 
 # 
-COPY . /code
+COPY . .
 
 # 
-CMD ["main.handler"]
+CMD [ "main.handler" ]
