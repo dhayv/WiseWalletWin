@@ -14,7 +14,7 @@ from router import expenses_endpoint as expense_router
 from router import income_endpoint as income_router
 from router import user_endpoint as user_router
 
-load_dotenv
+load_dotenv()
 
 logging.basicConfig(
     level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
@@ -56,8 +56,3 @@ app.include_router(income_router.router, prefix="/api")
 app.include_router(user_router.router, prefix="/api")
 
 handler = Mangum(app)
-
-if __name__ == "__main__":
-    import uvicorn
-
-    uvicorn.run(app, host="0.0.0.0", port=8000)
