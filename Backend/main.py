@@ -9,7 +9,6 @@ from mangum import Mangum
 
 from data_base.database import init_db
 from data_base.db_utils import check_connection
-from models import Expense, Income, Users
 from router import expenses_endpoint as expense_router
 from router import income_endpoint as income_router
 from router import user_endpoint as user_router
@@ -24,11 +23,9 @@ logging.basicConfig(
 # Startup event before server starts
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    await init_db(models=[Users, Expense, Income])
-    logging.info("Database Created")
-
+    await init_db()
     await check_connection()
-
+    logging.info("Database Created")
     yield
 
 
@@ -55,7 +52,7 @@ app.include_router(expense_router.router, prefix="/api")
 app.include_router(income_router.router, prefix="/api")
 app.include_router(user_router.router, prefix="/api")
 
-handler = Mangum(app, lifespan="off")
+handler = Mangum(app, lifespan="off", api_gateway_base_path="/default")
 
 if __name__ == "__main__":
     import uvicorn
