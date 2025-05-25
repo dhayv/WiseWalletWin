@@ -9,16 +9,16 @@ load_dotenv()
 
 
 class Settings(BaseSettings):
-    database_url: str = os.getenv("DATABASE_URL")
+    database_url: str = os.getenv("DATABASE_URL"),
+    server_timeout: str = os.getenv("MONGO_TIMEOUT_MS", "1000")
+    database_name: str = "Wallet_Database"
 
 
 settings = Settings()
 
-client = AsyncIOMotorClient(settings.database_url)
+client = AsyncIOMotorClient(settings.database_url, serverSelectionTimeoutMS=settings.server_timeout)
 
-database_name = "Wallet_Database"
-
-get_database = client.get_database(database_name)
+get_database = client[settings.database_name]
 
 
 # Function to check the connection to MongoDB
