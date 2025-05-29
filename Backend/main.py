@@ -52,7 +52,7 @@ app.include_router(expense_router.router, prefix="/api")
 app.include_router(income_router.router, prefix="/api")
 app.include_router(user_router.router, prefix="/api")
 
-handler = Mangum(app, lifespan="off", api_gateway_base_path="/default")
+handler = Mangum(app, lifespan="off")
 
 if __name__ == "__main__":
     import uvicorn
