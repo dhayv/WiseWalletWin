@@ -5,6 +5,7 @@ from contextlib import asynccontextmanager
 from dotenv import load_dotenv
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from models import Expense, Income, Users
 from mangum import Mangum
 
 from data_base.database import init_db
@@ -23,7 +24,7 @@ logging.basicConfig(
 # Startup event before server starts
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    await init_db()
+    await init_db(models=[Users, Expense, Income])
     await check_connection()
     logging.info("Database Created")
     yield
@@ -52,7 +53,7 @@ app.include_router(expense_router.router, prefix="/api")
 app.include_router(income_router.router, prefix="/api")
 app.include_router(user_router.router, prefix="/api")
 
-handler = Mangum(app, lifespan="off")
+handler = Mangum(app, lifespan="off", api_gateway_base_path="/default")
 
 if __name__ == "__main__":
     import uvicorn
