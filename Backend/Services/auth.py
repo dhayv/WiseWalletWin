@@ -46,7 +46,7 @@ def verify_password(plain_password, hashed_password):
 
 
 async def get_user(username: str):
-    user = await Users.find_one(Users.username == username)
+    user = await Users.find_one({"username": username})
 
     return user
 
@@ -123,7 +123,7 @@ async def get_current_user(
     if token_data.username is None:
         raise credentials_exception
 
-    user = await Users.find_one(Users.username == token_data.username)
+    user = await Users.find_one({"username": token_data.username})
     if user is None:
         raise credentials_exception
     return user
