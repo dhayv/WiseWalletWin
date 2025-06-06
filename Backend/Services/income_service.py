@@ -2,6 +2,7 @@ from beanie import PydanticObjectId
 from fastapi import APIRouter, HTTPException
 
 from models import Income, IncomeBase, IncomeUpdate
+from utils.helpers import update_document_or_404, validate_object_id
 
 router = APIRouter()
 
@@ -9,8 +10,10 @@ router = APIRouter()
 class IncomeService:
 
     async def add_income(self, income_data: IncomeBase, user_id: str) -> Income:
+        valid_user_id = validate_object_id(user_id)
+
         existing_income = await Income.find_one(
-            {"user_id.$id": PydanticObjectId(user_id)}
+            {"user_id.$id": PydanticObjectId(valid_user_id)}
         )
         if income_data.amount is None:
             income_data.amount = 0.0
@@ -18,26 +21,25 @@ class IncomeService:
         if existing_income:
 
             # Update the existing income entry
-            update_data = income_data.model_dump(exclude_unset=True)
-            await existing_income.update({"$set": update_data})
-            return existing_income
+            return await update_document_or_404(existing_income, income_data)
         else:
 
             new_income = Income(
                 amount=income_data,
                 recent_pay=income_data.recent_pay,
                 last_pay=income_data.last_pay,
-                user_id=PydanticObjectId(user_id),
+                user_id=user_id,
             )
 
             await new_income.insert()
             return new_income
 
     async def read_all_incomes(self, user_id: str) -> list[Income]:
-        incomes = await Income.find(
-            {"user_id.$id": PydanticObjectId(user_id)}
+        valid_user_id = validate_object_id(user_id)
+
+        return await Income.find(
+            {"user_id.$id": PydanticObjectId(valid_user_id)}
         ).to_list()
-        return incomes
 
     async def update_income(
         self,
@@ -45,13 +47,14 @@ class IncomeService:
         income_data: IncomeUpdate,
     ) -> Income:
 
+        valid_income_id = validate_object_id(income_id)
+
         if income_data is None:
             raise HTTPException(status_code=400, detail="Null not allowed")
 
-        db_income = await Income.get(PydanticObjectId(income_id))
+        db_income = await Income.get(valid_income_id)
 
         if db_income is None:
-            raise HTTPException(status_code=404, detail="income not found")
-        await db_income.update({"$set": income_data.model_dump(exclude_unset=True)})
+            raise HTTPException(status_code=400, detail="Null not allowed")
 
-        return db_income
+        return await update_document_or_404(db_income, income_data)

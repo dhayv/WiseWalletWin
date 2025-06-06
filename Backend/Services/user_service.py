@@ -1,8 +1,8 @@
-from beanie import PydanticObjectId
 from fastapi import HTTPException, Response, status
 
 from models import UserIn, Users, UserUpdate
 from Services.auth import get_password_hash
+from utils.helpers import validate_object_id
 
 
 class UserService:
@@ -40,7 +40,10 @@ class UserService:
     # user/me
 
     async def read_user(self, user_id: str):
-        result = await Users.get(PydanticObjectId(user_id))
+
+        valid_user_id = validate_object_id(user_id)
+
+        result = await Users.get(valid_user_id)
 
         if not result:
             raise HTTPException(status_code=404, detail="User account not found")
@@ -63,7 +66,10 @@ class UserService:
         return result
 
     async def delete_user(self, user_id):
-        user = await Users.get(PydanticObjectId(user_id))
+
+        valid_user_id = validate_object_id(user_id)
+
+        user = await Users.get(valid_user_id)
 
         if not user:
             raise HTTPException(status_code=404, detail="User account not found")

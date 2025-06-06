@@ -1,6 +1,6 @@
 import logging
 
-from beanie import Document, init_beanie
+from beanie import init_beanie
 
 from data_base.db_utils import get_database
 from data_base.seeder import prepopulate_categories
@@ -12,7 +12,7 @@ logging.basicConfig(
 
 
 # Create database and tables
-async def init_db(models: list[Document]):
+async def init_db():
     try:
         await init_beanie(
             database=get_database, document_models=[Users, Expense, Income, Category]

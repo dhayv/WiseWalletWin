@@ -1,3 +1,4 @@
+import json
 import logging
 import os
 from contextlib import asynccontextmanager
@@ -5,14 +6,16 @@ from contextlib import asynccontextmanager
 from dotenv import load_dotenv
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from mangum import Mangum
 
 from data_base.database import init_db
 from data_base.db_utils import check_connection
+
 from router import expenses_endpoint as expense_router
 from router import income_endpoint as income_router
 from router import user_endpoint as user_router
 
-load_dotenv
+load_dotenv()
 
 logging.basicConfig(
     level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
@@ -23,44 +26,14 @@ logging.basicConfig(
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     await init_db()
-
-    logging.info("Database Created")
-
     await check_connection()
     logging.info("Database Created")
-
-    await check_connection()
-
     yield
-
-
-async def prepopulate_categories():
-    default_categories = [
-        {"name": "Food", "description": "Money spent on groceries, dining out, etc."},
-        {"name": "Rent", "description": "Monthly rent or mortgage payments."},
-        {"name": "Utilities", "description": "Bills for electricity, water, gas, etc."},
-        {"name": "Phone Bill", "description": "Mobile phone service charges."},
-        {"name": "Online Services", "description": "Subscriptions to online platforms."},
-        {"name": "Groceries", "description": "Regular grocery shopping expenses."},
-        {"name": "Debt Repayment", "description": "Payments toward loans or credit card debt."},
-        {"name": "Insurance", "description": "Insurance premiums for health, car, etc."},
-        {"name": "Investments & Savings", "description": "Money allocated for investments or savings."},
-        {"name": "Business Expense", "description": "Costs related to running a business."},
-    ]
-
-    for cat in default_categories:
-        existing = await Category.find_one(Category.name == cat["name"])
-        if not existing:
-            new_cat = Category(**cat)
-            await new_cat.insert()
-            print(f"Inserted category: {new_cat.name}")
-        else:
-            print(f"Category {cat['name']} already exists.")
 
 
 app = FastAPI(lifespan=lifespan, debug=True)
 
-origins = os.getenv("ORIGIN_URL")
+origins = json.loads(os.getenv("ORIGIN_URL", "[]"))
 
 
 app.add_middleware(
@@ -72,7 +45,16 @@ app.add_middleware(
 )
 
 
-@app.get("/main")
+@app.middleware("http")
+async def log_request_path(request, call_next):
+    import logging
+
+    logging.info(f"📥 Incoming path: {request.url.path}")
+    response = await call_next(request)
+    return response
+
+
+@app.get("/")
 def hello():
     return {"message": "Hello, World"}
 
@@ -81,7 +63,9 @@ app.include_router(expense_router.router, prefix="/api")
 app.include_router(income_router.router, prefix="/api")
 app.include_router(user_router.router, prefix="/api")
 
+handler = Mangum(app)
+
 if __name__ == "__main__":
     import uvicorn
 
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    uvicorn.run(app, host="0.0.0.0", port=9000)
