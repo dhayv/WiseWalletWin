@@ -8,7 +8,6 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from data_base.database import init_db
 from data_base.db_utils import check_connection
-from models import Category, Expense, Income, Users
 from router import expenses_endpoint as expense_router
 from router import income_endpoint as income_router
 from router import user_endpoint as user_router
@@ -23,9 +22,11 @@ logging.basicConfig(
 # Startup event before server starts
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    await init_db(models=[Users, Expense, Income, Category])
-    await prepopulate_categories()
+    await init_db()
 
+    logging.info("Database Created")
+
+    await check_connection()
     logging.info("Database Created")
 
     await check_connection()
