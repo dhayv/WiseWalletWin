@@ -1,6 +1,6 @@
 import logging
 
-from beanie import Document, init_beanie
+from beanie import init_beanie
 
 from data_base.db_utils import get_database
 from models import Expense, Income, Users
@@ -13,9 +13,9 @@ logging.basicConfig(
 
 
 # Create database and tables
-async def init_db(models: list[Document]):
+async def init_db():
     try:
-        await init_beanie(database=get_database, document_models=models)
+        await init_beanie(database=get_database, document_models=[Users, Expense, Income])
 
     except Exception as e:
         logging.error(f"An error occurred while initializing beanie: {e}")
