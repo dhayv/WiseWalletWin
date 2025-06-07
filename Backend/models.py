@@ -11,7 +11,7 @@ logging.basicConfig(level=logging.INFO)
 
 class Category(Document):
     name: Optional[str] = None
-    description: str = Field(..., description="Category Description")
+    description: str = Field(..., unique=True, description="Category Description")
 
     class Config:
         arbitrary_types_allowed = True
@@ -152,10 +152,11 @@ class Expense(Document):
     due_date: Optional[int] = Field(
         default=None, ge=1, le=31, index=True
     )  # Due date of the expense (days of the month(1-30 or 31))
+    category_name: Optional[str] = None
 
     user_id: Link[Users]
     income_id: Link[Income]
-    category: Link[Category]
+    category: Optional[Link[Category]] = None
 
     class Config:
         arbitrary_types_allowed = True
@@ -169,6 +170,7 @@ class ExpenseBase(BaseModel):
     name: str
     amount: float
     due_date: Optional[int]
+    category_name: Optional[str] = None
 
     @field_validator("due_date", mode="before")
     @classmethod
@@ -189,3 +191,4 @@ class ExpenseUpdate(BaseModel):
     name: Optional[str] = None
     amount: Optional[float] = None
     due_date: Optional[int] = None
+    category_name: Optional[str] = None

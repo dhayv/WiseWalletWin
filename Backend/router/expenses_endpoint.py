@@ -1,4 +1,6 @@
-from fastapi import APIRouter, Depends, HTTPException, Response, status
+from typing import Optional
+
+from fastapi import APIRouter, Depends, HTTPException, Query, Response, status
 
 from models import Expense, ExpenseBase, ExpenseUpdate, Users
 from Services.auth import get_current_active_user
@@ -26,19 +28,21 @@ async def add_expense(
 @router.get("/expenses/{income_id}", response_model=list[Expense])
 async def read_expenses(
     income_id: str,
+    category: Optional[str] = Query(None),
     service: ExpenseService = Depends(get_expense_service),
     current_user: Users = Depends(get_current_active_user),
 ):
-    return await service.read_expense(income_id, current_user.id)
+    return await service.read_expense(income_id, current_user.id, category)
 
 
 @router.put("/expenses/{expense_id}")
 async def update_expense(
     expense_id: str,
+    category: str,
     expense_data: ExpenseUpdate,
     service: ExpenseService = Depends(get_expense_service),
 ):
-    updated_expense = await service.update_expense(expense_id, expense_data)
+    updated_expense = await service.update_expense(expense_id, expense_data, category)
     if not updated_expense:
         raise HTTPException(status_code=404, detail="Expense not found")
     return updated_expense
