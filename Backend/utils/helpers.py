@@ -1,3 +1,4 @@
+from beanie import PydanticObjectId
 from fastapi import HTTPException
 
 
@@ -9,7 +10,6 @@ async def update_document_or_404(document, data):
 
 
 def validate_object_id(object_id: str):
-    from beanie import PydanticObjectId
 
     if not object_id or object_id == "null":
         raise HTTPException(status_code=400, detail="Invalid or missing ID")
