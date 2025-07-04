@@ -1,11 +1,14 @@
-import React, { useContext, useState } from 'react'
+import { useContext, useState } from 'react'
 import { UserContext } from '../context/UserContext'
 import 'bulma/css/bulma.min.css'
 import '../styles/Header.css' // Custom styles if needed
 import { useNavigate } from 'react-router-dom'
 
-const Header = ({ title }) => {
-  const { token, setToken, setIncomeData, setExpenseData, setUserId } = useContext(UserContext)
+
+type HeaderProps = {title: string}
+
+const Header = ({ title }: HeaderProps) => {
+  const { setToken, setIncomeData, setExpenseData, setUserId } = useContext(UserContext)
   const [isActive, setIsActive] = useState(false)
   const navigate = useNavigate()
 
